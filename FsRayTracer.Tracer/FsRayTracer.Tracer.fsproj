@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    
+    
+    
+    <Compile Include="Constnats.fs" />
+    <Compile Include="Helpers.fs" />
+    <Compile Include="Color.fs" />
+    <Compile Include="Canvas.fs" />
+    <Compile Include="Vector.fs" />
+
+    <Compile Include="Point.fs" />
+    <Compile Include="Matrix.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+</Project>

@@ -19,6 +19,13 @@ module Domain =
 
             {a with entries = array2D entries}
 
+        static member (.=) (a: Matrix, b: Matrix) =
+
+            let aList = a.entries |> Seq.cast<float> |> Seq.toList
+            let bList = b.entries |> Seq.cast<float> |> Seq.toList
+
+            Seq.forall2(fun x y -> FloatHelper.equal x y) aList bList
+
 
 module Matrix =
     let make (m: float list list) : Matrix =
@@ -94,4 +101,13 @@ module Matrix =
         not (FloatHelper.equal 0.  (m |> determinant))
 
     let inverse (m:Matrix) =
-        m
+        match invertable m with
+        | false -> failwith "not invertable"
+        | true ->
+            let inversed =
+                [for row in 0..m.dimensions - 1 do
+                    [for col in 0..m.dimensions - 1 do
+                        let c = cofactor row col m
+                        let x = c / determinant m
+                        x ]]
+            make inversed |> Transpose

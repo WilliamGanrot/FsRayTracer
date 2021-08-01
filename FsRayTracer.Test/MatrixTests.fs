@@ -114,8 +114,8 @@ let ``a mtrix multiplied by a point`` () =
                       [8.;      6.;     4.;     1.];
                       [0.;      0.;     0.;     1.] ]
 
-    let expected = createPoint(18., 24., 33.) 
-    let multiplied = Matrix.multiplyPoint a (createPoint(1., 2., 3.))
+    let expected = Point.create 18. 24. 33. 
+    let multiplied = Matrix.multiplyPoint a (Point.create 1. 2. 3.)
     expected = multiplied |> Assert.True
 
 
@@ -128,8 +128,8 @@ let ``a mtrix multiplied by a vector`` () =
                       [8.;      6.;     4.;     1.];
                       [0.;      0.;     0.;     1.] ]
 
-    let expected = createVector(14., 22., 32.) 
-    let multiplied = Matrix.multiplyVector a (createVector(1., 2., 3.))
+    let expected = Vector.create 14. 22. 32. 
+    let multiplied = Matrix.multiplyVector a (Vector.create 1. 2. 3.)
     expected = multiplied |> Assert.True
 
 
@@ -149,7 +149,7 @@ let ``multiplying a matrix by the identity matrix`` () =
 [<Fact>]
 let ``multiplying the identity with matric by a vector`` () =
 
-    let v = createVector(4.,4.,4.)
+    let v = Vector.create 4. 4. 4.
     let identity = Matrix.identityMatrix 4
 
     let multiplied = v |> Matrix.multiplyVector identity
@@ -301,24 +301,26 @@ let ``testing a noninvertible matrix for inveribiltiy`` () =
 let ``calculating the inverse of a matrix`` () =
 
     let a =
-        Matrix.make[ [-5.;      2.;     6.;     -8.]
-                     [1.;      -5.;     1.;     8.]
-                     [7.;      7.;     -6.;     -7.]
-                     [1.;      -3.;     7.;    4.]]
+        Matrix.make [ [ -5.0; 2.; 6.; -8.0 ];
+                      [ 1.; -5.0; 1.; 8. ];
+                      [ 7.; 7.0; -6.0; -7.0 ];
+                      [ 1.; -3.0; 7.; 4. ] ]
+
 
     let b = a |> Matrix.inverse
 
     let expected =
         Matrix.make [ [ 0.21805; 0.45113; 0.24060; -0.04511 ];
-                        [ -0.80827; -1.45677; -0.44361; 0.52068 ];
-                        [ -0.07895; -0.22368; -0.05263; 0.19737 ];
-                        [ -0.52256; -0.81391; -0.30075; 0.30639 ] ]
+                       [ -0.80827; -1.45677; -0.44361; 0.52068 ];
+                       [ -0.07895; -0.22368; -0.05263; 0.19737 ];
+                       [ -0.52256; -0.81391; -0.30075; 0.30639 ] ]
+
 
     FloatHelper.equal 532. (Matrix.determinant a) |> Assert.True
     FloatHelper.equal -160. (Matrix.cofactor 2 3 a) |> Assert.True
-    FloatHelper.equal (-160./532.) b.entries.[3,2] 
+    FloatHelper.equal (-160./532.) b.entries.[3,2]  |> Assert.True
     FloatHelper.equal 105. (Matrix.cofactor 3 2 a) |> Assert.True
-    FloatHelper.equal (105./532.) b.entries.[3,2] 
+    FloatHelper.equal (105./532.) b.entries.[2,3] |> Assert.True
 
     b .= expected |> Assert.True
 

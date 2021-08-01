@@ -28,8 +28,7 @@ open RayTracer.Vector
                       W = p1.W - p2.W }
 
 
-    [<AutoOpen>]
-    module Operations =
+    module Point =
 
-        let createPoint (x, y, z) =
+        let create x y z =
             {X = x; Y = y; Z = z; W = 1.0}

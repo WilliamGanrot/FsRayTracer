@@ -28,12 +28,12 @@ let main argv =
           velocity = projectile.velocity + environment.gravity + environment.wind }
 
     let p =
-        { position = createPoint(0.0, 1.0, 0.0);
-          velocity = (createVector(1.0, 1.8, 0.0) |> normalize) * 11.25 }
+        { position = Point.create 0. 1. 0.;
+          velocity = (Vector.create 1.0 1.8 0.0 |> Vector.normalize) * 11.25 }
 
     let e =
-        { gravity = createVector(0.0, -0.1, 0.0);
-          wind    = createVector(-0.01, 0.0, 0.0) }
+        { gravity = Vector.create 0.0 -0.1 0.0;
+          wind    = Vector.create -0.01 0.0 0.0 }
 
     let c = Canvas.makeCanvas 900 550
 

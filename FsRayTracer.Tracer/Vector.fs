@@ -43,12 +43,10 @@ open RayTracer.Helpers
     
             static member (.=) (p, v : Vector) = FloatHelper.equal p.X v.X && FloatHelper.equal p.Y v.Y && FloatHelper.equal p.Z v.Z && p.W = v.W
 
-            
-                
-    [<AutoOpen>]
-    module Operations =
+ 
+    module Vector =
 
-        let createVector (x, y, z) =
+        let create x y z =
             {X = x; Y = y; Z = z; W = 0.0}
 
         let multiblyByScalar (v:Vector) = v * 3.5
@@ -66,6 +64,6 @@ open RayTracer.Helpers
               W = v1.W / magnitude v1 }
 
         let cross (a:Vector) (b:Vector) : Vector =
-            createVector(((a.Y * b.Z) - (a.Z * b.Y)), ((a.Z * b.X) - (a.X * b.Z)), ((a.X * b.Y) - (a.Y * b.X)))
+            create ((a.Y * b.Z) - (a.Z * b.Y)) ((a.Z * b.X) - (a.X * b.Z)) ((a.X * b.Y) - (a.Y * b.X))
 
         

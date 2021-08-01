@@ -43,11 +43,11 @@ module Matrix =
    
     let multiplyVector (m:Matrix) (v:Vector) =
         let l = m |> multiplyByList [|v.X; v.Y; v.Z; v.W|]
-        createVector (l.[0], l.[1], l.[2])
+        Vector.create l.[0] l.[1] l.[2]
 
     let multiplyPoint (m:Matrix) (p:Point) =
         let l = m |> multiplyByList [|p.X; p.Y; p.Z; p.W|]
-        createPoint (l.[0], l.[1], l.[2])
+        Point.create l.[0] l.[1] l.[2]
 
     let Transpose (a:Matrix) =
         let e = 

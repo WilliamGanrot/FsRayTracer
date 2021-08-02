@@ -108,6 +108,8 @@ module Matrix =
                 [for row in 0..m.dimensions - 1 do
                     [for col in 0..m.dimensions - 1 do
                         let c = cofactor row col m
-                        let x = c / determinant m
-                        x ]]
-            make inversed |> Transpose
+                        c / determinant m ]]
+
+            inversed
+            |> make
+            |> Transpose

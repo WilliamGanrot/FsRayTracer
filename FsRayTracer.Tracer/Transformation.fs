@@ -29,10 +29,6 @@ module Domain =
 
 module Transformation =
 
-    let translation x y z : Matrix =
-        Matrix.make [[]]
-
-
     let rec matrix (t:Transformation) : Matrix =
         match t with
         | Translation (x,y,z) ->
@@ -73,3 +69,7 @@ module Transformation =
                 |> List.map(fun x -> x |> matrix)
                 |> List.fold (*) (h |> matrix)
             | _ -> failwith "incomplete pattern matching"
+
+    
+    let applyToPoint t p =
+        t |> matrix |> Matrix.multiplyPoint p

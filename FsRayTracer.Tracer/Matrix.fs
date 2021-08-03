@@ -31,6 +31,16 @@ module Matrix =
     let make (m: float list list) : Matrix =
         {dimensions = m.Length; entries = array2D m}
 
+    let multiply (a: Matrix, b: Matrix) =
+        let entries = 
+            [for rowindex in 0..a.dimensions - 1 do
+                [for colindex in 0..b.dimensions - 1 do
+                    let row = a.entries.[rowindex,*]
+                    let col = b.entries.[*,colindex]
+                    (Array.map2(fun x y -> x * y) row col) |> Array.sum ]]
+
+        {a with entries = array2D entries}
+
     let identityMatrix (size:int) =
         [0..size-1]
         |> List.map (fun x -> [0..size-1] |> List.map (fun x2 -> if x2 = x then 1. else 0.))

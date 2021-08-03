@@ -18,7 +18,7 @@ type Enviorment = {
 
 [<EntryPoint>]
 let main argv =
-    (*IMAGE !*)
+    (*IMAGE 1*)
     (*
     let tick environment projectile =
         { position = projectile.position + projectile.velocity;
@@ -54,34 +54,51 @@ let main argv =
     System.IO.File.WriteAllText("image.pgm", ppm);
     *)
 
-    let c = Canvas.makeCanvas 200 200
-    let origin = Point.create 0. 0. 0.
 
-    let angle = (2.*Math.PI)/12.
+    (*IMAGE 2*)
+    (*
+        let c = Canvas.makeCanvas 400 400
+
+        let angle = (Math.PI)/6.
+        let radius = 3./8. * float c.Width
+
+        let twelwP = Point.create 0. 0. 1.
+
+
+        [1..12]
+        |> List.iter(fun h ->
+            let p =
+                twelwP
+                |> Transformation.applyToPoint (Rotation(Y, (float h) * angle))
+                |> Transformation.applyToPoint (Scaling(radius, 0., radius))
+                |> Transformation.applyToPoint (Translation((float c.Width/2.), 0., (float c.Width/2.)))
+
+            c |> Canvas.setPixel (int p.X) (c.Height-(int p.Z)) Color.red)
+
+
+        let ppm = Canvas.toPPM c
+        System.IO.File.WriteAllText("image.pgm", ppm);
+    *)
+
+    let c = Canvas.makeCanvas 400 400
+
+    let angle = (Math.PI)/6.
     let radius = 3./8. * float c.Width
 
     let twelwP = Point.create 0. 0. 1.
 
-    let points =
-        [1..12]
-        |> List.map(fun h ->
+    
+    [1..12]
+    |> List.iter(fun h ->
+        let p =
+            twelwP
+            |> Transformation.applyToPoint (Rotation(Y, (float h) * angle))
+            |> Transformation.applyToPoint (Scaling(radius, 0., radius))
+            |> Transformation.applyToPoint (Translation((float c.Width/2.), 0., (float c.Width/2.)))
 
-            let t = Translation(100., 100., 100.)
-            Rotation(Y, (float h) * angle)
-            |> Transformation.matrix
-            |> Matrix.multiplyPoint twelwP
-            |> Matrix.multiplyPoint (t |> Transformation.matrix))
-    points
-    |> List.map (fun p -> c |> Canvas.setPixel (int (p.X*radius)+100) (int (p.Y*radius)+100) Color.red)
-    |> ignore
-    //let twelwP = Point.create 0. 0. 1.
-    //let threeP =
-    //    Rotation (Y, 3. * angle)
-    //    |> Transformation.matrix
-    //    |> Matrix.multiplyPoint twelwP
+        c |> Canvas.setPixel (int p.X) (c.Height-(int p.Z)) Color.red)
 
-    //c |> Canvas.setPixel (int (twelwP.X*radius + origin.X)) (int (twelwP.Z*radius + origin.Z)) Color.red
-    //c |> Canvas.setPixel (int (threeP.X*radius + origin.X)) (int (threeP.Z*radius + origin.Z)) Color.white
+
     let ppm = Canvas.toPPM c
     System.IO.File.WriteAllText("image.pgm", ppm);
     0    

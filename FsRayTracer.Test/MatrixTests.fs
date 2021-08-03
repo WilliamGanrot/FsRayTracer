@@ -115,7 +115,7 @@ let ``a mtrix multiplied by a point`` () =
                       [0.;      0.;     0.;     1.] ]
 
     let expected = Point.create 18. 24. 33. 
-    let multiplied = Matrix.multiplyPoint a (Point.create 1. 2. 3.)
+    let multiplied = Matrix.multiplyPoint (Point.create 1. 2. 3.) a
     expected = multiplied |> Assert.True
 
 

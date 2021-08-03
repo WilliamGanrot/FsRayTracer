@@ -45,7 +45,7 @@ module Matrix =
         let l = m |> multiplyByList [|v.X; v.Y; v.Z; v.W|]
         Vector.create l.[0] l.[1] l.[2]
 
-    let multiplyPoint (m:Matrix) (p:Point) =
+    let multiplyPoint (p:Point) (m:Matrix) =
         let l = m |> multiplyByList [|p.X; p.Y; p.Z; p.W|]
         Point.create l.[0] l.[1] l.[2]
 

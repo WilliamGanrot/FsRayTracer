@@ -24,6 +24,7 @@ module Domain =
         | Rotation of axis:Axis * degrees:float
         | Shering of xy:float * xz:float * yx:float * yz:float * zx:float * zy:float
         | TransformationGroup of transformations:Transformation list
+        | Matrix of Matrix
         
      
 
@@ -31,6 +32,7 @@ module Transformation =
 
     let rec matrix (t:Transformation) : Matrix =
         match t with
+        | Matrix m -> m
         | Translation (x,y,z) ->
             Matrix.make [[1.; 0.; 0.; x];
                          [0.; 1.; 0.; y]
@@ -73,3 +75,9 @@ module Transformation =
     
     let applyToPoint t p =
         t |> matrix |> Matrix.multiplyPoint p
+
+    let applyToVector t v =
+        t |> matrix |> Matrix.multiplyVector v
+
+    let applyToMatrix t m =
+        t |> matrix |> Matrix.multiply m

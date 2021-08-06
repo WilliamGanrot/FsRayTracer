@@ -6,6 +6,8 @@ open RayTracer.Helpers
 
 [<AutoOpen>]
 module Domain =
+
+   
     type Matrix =
         {dimensions: int; entries: float [,]}
 
@@ -24,14 +26,14 @@ module Domain =
             let aList = a.entries |> Seq.cast<float> |> Seq.toList
             let bList = b.entries |> Seq.cast<float> |> Seq.toList
 
-            Seq.forall2(fun x y -> FloatHelper.equal x y) aList bList
+            a.dimensions = b.dimensions && Seq.forall2(fun x y -> FloatHelper.equal x y) aList bList
 
 
 module Matrix =
     let make (m: float list list) : Matrix =
         {dimensions = m.Length; entries = array2D m}
 
-    let multiply (a: Matrix, b: Matrix) =
+    let multiply (a: Matrix) (b: Matrix) =
         let entries = 
             [for rowindex in 0..a.dimensions - 1 do
                 [for colindex in 0..b.dimensions - 1 do
@@ -51,7 +53,7 @@ module Matrix =
             let row = m.entries.[i,*]
             (Array.map2(fun x y -> x * y) l row) |> Array.sum ]
    
-    let multiplyVector (m:Matrix) (v:Vector) =
+    let multiplyVector (v:Vector) (m:Matrix) =
         let l = m |> multiplyByList [|v.X; v.Y; v.Z; v.W|]
         Vector.create l.[0] l.[1] l.[2]
 
@@ -123,3 +125,5 @@ module Matrix =
             inversed
             |> make
             |> Transpose
+
+

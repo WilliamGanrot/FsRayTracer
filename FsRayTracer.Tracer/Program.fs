@@ -5,6 +5,9 @@ open System
 open Raytracer.Canvas
 open RayTracer.Transformation
 open RayTracer.Matrix
+open RayTracer.Shape
+open RayTracer.Intersection
+open RayTracer.Ray
 
 type Projectile = {
     position:Point;
@@ -80,25 +83,73 @@ let main argv =
         System.IO.File.WriteAllText("image.pgm", ppm);
     *)
 
-    let c = Canvas.makeCanvas 400 400
+    (*IMAGE 3*)
+    (*
+    let rayOrigin = Point.create 0. 0. -5.
+    let wallZ = 10
+    let wallSize = 7.
+    let canvasPixels = 100
+    let pixelSize = wallSize/ (float canvasPixels)
+    let half = wallSize / 2.
+    let canvas = Canvas.makeCanvas canvasPixels canvasPixels
+    let shape = Shape.sphere
 
-    let angle = (Math.PI)/6.
-    let radius = 3./8. * float c.Width
+    let hits x y =
+        let worldY = half - pixelSize * (float y)
+        let worldX = -half + pixelSize * (float x)
+        let position = Point.create worldX worldY (float wallZ)
 
-    let twelwP = Point.create 0. 0. 1.
+        let hit =
+            Vector.normalize (position - rayOrigin)
+            |> Ray.create rayOrigin 
+            |> Ray.intersect shape
+            |> Intersection.hit
 
-    
-    [1..12]
-    |> List.iter(fun h ->
-        let p =
-            twelwP
-            |> Transformation.applyToPoint (Rotation(Y, (float h) * angle))
-            |> Transformation.applyToPoint (Scaling(radius, 0., radius))
-            |> Transformation.applyToPoint (Translation((float c.Width/2.), 0., (float c.Width/2.)))
+        match hit with
+        | Some _ -> Some {X = x; Y = y}
+        | _ -> None
 
-        c |> Canvas.setPixel (int p.X) (c.Height-(int p.Z)) Color.red)
+    canvas
+    |> Canvas.cordinats
+    |> List.map (fun c -> hits c.X c.Y)
+    |> List.choose (fun x -> x)
+    |> List.iter(fun c -> Canvas.setPixel c.X c.Y Color.red canvas)
 
+    let ppm = Canvas.toPPM canvas
+    System.IO.File.WriteAllText ("image.pgm", ppm)
+    *)
 
-    let ppm = Canvas.toPPM c
-    System.IO.File.WriteAllText("image.pgm", ppm);
+    let rayOrigin = Point.create 0. 0. -5.
+    let wallZ = 10
+    let wallSize = 7.
+    let canvasPixels = 100
+    let pixelSize = wallSize/ (float canvasPixels)
+    let half = wallSize / 2.
+    let canvas = Canvas.makeCanvas canvasPixels canvasPixels
+    let shape = Shape.sphere
+
+    let hits x y =
+        let worldY = half - pixelSize * (float y)
+        let worldX = -half + pixelSize * (float x)
+        let position = Point.create worldX worldY (float wallZ)
+
+        let hit =
+            Vector.normalize (position - rayOrigin)
+            |> Ray.create rayOrigin 
+            |> Ray.intersect shape
+            |> Intersection.hit
+
+        match hit with
+        | Some _ -> Some {X = x; Y = y}
+        | _ -> None
+
+    canvas
+    |> Canvas.cordinats
+    |> List.map (fun c -> hits c.X c.Y)
+    |> List.choose (fun x -> x)
+    |> List.iter(fun c -> Canvas.setPixel c.X c.Y Color.red canvas)
+
+    let ppm = Canvas.toPPM canvas
+    System.IO.File.WriteAllText ("image.pgm", ppm)
+
     0    

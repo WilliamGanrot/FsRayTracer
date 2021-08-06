@@ -15,11 +15,18 @@
     <Compile Include="Canvas.fs" />
     <Compile Include="Vector.fs" />
     <Compile Include="Point.fs" />
-    <Compile Include="Shape.fs" />
-    <Compile Include="Intersection.fs" />
-    <Compile Include="Ray.fs" />
+
     <Compile Include="Matrix.fs" />
     <Compile Include="Transformation.fs" />
+
+    <Compile Include="Shape.fs" />
+
+    <Compile Include="Intersection.fs" />
+    
+    
+    
+    <Compile Include="Ray.fs" />
+    
 
 
     <Compile Include="Program.fs" />

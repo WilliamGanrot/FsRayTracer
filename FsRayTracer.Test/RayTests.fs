@@ -7,6 +7,8 @@ open RayTracer.Ray
 open RayTracer.Matrix
 open RayTracer.Intersection
 open RayTracer.Helpers
+open RayTracer.Transformation
+
 
 
 
@@ -95,4 +97,22 @@ let ``a sphere is behind a ray`` () =
     FloatHelper.equal xs.[0].t -6. |> Assert.True
     FloatHelper.equal xs.[1].t -4. |> Assert.True
 
+[<Fact>]
+let ``translating a ray`` () =
+    let r = Ray.create (Point.create 1. 2. 3.) (Vector.create 0. 1. 0.)
+    let t = Translation(3., 4., 5.)
 
+    let r2 = Ray.transform r t
+
+    Point.equal (r2.origin) (Point.create 4. 6. 8.) |> Assert.True
+    (r2.direction) .= (Vector.create 0. 1. 0.) |> Assert.True
+
+[<Fact>]
+let ``scaling a ray`` () =
+    let r = Ray.create (Point.create 1. 2. 3.) (Vector.create 0. 1. 0.)
+    let t = Scaling(2., 3., 4.)
+
+    let r2 = Ray.transform r t
+
+    Point.equal (r2.origin) (Point.create 2. 6. 12.) |> Assert.True
+    (r2.direction) .= (Vector.create 0. 3. 0.) |> Assert.True

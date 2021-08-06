@@ -3,7 +3,11 @@ open RayTracer.Color
 
 [<AutoOpen>]
 module Domain =
+
+    type Cordinat = {X: int; Y:int}
+
     type Canvas = {Width: int; Height: int; Pixels: Color [,] }
+
 
 module Canvas =
 
@@ -43,3 +47,8 @@ module Canvas =
 
         let lines = header @ pixelData
         (String.concat "\n" lines) + "\n"
+
+    let cordinats (m:Canvas) : Cordinat list =
+        [ for y in 0..m.Height - 1 do
+             for x in 0..m.Width - 1 do
+                 { X = x; Y = y } ]

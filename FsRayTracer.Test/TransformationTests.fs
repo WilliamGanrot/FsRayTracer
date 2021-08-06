@@ -8,6 +8,7 @@ open RayTracer.Transformation
 open RayTracer.Matrix
 
 open Xunit
+open RayTracer.Ray
 
 
 [<Fact>]
@@ -34,7 +35,7 @@ let ``translation does not affect vetors`` () =
     let transform = Translation(5., -3., 2.) |> Transformation.matrix
     let v = Vector.create -3. 4. 5.
     
-    (Matrix.multiplyVector transform v) = v |> Assert.True
+    (Matrix.multiplyVector v transform) = v |> Assert.True
 
 [<Fact>]
 let ``a scaling matrix applied to point`` () =
@@ -50,7 +51,7 @@ let ``a scaling matrix applied to a vector`` () =
     let v = Vector.create -4. 6. 8.
     let expected = Vector.create -8. 18. 32.
     
-    (Matrix.multiplyVector transform v) = expected |> Assert.True
+    (Matrix.multiplyVector v transform) = expected |> Assert.True
 
 [<Fact>]
 let ``multiplying by the inverse of a scaling matrix`` () =
@@ -59,7 +60,7 @@ let ``multiplying by the inverse of a scaling matrix`` () =
     let v = Vector.create -4. 6. 8.
     let expected = Vector.create -2. 2. 2.
     
-    (Matrix.multiplyVector inv v) = expected |> Assert.True
+    (Matrix.multiplyVector v inv) = expected |> Assert.True
 
 [<Fact>]
 let ``reflection is scaling by a negative value`` () =

@@ -129,7 +129,7 @@ let ``a mtrix multiplied by a vector`` () =
                       [0.;      0.;     0.;     1.] ]
 
     let expected = Vector.create 14. 22. 32. 
-    let multiplied = Matrix.multiplyVector a (Vector.create 1. 2. 3.)
+    let multiplied = Matrix.multiplyVector (Vector.create 1. 2. 3.) a 
     expected = multiplied |> Assert.True
 
 
@@ -152,7 +152,7 @@ let ``multiplying the identity with matric by a vector`` () =
     let v = Vector.create 4. 4. 4.
     let identity = Matrix.identityMatrix 4
 
-    let multiplied = v |> Matrix.multiplyVector identity
+    let multiplied = identity |> Matrix.multiplyVector v
     multiplied .= v |> Assert.True
 
 [<Fact>]

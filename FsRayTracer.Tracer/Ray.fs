@@ -6,21 +6,13 @@ open RayTracer.Vector
 open System
 open RayTracer.Shape
 open RayTracer.Intersection
+open RayTracer.Transformation
+open RayTracer.Matrix
 
 [<AutoOpen>]
 module Domain =
 
     type Ray = {origin:Point; direction:Vector;}
-
-    
-
-    //type Shape =
-    //| Sphere of Sphere
-
-    //type Object = {Shape: Sphere}
-
-    
-
 
 module Ray =
 
@@ -30,7 +22,17 @@ module Ray =
     let position (t:float) (r:Ray) : Point =
         r.origin + (r.direction * t)
 
-    let intersect (sphere:Sphere) (ray:Ray) : Intersection list =
+    let transform (r:Ray) (t:Transformation) : Ray =
+        let o = Transformation.applyToPoint t r.origin
+        let d = Transformation.applyToVector t r.direction
+        create o d
+
+    let intersect (sphere:Sphere) (r:Ray) : Intersection list =
+
+        let ray =
+            Matrix.inverse sphere.transform
+            |> Matrix
+            |> transform r
 
         let sphereToRay = ray.origin - Point.create 0. 0. 0.
         let a = Vector.dot ray.direction ray.direction

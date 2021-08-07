@@ -128,3 +128,23 @@ let ``the cross product of two vectors`` () =
 
     Assert.True((Vector.cross a b) .= Vector.create -1.0 2.0 -1.0)
     Assert.True((Vector.cross b a) .= Vector.create 1.0 -2.0 1.0)
+
+[<Fact>]
+let ``reflecting a vector approaching at 45``  () =
+
+    let v = Vector.create 1. -1. 0.
+    let n = Vector.create 0. 1. 0.
+
+    let r = Vector.reflect n v
+
+    r .= (Vector.create 1. 1. 0.) |> Assert.True
+
+[<Fact>]
+let ``reflecting a vector of slanted surface``  () =
+
+    let v = Vector.create 0. -1. 0.
+    let n = Vector.create (Math.Pow(2., 0.5)/2.) (Math.Pow(2., 0.5)/2.) 0.
+
+    let r = Vector.reflect n v
+
+    r .= (Vector.create 1. 0. 0.) |> Assert.True

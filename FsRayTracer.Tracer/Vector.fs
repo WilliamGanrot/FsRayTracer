@@ -69,4 +69,7 @@ open RayTracer.Helpers
         let dot a b =
             (a.X * b.X) + (a.Y * b.Y) + (a.Z * b.Z) + (a.W * b.W)
 
+        let reflect normal v = 
+            v - (normal * 2. * dot v normal)
+
         

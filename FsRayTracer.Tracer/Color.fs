@@ -33,6 +33,10 @@ module Domain =
                 FloatHelper.equal c1.Red c2.Red && FloatHelper.equal c1.Green c2.Green && FloatHelper.equal c1.Blue c2.Blue
 
 module Color =
+
+    let create r g b =
+        { Red = r; Green = g; Blue = b }
+
     let mulitplyByScalar c s =
         { Red = c.Red * s
           Green = c.Green * s

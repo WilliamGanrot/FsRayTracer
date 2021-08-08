@@ -37,10 +37,10 @@ module Color =
     let create r g b =
         { Red = r; Green = g; Blue = b }
 
-    let mulitplyByScalar c s =
+    let mulitplyByScalar s c =
         { Red = c.Red * s
           Green = c.Green * s
-          Blue = c.Blue - s }
+          Blue = c.Blue * s }
 
     let toRgb color =
         let clamp f =

@@ -8,6 +8,9 @@ open RayTracer.Matrix
 open RayTracer.Intersection
 open RayTracer.Helpers
 open RayTracer.Transformation
+open RayTracer.Material
+open RayTracer.Light
+open RayTracer.Color
 
 open Xunit
 open RayTracer.Shape
@@ -98,3 +101,24 @@ let ``cumputing the normal on a transformed sphere`` () =
         |> Shape.normal (Point.create 0. (Math.Pow (2., 0.5)/2.) -(Math.Pow (2., 0.5)/2.))
 
     n .= (Vector.create 0. 0.97014 -0.24254) |>  Assert.True
+
+[<Fact>]
+let ``a sphere has a deafult material`` () =
+    let s = Shape.sphere
+    s.material = Material.standard |> Assert.True
+
+[<Fact>]
+let ``a sphere may be assigned a material`` () =
+    
+    let m =
+        Material.standard
+        |> Material.withAmbient 1.
+
+    let s =
+        Shape.sphere
+        |> Shape.setMaterial m
+
+    s.material = m |> Assert.True
+
+
+    

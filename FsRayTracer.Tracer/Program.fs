@@ -5,9 +5,11 @@ open System
 open Raytracer.Canvas
 open RayTracer.Transformation
 open RayTracer.Matrix
+open RayTracer.Material
 open RayTracer.Shape
 open RayTracer.Intersection
 open RayTracer.Ray
+open RayTracer.Light
 
 type Projectile = {
     position:Point;
@@ -122,32 +124,48 @@ let main argv =
     let rayOrigin = Point.create 0. 0. -5.
     let wallZ = 10
     let wallSize = 7.
-    let canvasPixels = 100
+    let canvasPixels = 200
     let pixelSize = wallSize/ (float canvasPixels)
     let half = wallSize / 2.
     let canvas = Canvas.makeCanvas canvasPixels canvasPixels
-    let shape = Shape.sphere
 
-    let hits x y =
+    let material = Material.standard |> Material.withColor (Color.create 1. 0.2 1.0)
+    let shape = Shape.sphere |> Shape.setMaterial material
+
+    let lightPosition = Point.create -10. 10. -10.
+    let lightColor = Color.create 1. 1. 1.
+    let light = Light.create lightColor lightPosition
+
+    let calc x y =
         let worldY = half - pixelSize * (float y)
         let worldX = -half + pixelSize * (float x)
         let position = Point.create worldX worldY (float wallZ)
 
-        let hit =
+        let ray =
             Vector.normalize (position - rayOrigin)
             |> Ray.create rayOrigin 
+
+        let hit =
+            ray
             |> Ray.intersect shape
             |> Intersection.hit
 
+        
+
         match hit with
-        | Some _ -> Some {X = x; Y = y}
+        | Some intersection ->
+            let point = Ray.position intersection.t ray
+            let normal = Shape.normal point intersection.object
+            let eye = ray.direction * -1.
+            let color = Material.lighting intersection.object.material light point eye normal
+            Some {X = x; Y = y; Color = color}
         | _ -> None
 
     canvas
     |> Canvas.cordinats
-    |> List.map (fun c -> hits c.X c.Y)
+    |> List.map (fun c -> calc c.X c.Y)
     |> List.choose (fun x -> x)
-    |> List.iter(fun c -> Canvas.setPixel c.X c.Y Color.red canvas)
+    |> List.iter(fun c -> Canvas.setPixel c.X c.Y c.Color canvas)
 
     let ppm = Canvas.toPPM canvas
     System.IO.File.WriteAllText ("image.pgm", ppm)

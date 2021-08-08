@@ -5,11 +5,17 @@ open RayTracer.Transformation
 open RayTracer.Matrix
 open RayTracer.Vector
 open RayTracer.Point
+open RayTracer.Material
 
 
 [<AutoOpen>]
 module Domain =
-    type Sphere = {id:int; radii:float; transform: Matrix}
+
+    type Sphere =
+        { id:int;
+          radii:float;
+          transform: Matrix;
+          material: Material }
 
 module Shape =
 
@@ -17,7 +23,8 @@ module Shape =
         let r = new Random()
         {id = r.Next();
         radii = 1.;
-        transform = Matrix.identityMatrix 4}
+        transform = Matrix.identityMatrix 4;
+        material = Material.standard }
 
     let transform (t:Transformation) (s:Sphere) : Sphere =
         let t = Transformation.applyToMatrix t s.transform
@@ -38,3 +45,6 @@ module Shape =
             |> Matrix.multiplyVector objectNormal
 
         Vector.normalize {worldNormal with W = 0.}
+
+    let setMaterial m s =
+        {s with material = m}

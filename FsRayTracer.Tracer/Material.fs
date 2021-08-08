@@ -1,0 +1,84 @@
+namespace RayTracer.Material
+
+open RayTracer.Color
+open RayTracer.Light
+open RayTracer.Point
+open RayTracer.Vector
+open System
+
+[<AutoOpen>]
+module Domain =
+    type Material =
+        { color: Color;
+          ambient:float;
+          diffuse:float;
+          specular: float;
+          shininess: float; }
+
+module Material =
+
+    let create ambient diffuse specular shinines color =
+        {ambient = ambient; diffuse = diffuse; specular = specular; shininess = shinines; color = color}
+
+    let standard =
+        { color = Color.create 1. 1. 1.;
+          ambient = 0.1;
+          diffuse = 0.9;
+          specular = 0.9;
+          shininess = 200. }
+
+    let withAmbient a m =
+        {m with ambient = a}
+
+    let withDiffuse d m =
+        {m with diffuse = d}
+
+    let withSpecular s m =
+        {m with specular = s}
+
+    let withShininess s m =
+        {m with shininess = s}
+
+    let withColor c m =
+        {m with color = c}
+
+    let lighting material light point eyevector normalv =
+        //let effectiveColor = material.color * light.intensity
+        //let lightv = Vector.normalize(light.position - point)
+        //let ambient = effectiveColor |> Color.mulitplyByScalar material.ambient
+        //let lightDotNormal = dot lightv normalv
+        //let (diffuse, specular) =
+        //    if lightDotNormal < 0.0
+        //    then (color(0.0, 0.0, 0.0), color(0.0, 0.0, 0.0))
+        //    else let d = material.Diffuse * lightDotNormal * effectiveColor
+        //         let reflectv = reflect -lightv normalv
+        //         let reflectDotEye = dot reflectv eyev
+        //         if reflectDotEye <= 0.0
+        //         then (d, color(0.0, 0.0, 0.0))
+        //         else let factor = reflectDotEye ** material.Shininess
+        //              (d, material.Specular * factor * light.Intensity)
+        //ambient + diffuse + specular
+
+        let effectiveColor = material.color * light.intensity
+
+        let lightv = (light.poistion - point) |> Vector.normalize
+
+        let ambient = effectiveColor |> Color.mulitplyByScalar material.ambient
+
+        let lightDotNormal = Vector.dot lightv normalv
+
+        match lightDotNormal with
+        | v when v < 0. -> ambient
+        | _ ->
+            let diffuse =
+                effectiveColor
+                |> Color.mulitplyByScalar (material.diffuse * lightDotNormal)
+
+            let reflectv = Vector.reflect normalv (lightv * -1.)
+            let reflectDotEye = Vector.dot reflectv eyevector
+
+            match reflectDotEye with
+            | v when v <= 0. -> ambient + diffuse
+            | _ ->
+                let factor = Math.Pow(reflectDotEye, material.shininess)
+                ambient + diffuse + (light.intensity |> Color.mulitplyByScalar (material.specular * factor))

@@ -63,5 +63,5 @@ module World =
                 |> shadeHit world
             | None -> Color.black
 
-    let addObject shape world =
-        world
+    let addObject s world =
+        {world with objects = world.objects @ s}

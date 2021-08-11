@@ -124,12 +124,12 @@ let main argv =
     let rayOrigin = Point.create 0. 0. -5.
     let wallZ = 10
     let wallSize = 7.
-    let canvasPixels = 200
+    let canvasPixels = 800
     let pixelSize = wallSize/ (float canvasPixels)
     let half = wallSize / 2.
     let canvas = Canvas.makeCanvas canvasPixels canvasPixels
 
-    let material = Material.standard |> Material.withColor (Color.create 1. 0.2 1.0)
+    let material = Material.standard |> Material.withColor (Color.create 0.5 0.1 0.7)
     let shape = Shape.sphere |> Shape.setMaterial material
 
     let lightPosition = Point.create -10. 10. -10.

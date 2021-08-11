@@ -30,12 +30,12 @@ let ``creating and quering a ray`` () =
 [<Fact>]
 let ``computing a point from a distance`` () =
 
-    let r = Ray.create (Point.create 1. 2. 3.) (Vector.create 4. 5. 6.)
+    let r = Ray.create (Point.create 2. 3. 4.) (Vector.create 1. 0. 0.)
 
-    Point.equal (Ray.position 0. r) (Point.create 2. 3. 4.)    
-    Point.equal (Ray.position 1. r) (Point.create 3. 3. 4.)    
-    Point.equal (Ray.position -1. r) (Point.create 1. 3. 4.)    
-    Point.equal (Ray.position 2.5 r) (Point.create 4.5 3. 4.)
+    Point.equal (Ray.position 0. r) (Point.create 2. 3. 4.) |> Assert.True
+    Point.equal (Ray.position 1. r) (Point.create 3. 3. 4.) |> Assert.True   
+    Point.equal (Ray.position -1. r) (Point.create 1. 3. 4.) |> Assert.True   
+    Point.equal (Ray.position 2.5 r) (Point.create 4.5 3. 4.) |> Assert.True
     
 [<Fact>]
 let ``a ray intersects a sphere at two points`` () =

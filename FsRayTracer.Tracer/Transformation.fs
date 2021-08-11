@@ -10,14 +10,6 @@ module Domain =
         | Y
         | Z
 
-    type Skew =
-        | Xy
-        | Xz
-        | Yx
-        | Yz
-        | Zx
-        | Zy
-
     type Transformation =
         | Translation of x:float * y:float * z:float
         | Scaling of x:float * y:float * z:float
@@ -81,3 +73,5 @@ module Transformation =
 
     let applyToMatrix t m =
         t |> matrix |> Matrix.multiply m
+
+

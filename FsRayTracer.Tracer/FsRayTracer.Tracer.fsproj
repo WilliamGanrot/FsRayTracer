@@ -6,11 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-
-
-      
-
-
       <Compile Include="Constnats.fs" />
       <Compile Include="Helpers.fs" />
       <Compile Include="Color.fs" />
@@ -19,18 +14,20 @@
       <Compile Include="Canvas.fs" />
       <Compile Include="Vector.fs" />
       <Compile Include="Point.fs" />
+      
       <Compile Include="Light.fs" />
       <Compile Include="Material.fs" />
     <Compile Include="Matrix.fs" />
     <Compile Include="Transformation.fs" />
 
     <Compile Include="Shape.fs" />
-
+     
     <Compile Include="Intersection.fs" />
     
     
     
     <Compile Include="Ray.fs" />
+      <Compile Include="Computation.fs" />
       <Compile Include="World.fs" />
 
 

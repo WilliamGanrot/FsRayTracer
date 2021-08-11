@@ -1,10 +1,13 @@
 namespace RayTracer.Intersection
 
 open RayTracer.Shape
+open RayTracer.Vector
+open RayTracer.Point
 
 [<AutoOpen>]
 module Domain =
     type Intersection = {t:float; object:Sphere}
+
 
 module Intersection =
     let create (s:Sphere) (t:float) =
@@ -22,3 +25,4 @@ module Intersection =
         match hitsInfrontOfOrigin with
         | [] -> None
         | h::_ -> Some h
+

@@ -27,7 +27,7 @@ module Ray =
         let d = Transformation.applyToVector t r.direction
         create o d
 
-    let intersect (sphere:Sphere) (r:Ray) : Intersection list =
+    let intersect sphere r =
 
         let ray =
             Matrix.inverse sphere.transform

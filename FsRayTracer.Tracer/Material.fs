@@ -43,21 +43,6 @@ module Material =
         {m with color = c}
 
     let lighting material light point eyevector normalv =
-        //let effectiveColor = material.color * light.intensity
-        //let lightv = Vector.normalize(light.position - point)
-        //let ambient = effectiveColor |> Color.mulitplyByScalar material.ambient
-        //let lightDotNormal = dot lightv normalv
-        //let (diffuse, specular) =
-        //    if lightDotNormal < 0.0
-        //    then (color(0.0, 0.0, 0.0), color(0.0, 0.0, 0.0))
-        //    else let d = material.Diffuse * lightDotNormal * effectiveColor
-        //         let reflectv = reflect -lightv normalv
-        //         let reflectDotEye = dot reflectv eyev
-        //         if reflectDotEye <= 0.0
-        //         then (d, color(0.0, 0.0, 0.0))
-        //         else let factor = reflectDotEye ** material.Shininess
-        //              (d, material.Specular * factor * light.Intensity)
-        //ambient + diffuse + specular
 
         let effectiveColor = material.color * light.intensity
 

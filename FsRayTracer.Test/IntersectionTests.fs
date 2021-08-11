@@ -85,3 +85,6 @@ let ``the hit is always the lowest nonnegative intersection`` () =
     let i = xs |> Intersection.hit
     i = Some(i4) |> Assert.True
 
+
+
+

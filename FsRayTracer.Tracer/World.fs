@@ -52,14 +52,6 @@ module World =
         Material.lighting c.object.material w.light c.point c.eyev c.normalv
 
     let colorAt world ray =
-
-        let y = world |> intersect ray
-        let y2 = Intersection.hit y
-        let y3 = y2.Value
-        let y4 = Computation.prepare ray y3
-        let y5 = shadeHit world y4
-
-
         world
         |> intersect ray
         |> Intersection.hit

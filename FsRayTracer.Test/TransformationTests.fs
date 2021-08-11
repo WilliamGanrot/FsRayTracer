@@ -186,5 +186,47 @@ let ``chained transformations must be applied in reverse order`` () =
     |> Point.equal (Point.create 15. 0. 7.)
     |> Assert.True
 
+[<Fact>]
+let ``a transformation matrix for the defaul orientation`` () =
+    let from = Point.create 0. 0. 0.
+    let ``to`` = Point.create 0. 0. -1.
+    let up = Vector.create 0. 1. 0.
+
+    let t = Transformation.viewTransform from ``to`` up
+    t .= Matrix.identityMatrix 4
+
+[<Fact>]
+let ``a view transformation matrix looking in poisitive z directoin`` () =
+    let from = Point.create 0. 0. 0.
+    let ``to`` = Point.create 0. 0. 1.
+    let up = Vector.create 0. 1. 0.
 
 
+    let t = Transformation.viewTransform from ``to`` up
+    t .= Transformation.matrix (Scaling(-1., 1., -1.))
+
+[<Fact>]
+let ``the view transformation moves the world`` () =
+    let from = Point.create 0. 0. 8.
+    let ``to`` = Point.create 0. 0. 0.
+    let up = Vector.create 0. 1. 0.
+
+    let t = Transformation.viewTransform from ``to`` up
+    t .= Transformation.matrix (Translation(0., 0., -8.))
+
+[<Fact>]
+let ``an arbitrary view transformation`` () =
+    let from = Point.create 1. 3. 2.
+    let ``to`` = Point.create 4. -2. 8.
+    let up = Vector.create 1. 1. 0.
+
+
+    let t = Transformation.viewTransform from ``to`` up
+    let expected =
+        Matrix.make [ [ -0.50709; 0.50709; 0.67612; -2.36643 ];
+                      [ 0.76772; 0.60609; 0.12122; -2.82843 ];
+                      [ -0.35857; 0.59761; -0.71714; 0. ];
+                      [ 0.; 0.; 0.; 1. ] ]
+
+
+    t .= expected |> Assert.True

@@ -2,6 +2,8 @@ namespace RayTracer.Transformation
 
 open RayTracer.Matrix
 open System
+open RayTracer.Point
+open RayTracer.Vector
 
 [<AutoOpen>]
 module Domain =
@@ -74,4 +76,24 @@ module Transformation =
     let applyToMatrix t m =
         t |> matrix |> Matrix.multiply m
 
+    let viewTransform (from:Point) (``to``:Point) (up:Vector) =
 
+        let forward = Vector.normalize (``to`` - from)
+        let left =
+            up
+            |> Vector.normalize
+            |> Vector.cross forward
+        let trueUp = Vector.cross left forward
+
+        let orientation =
+            Matrix.make [ [left.X; left.Y; left.Z; 0.];
+                          [trueUp.X; trueUp.Y; trueUp.Z; 0.];
+                          [-forward.X; -forward.Y; -forward.Z; 0.];
+                          [0.; 0.; 0.; 1.]]
+
+        orientation
+        |> applyToMatrix (Translation(-from.X, -from.Y, -from.Z))
+        
+        
+        
+        

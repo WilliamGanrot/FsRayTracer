@@ -6,11 +6,14 @@ open RayTracer.Vector
 open RayTracer.Constnats
 open RayTracer.Transformation
 open RayTracer.Matrix
+open RayTracer.World
 open RayTracer.Camera
 
 open Xunit
 open RayTracer.Ray
 open RayTracer.Helpers
+open Raytracer.Canvas
+open RayTracer.Color
 
 
 [<Fact>]
@@ -68,3 +71,18 @@ let ``constructing a ray when the camera is transformed`` () =
 
     Point.equal r.origin (Point.create 0. 2. -5.) |> Assert.True
     r.direction .= (Vector.create ((Math.Pow(2., 0.5))/2.) 0. -((Math.Pow(2., 0.5))/2.)) |> Assert.True
+
+[<Fact>]
+let ``rendering a world with a camera`` () =
+    let w = World.standard
+
+    let from = Point.create 0. 0. -5.
+    let ``to`` = Point.create 0. 0. 0.
+    let up = Vector.create 0. 1. 0.
+
+    let c =
+        Camera.create 11 11 (Math.PI/2.)
+        |> Camera.withTransfom (Transformation.viewTransform from ``to`` up)
+
+    let image = Camera.render c w
+    (image |> Canvas.getPixel 5 5) .= Color.create 0.38066 0.47583 0.2855

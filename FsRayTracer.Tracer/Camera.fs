@@ -6,6 +6,8 @@ open RayTracer.Ray
 open System
 open RayTracer.Point
 open RayTracer.Vector
+open RayTracer.World
+open Raytracer.Canvas
 
 
 [<AutoOpen>]
@@ -60,6 +62,18 @@ module Camera =
         let direction = Vector.normalize (pixel - origin)
         Ray.create origin direction
 
-
     let withTransfom t c =
         {c with transform = t}
+
+    let render (camera:Camera) (world:World) =
+        let image = Canvas.makeCanvas camera.hsize camera.vsize
+        for y in 0..camera.vsize - 1 do
+            for x in 0..camera.hsize - 1 do
+                let color =
+                    rayForPixel (float x) (float y) camera
+                    |> World.colorAt world
+
+                Canvas.setPixel x y color image
+                
+            
+        image

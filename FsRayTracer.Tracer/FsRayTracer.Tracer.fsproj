@@ -29,9 +29,10 @@
     
     
     <Compile Include="Ray.fs" />
-      <Compile Include="Camera.fs" />
+      
       <Compile Include="Computation.fs" />
       <Compile Include="World.fs" />
+      <Compile Include="Camera.fs" />
 
 
     <Compile Include="Program.fs" />

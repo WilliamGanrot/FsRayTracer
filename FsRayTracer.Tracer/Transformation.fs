@@ -76,7 +76,7 @@ module Transformation =
     let applyToMatrix t m =
         t |> matrix |> Matrix.multiply m
 
-    let viewTransform (from:Point) (``to``:Point) (up:Vector) =
+    let viewTransform (from:Point) (``to``:Point) (up:Vector) = 
 
         let forward = Vector.normalize (``to`` - from)
         let left =

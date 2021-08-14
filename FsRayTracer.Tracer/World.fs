@@ -75,11 +75,11 @@ module World =
         let distance = Vector.magnitude v
         let direction = Vector.normalize v
 
-        let h =
+        let optionHit =
             Ray.create p direction
             |> intersect w
             |> Intersection.hit
 
-        match h with
+        match optionHit with
         | Some hit when hit.t < distance -> true
         |_ -> false

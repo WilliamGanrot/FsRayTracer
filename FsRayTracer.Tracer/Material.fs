@@ -49,22 +49,20 @@ module Material =
         let ambient = effectiveColor |> Color.mulitplyByScalar material.ambient
         let lightDotNormal = Vector.dot lightv normalv
 
+        let diffuse =
+            effectiveColor
+            |> Color.mulitplyByScalar (material.diffuse * lightDotNormal)
+
+        let reflectDotEye =
+            Vector.reflect normalv (lightv * -1.)
+            |> Vector.dot eyevector
 
         match inShadow with
         | true -> ambient
         | false ->
             match lightDotNormal with
             | v when v < 0. -> ambient
+            | _ when reflectDotEye <= 0. -> ambient + diffuse
             | _ ->
-                let diffuse =
-                    effectiveColor
-                    |> Color.mulitplyByScalar (material.diffuse * lightDotNormal)
-
-                let reflectv = Vector.reflect normalv (lightv * -1.)
-                let reflectDotEye = Vector.dot reflectv eyevector
-
-                match reflectDotEye with
-                | v when v <= 0. -> ambient + diffuse
-                | _ ->
-                    let factor = Math.Pow(reflectDotEye, material.shininess)
-                    ambient + diffuse + (light.intensity |> Color.mulitplyByScalar (material.specular * factor))
+                let factor = Math.Pow(reflectDotEye, material.shininess)
+                ambient + diffuse + (light.intensity |> Color.mulitplyByScalar (material.specular * factor))

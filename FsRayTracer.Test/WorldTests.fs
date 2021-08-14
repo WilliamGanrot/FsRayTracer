@@ -57,7 +57,7 @@ let ``intersect a world with a ray``  () =
     let w = World.standard
     let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.)
 
-    let xs = World.intersect r w
+    let xs = World.intersect w r
 
     xs.Length = 4 |> Assert.True
     xs.[0].t |> FloatHelper.equal 4. |> Assert.True
@@ -126,5 +126,32 @@ let ``the color with an intersection behind the ray`` () =
 
     c .= inner.material.color |> Assert.True
 
+[<Fact>]
+let ``there is not shadow when nothing is collinear with point and light`` () =
+    let w = World.standard
+    let p = Point.create 0. 10. 0.
+
+    World.isShadowed p w |> Assert.False
+
+[<Fact>]
+let ``the shadow when an object is between the point and the light`` () =
+    let w = World.standard
+    let p = Point.create 10. -10. 10.
+
+    World.isShadowed p w |> Assert.True
+
+[<Fact>]
+let ``there is no shadow when an object is behind the light`` () =
+    let w = World.standard
+    let p = Point.create -20. 20. -20.
+
+    World.isShadowed p w |> Assert.False
+
+[<Fact>]
+let ``there is no shadow when an object is behind the point`` () =
+    let w = World.standard
+    let p = Point.create -2. 2. -2.
+
+    World.isShadowed p w |> Assert.False
 
 

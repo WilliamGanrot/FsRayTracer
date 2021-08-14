@@ -9,6 +9,7 @@ open RayTracer.Material
 open RayTracer.Transformation
 open RayTracer.Computation
 open RayTracer.Intersection
+open RayTracer.Vector
 
 [<AutoOpen>]
 module Domain =
@@ -42,18 +43,18 @@ module World =
         { light = light;
           objects = [s1;s2] }
 
-    let intersect r (w:World)= 
+    let intersect (w:World) r  = 
         w.objects
         |> List.map(fun x -> Ray.intersect x r)
         |> List.fold List.append []
         |> List.sort
 
     let shadeHit (w:World) (c:Computation) =
-        Material.lighting c.object.material w.light c.point c.eyev c.normalv
+        Material.lighting c.object.material w.light c.point c.eyev c.normalv false
 
     let colorAt world ray =
-        world
-        |> intersect ray
+        ray
+        |> intersect world
         |> Intersection.hit
         |> fun hit ->
             match hit with
@@ -68,3 +69,17 @@ module World =
 
     let withLight l world =
         { world with light = l }
+
+    let isShadowed p w =
+        let v = w.light.poistion - p
+        let distance = Vector.magnitude v
+        let direction = Vector.normalize v
+
+        let h =
+            Ray.create p direction
+            |> intersect w
+            |> Intersection.hit
+
+        match h with
+        | Some hit when hit.t < distance -> true
+        |_ -> false

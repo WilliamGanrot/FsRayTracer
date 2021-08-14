@@ -65,15 +65,30 @@ module Camera =
     let withTransfom t c =
         {c with transform = t}
 
-    let render (camera:Camera) (world:World) =
-        let image = Canvas.makeCanvas camera.hsize camera.vsize
-        for y in 0..camera.vsize - 1 do
+    let pixels camera =
+        [ for y in 0..camera.vsize - 1 do
             for x in 0..camera.hsize - 1 do
-                let color =
-                    rayForPixel (float x) (float y) camera
-                    |> World.colorAt world
+                (x,y) ]
 
-                Canvas.setPixel x y color image
-                
-            
-        image
+    let render (world:World) (camera:Camera) =
+
+        let image = Canvas.makeCanvas camera.hsize camera.vsize
+
+        camera
+        |> pixels
+        |> List.map(fun (x, y) ->
+            let color = 
+                rayForPixel (float x) (float y) camera
+                |> World.colorAt world
+            (x,y,color))
+        |> List.iter (fun (x,y,c) -> Canvas.setPixel x y c image)
+
+
+        image 
+        
+
+
+
+        
+
+    

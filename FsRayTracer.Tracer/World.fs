@@ -64,4 +64,7 @@ module World =
             | None -> Color.black
 
     let addObject s world =
-        {world with objects = world.objects @ s}
+        {world with objects = world.objects @ [s]}
+
+    let withLight l world =
+        { world with light = l }

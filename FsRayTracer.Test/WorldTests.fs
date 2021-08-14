@@ -81,7 +81,12 @@ let ``shading an intersection`` () =
 
 [<Fact>]
 let ``shading an intersection from the inside`` () =
-    let w = {World.standard with light = Light.create (Color.create 1. 1. 1.) (Point.create 0. 0.25 0.)}
+
+    
+    let w =
+        World.standard
+        |> World.withLight (Light.create (Color.create 1. 1. 1.) (Point.create 0. 0.25 0.))
+
     let r = Ray.create (Point.create 0. 0. 0.) (Vector.create 0. 0. 1.)
     let shape = w.objects.[1]
     let i = Intersection.create shape 0.5
@@ -153,5 +158,31 @@ let ``there is no shadow when an object is behind the point`` () =
     let p = Point.create -2. 2. -2.
 
     World.isShadowed p w |> Assert.False
+
+[<Fact>]
+let ``shadeHit is given an intersection in shadow `` () =
+
+    let s1 = Shape.sphere
+    let s2 =
+        Shape.sphere
+        |> Shape.transform (Translation(0., 0., 10.))
+
+    let w =
+        World.empty
+        |> World.withLight (Light.create (Color.create 1. 1. 1.) (Point.create 0. 0. -10.))
+        |> World.addObject s1
+        |> World.addObject s2
+
+    let r = Ray.create (Point.create 0. 0. 5.) (Vector.create 0. 0. 1.)
+    let i = Intersection.create s2 4.
+
+    let comps = Computation.prepare r i
+    let c = World.shadeHit w comps
+    c .= Color.create 0.1 0.1 0.1 |> Assert.True
+
+
+
+
+    
 
 

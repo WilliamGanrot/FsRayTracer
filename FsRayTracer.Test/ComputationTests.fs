@@ -13,6 +13,8 @@ open Xunit
 open RayTracer.Shape
 open RayTracer.World
 open RayTracer.Color
+open RayTracer.Transformation
+open RayTracer.Constnats
 
 [<Fact>]
 let ``precomputing the state of an intersection`` () =
@@ -49,4 +51,17 @@ let ``the hit, when an intersection occurs on the inside`` () =
     comps.eyev .= (Vector.create 0. 0. -1.) |> Assert.True
     comps.normalv .= Vector.create 0. 0. -1. |> Assert.True
     comps.inside |> Assert.True
+
+[<Fact>]
+let ``the hit should offset the point`` () =
+    let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.) 
+    let s =
+        Shape.sphere
+        |> Shape.transform (Translation(0., 0., 0.1))
+
+    let i = Intersection.create s 1.
+    let comps = i |> Computation.prepare r
+
+    comps.overPoint.Z < -(epsilon/2.) |> Assert.True
+    comps.point.Z > comps.overPoint.Z |> Assert.True
 

@@ -49,8 +49,23 @@ module World =
         |> List.fold List.append []
         |> List.sort
 
+    let isShadowed p w =
+        let v = w.light.poistion - p
+        let distance = Vector.magnitude v
+        let direction = Vector.normalize v
+
+        let optionHit =
+            Ray.create p direction
+            |> intersect w
+            |> Intersection.hit
+
+        match optionHit with
+        | Some hit when hit.t < distance -> true
+        |_ -> false
+
     let shadeHit (w:World) (c:Computation) =
-        Material.lighting c.object.material w.light c.point c.eyev c.normalv false
+        let shadowed = isShadowed c.overPoint w
+        Material.lighting c.object.material w.light c.overPoint c.eyev c.normalv shadowed
 
     let colorAt world ray =
         ray
@@ -65,21 +80,11 @@ module World =
             | None -> Color.black
 
     let addObject s world =
-        {world with objects = world.objects @ [s]}
+        { world with objects = world.objects @ [s] }
+
+    let setObjects sl world =
+        { world with objects = sl }
 
     let withLight l world =
         { world with light = l }
 
-    let isShadowed p w =
-        let v = w.light.poistion - p
-        let distance = Vector.magnitude v
-        let direction = Vector.normalize v
-
-        let optionHit =
-            Ray.create p direction
-            |> intersect w
-            |> Intersection.hit
-
-        match optionHit with
-        | Some hit when hit.t < distance -> true
-        |_ -> false

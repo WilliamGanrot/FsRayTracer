@@ -5,6 +5,7 @@ open RayTracer.Vector
 open RayTracer.Ray
 open RayTracer.Intersection
 open RayTracer.Shape
+open RayTracer.Constnats
 
 [<AutoOpen>]
 module Domain =
@@ -13,6 +14,7 @@ module Domain =
         { t: float;
           object: Sphere;
           point:Point;
+          overPoint: Point;
           eyev: Vector;
           inside: bool;
           normalv: Vector}
@@ -27,11 +29,13 @@ module Computation =
         let eyev = r.direction * -1.
         let normalv = i.object |> Shape.normal point
         let inside = (Vector.dot normalv eyev) < 0.
+        let trueNormalv = if inside then normalv * -1. else normalv
 
         { t = t;
           object = object;
-          point = point
-          eyev = eyev
+          point = point;
+          overPoint = point + trueNormalv * epsilon;
+          eyev = eyev;
           inside = inside;
-          normalv = if inside then normalv * -1. else normalv }
+          normalv = trueNormalv }
 

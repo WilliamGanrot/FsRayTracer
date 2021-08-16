@@ -1,7 +1,7 @@
 namespace RayTracer.World
 
 open RayTracer.Light
-open RayTracer.Shape
+open RayTracer.Object
 open RayTracer.Point
 open RayTracer.Ray
 open RayTracer.Color
@@ -13,7 +13,7 @@ open RayTracer.Vector
 
 [<AutoOpen>]
 module Domain =
-    type World = { light: Light; objects: Sphere list }
+    type World = { light: Light; objects: Object list }
 
 module World =
 
@@ -33,12 +33,12 @@ module World =
             |> Material.withSpecular 0.2
 
         let s1 =
-            Shape.sphere
-            |> Shape.setMaterial material
+            Object.sphere
+            |> Object.setMaterial material
 
         let s2 =
-            Shape.sphere
-            |> Shape.transform (Scaling(0.5, 0.5, 0.5))
+            Object.sphere
+            |> Object.transform (Scaling(0.5, 0.5, 0.5))
 
         { light = light;
           objects = [s1;s2] }
@@ -79,11 +79,11 @@ module World =
                 |> shadeHit world
             | None -> Color.black
 
-    let addObject s world =
-        { world with objects = world.objects @ [s] }
+    let addObject object world =
+        { world with objects = world.objects @ [object] }
 
-    let setObjects sl world =
-        { world with objects = sl }
+    let setObjects objects world =
+        { world with objects = objects }
 
     let withLight l world =
         { world with light = l }

@@ -1,17 +1,17 @@
 namespace RayTracer.Intersection
 
-open RayTracer.Shape
+open RayTracer.Object
 open RayTracer.Vector
 open RayTracer.Point
 
 [<AutoOpen>]
 module Domain =
-    type Intersection = {t:float; object:Sphere}
+    type Intersection = { t: float; object: Object }
 
 
 module Intersection =
-    let create (s:Sphere) (t:float) =
-        { object = s; t = t }
+    let create (o:Object) (t:float) =
+        { object = o; t = t }
 
     let intersections (l: Intersection list) : Intersection list =
         l

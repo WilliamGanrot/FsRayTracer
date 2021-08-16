@@ -13,7 +13,7 @@ open RayTracer.Transformation
 
 
 open Xunit
-open RayTracer.Shape
+open RayTracer.Object
 
 [<Fact>]
 let ``creating and quering a ray`` () =
@@ -42,7 +42,7 @@ let ``a ray intersects a sphere at two points`` () =
 
     let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.)
 
-    let s = Shape.sphere
+    let s = Object.sphere
     let xs = Ray.intersect s r
 
     xs.Length = 2 |> Assert.True
@@ -55,7 +55,7 @@ let ``a ray intersects a sphere at tangent`` () =
 
     let r = Ray.create (Point.create 0. 1. -5.) (Vector.create 0. 0. 1.)
 
-    let s = Shape.sphere
+    let s = Object.sphere
     let xs = Ray.intersect s r
 
     xs.Length = 2 |> Assert.True
@@ -67,7 +67,7 @@ let ``a ray misses a sphere`` () =
 
     let r = Ray.create (Point.create 0. 2. -5.) (Vector.create 0. 0. 1.)
 
-    let s = Shape.sphere
+    let s = Object.sphere
     let xs = Ray.intersect s r
 
     xs.Length = 0 |> Assert.True
@@ -77,7 +77,7 @@ let ``a ray originates inside a sphere`` () =
 
     let r = Ray.create (Point.create 0. 0. 0.) (Vector.create 0. 0. 1.)
 
-    let s = Shape.sphere
+    let s = Object.sphere
     let xs = Ray.intersect s r
 
     xs.Length = 2 |> Assert.True
@@ -90,7 +90,7 @@ let ``a sphere is behind a ray`` () =
 
     let r = Ray.create (Point.create 0. 0. 5.) (Vector.create 0. 0. 1.)
 
-    let s = Shape.sphere
+    let s = Object.sphere
     let xs = Ray.intersect s r
 
     xs.Length = 2 |> Assert.True

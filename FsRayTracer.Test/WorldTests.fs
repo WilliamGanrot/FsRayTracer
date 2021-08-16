@@ -8,7 +8,7 @@ open RayTracer.Light
 open RayTracer.Material
 open RayTracer.Color
 open RayTracer.World
-open RayTracer.Shape
+open RayTracer.Object
 open RayTracer.Transformation
 open RayTracer.Ray
 
@@ -37,12 +37,12 @@ let ``the default world``  () =
         |> Material.withSpecular 0.2
 
     let s1 =
-        Shape.sphere
-        |> Shape.setMaterial material
+        Object.sphere
+        |> Object.setMaterial material
 
     let s2 =
-        Shape.sphere
-        |> Shape.transform (Scaling(0.5, 0.5, 0.5))
+        Object.sphere
+        |> Object.transform (Scaling(0.5, 0.5, 0.5))
 
         
     w.objects.Length = 2 |> Assert.True
@@ -118,11 +118,11 @@ let ``the color with an intersection behind the ray`` () =
         
     let outer =
         wpre.objects.[0]
-        |> Shape.setMaterial (wpre.objects.[0].material |> Material.withAmbient 1.)
+        |> Object.setMaterial (wpre.objects.[0].material |> Material.withAmbient 1.)
 
     let inner =
         wpre.objects.[1]
-        |> Shape.setMaterial (wpre.objects.[1].material |> Material.withAmbient 1.)
+        |> Object.setMaterial (wpre.objects.[1].material |> Material.withAmbient 1.)
 
     let r = Ray.create (Point.create 0. 0. 0.75) (Vector.create 0. 0. -1.)
 
@@ -162,10 +162,10 @@ let ``there is no shadow when an object is behind the point`` () =
 [<Fact>]
 let ``shadeHit is given an intersection in shadow `` () =
 
-    let s1 = Shape.sphere
+    let s1 = Object.sphere
     let s2 =
-        Shape.sphere
-        |> Shape.transform (Translation(0., 0., 10.))
+        Object.sphere
+        |> Object.transform (Translation(0., 0., 10.))
 
     let w =
         World.empty

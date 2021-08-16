@@ -22,7 +22,7 @@
     <Compile Include="Transformation.fs" />
       
 
-    <Compile Include="Shape.fs" />
+    <Compile Include="Object.fs" />
      
     <Compile Include="Intersection.fs" />
     

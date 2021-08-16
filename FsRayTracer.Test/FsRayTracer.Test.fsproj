@@ -13,7 +13,7 @@
     <Compile Include="WorldTests.fs" />
     <Compile Include="MaterialTests.fs" />
     <Compile Include="LightTests.fs" />
-    <Compile Include="ShapeTests.fs" />
+    <Compile Include="ObjectTests.fs" />
     <Compile Include="IntersectionTests.fs" />
     <Compile Include="RayTests.fs" />
     <Compile Include="TransformationTests.fs" />

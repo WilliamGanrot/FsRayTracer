@@ -77,12 +77,14 @@ module Camera =
         camera
         |> pixels
         |> List.map(fun (x, y) ->
-            let color = 
-                rayForPixel (float x) (float y) camera
-                |> World.colorAt world
-            (x,y,color))
+            async {
+                let color = rayForPixel (float x) (float y) camera |> World.colorAt world
+                return (x,y,color)
+            })
+        |> Async.Parallel
+        |> Async.RunSynchronously
+        |> Array.toList
         |> List.iter (fun (x,y,c) -> Canvas.setPixel x y c image)
-
 
         image 
         

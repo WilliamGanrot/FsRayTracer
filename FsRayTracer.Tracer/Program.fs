@@ -240,11 +240,13 @@ let main argv =
         |> World.withLight (
             Light.create (Color.create 1. 1. 1.) (Point.create -10. 10. -10.))
 
+    let stopWatch = System.Diagnostics.Stopwatch.StartNew()
     let ppm =
-        Camera.create 1000 500 (Math.PI/3.)
+        Camera.create 200 10 (Math.PI/3.)
         |> Camera.withTransfom (Transformation.viewTransform (Point.create 0. 1.5 -5.) (Point.create 0. 1. 0.) (Vector.create 0. 1. 0.))
         |> Camera.render world
         |> Canvas.toPPM
+    stopWatch.Stop()
 
     System.IO.File.WriteAllText ("image.pgm", ppm)
     0    

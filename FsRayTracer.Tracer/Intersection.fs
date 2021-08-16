@@ -11,7 +11,7 @@ module Domain =
 
 module Intersection =
     let create (s:Sphere) (t:float) =
-        {object = s; t = t}
+        { object = s; t = t }
 
     let intersections (l: Intersection list) : Intersection list =
         l

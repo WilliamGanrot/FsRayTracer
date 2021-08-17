@@ -8,6 +8,7 @@ open RayTracer.Object
 open RayTracer.Intersection
 open RayTracer.Transformation
 open RayTracer.Matrix
+open RayTracer.Constnats
 
 [<AutoOpen>]
 module Domain =
@@ -45,13 +46,24 @@ module Ray =
 
             match discriminated with
             | d when d < 0. -> []
-            | d ->
+            | _ ->
                 let t1 = ((-b) - Math.Pow(discriminated, 0.5)) / (2. * a)
                 let t2 = ((-b) + Math.Pow(discriminated, 0.5)) / (2. * a)
 
                 let i1 = Intersection.create object t1
                 let i2 = Intersection.create object t2
                 [i1;i2]
+        | Plane ->
+            match Math.Abs(ray.direction.Y) < epsilon with
+            | true  -> []
+            | false ->
+                let i =
+                    let t = -(ray.origin.Y / ray.direction.Y)
+                    Intersection.create object t
+                [i]
+                
+                
+
 
 
 

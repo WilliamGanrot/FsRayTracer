@@ -78,6 +78,7 @@ module Camera =
         |> pixels
         |> List.map(fun (x, y) ->
             async {
+                printfn "%A %A" y x
                 let color = rayForPixel (float x) (float y) camera |> World.colorAt world
                 return (x,y,color)
             })

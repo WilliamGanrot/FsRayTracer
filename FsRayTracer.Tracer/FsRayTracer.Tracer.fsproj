@@ -7,6 +7,8 @@
 
   <ItemGroup>
       
+     
+      
       <Compile Include="Constnats.fs" />
       <Compile Include="Helpers.fs" />
       <Compile Include="Color.fs" />
@@ -15,15 +17,25 @@
       <Compile Include="Canvas.fs" />
       <Compile Include="Vector.fs" />
       <Compile Include="Point.fs" />
-      
-      <Compile Include="Light.fs" />
-      <Compile Include="Material.fs" />
-    <Compile Include="Matrix.fs" />
-    <Compile Include="Transformation.fs" />
-      
-
-    <Compile Include="Object.fs" />
      
+      <Compile Include="Light.fs" />
+      
+      
+     
+    <Compile Include="Matrix.fs" />
+      
+    <Compile Include="Transformation.fs" />
+
+
+
+      <Compile Include="Pattern.fs" />
+      <Compile Include="Material.fs" />
+
+      <Compile Include="Object.fs" />
+      
+      
+   
+      
     <Compile Include="Intersection.fs" />
     
     

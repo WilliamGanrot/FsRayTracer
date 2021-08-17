@@ -116,3 +116,40 @@ let ``scaling a ray`` () =
 
     Point.equal (r2.origin) (Point.create 2. 6. 12.) |> Assert.True
     (r2.direction) .= (Vector.create 0. 3. 0.) |> Assert.True
+
+[<Fact>]
+let ``intersect with a ray parallel to the plane`` () =
+    let r = Ray.create (Point.create 0. 10. 0.) (Vector.create 0. 0. 1.)
+    let p = Object.plane
+
+    let r2 = Ray.intersect p r
+    r2.IsEmpty |> Assert.True
+
+[<Fact>]
+let ``intersect with a rcoplanar ray`` () =
+    let r = Ray.create (Point.create 0. 0. 0.) (Vector.create 0. 0. 1.)
+    let p = Object.plane
+
+    let r2 = Ray.intersect p r
+    r2.IsEmpty |> Assert.True
+
+
+[<Fact>]
+let ``a ray intersecting a plane from above`` () =
+    let r = Ray.create (Point.create 0. 1. 0.) (Vector.create 0. -1. 0.)
+    let p = Object.plane
+
+    let r2 = Ray.intersect p r
+    r2.Length = 1 |> Assert.True
+    r2.[0].t = 1. |> Assert.True
+    r2.[0].object = p |> Assert.True
+
+[<Fact>]
+let ``a ray intersecting a plane from below`` () =
+    let r = Ray.create (Point.create 0. -1. 0.) (Vector.create 0. 1. 0.)
+    let p = Object.plane
+
+    let r2 = Ray.intersect p r
+    r2.Length = 1 |> Assert.True
+    r2.[0].t = 1. |> Assert.True
+    r2.[0].object = p |> Assert.True

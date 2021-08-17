@@ -65,7 +65,7 @@ module World =
 
     let shadeHit (w:World) (c:Computation) =
         let shadowed = isShadowed c.overPoint w
-        Material.lighting c.object.material w.light c.overPoint c.eyev c.normalv shadowed
+        Object.lighting c.object.material w.light c.overPoint c.eyev c.normalv shadowed c.object
 
     let colorAt world ray =
         ray

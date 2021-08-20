@@ -340,18 +340,23 @@ let main argv =
         Object.plane
         |> Object.setMaterial (
             Material.standard
-            |> Material.withColor (Color.create 1. 0.9 0.9)
-            |> Material.withSpecular 0.)
-
+            |> Material.withPattern (
+                Pattern.rings (Color.white) (Color.create 0.7 0. 0.2)
+                |> Pattern.transform (Translation(0., 0., 2.5))))
+    
     let middle =
         Object.sphere
-        |> Object.transform (Translation(-0.5, 1., 0.5))
         |> Object.setMaterial (
             Material.standard
-            |> Material.withPattern (Pattern.gradient (Color.red) Color.white)
-            |> Material.withColor (Color.create 0.1 1. 0.5)
+            |> Material.withPattern (
+                Pattern.stripes (Color.create 0.3 0. 0.) (Color.create 0.5 1. 0.7)
+                |> Pattern.transform (Scaling(0.2, 0.2, 0.2))
+                |> Pattern.transform (Rotation(Y, -Math.PI/4.)))
             |> Material.withDiffuse 0.7
             |> Material.withSpecular 0.3)
+        |> Object.transform (Translation(-0.5, 1., 0.5))
+
+
 
     let right =
         Object.sphere
@@ -359,19 +364,25 @@ let main argv =
         |> Object.transform (Scaling(0.5, 0.5, 0.5))
         |> Object.setMaterial (
             Material.standard
-            |> Material.withColor (Color.create 0.5 1. 0.1)
+            |> Material.withColor (Color.create 0.9 0.7 0.)
             |> Material.withDiffuse 0.7
             |> Material.withSpecular 0.3)
 
+
+
     let left =
         Object.sphere
-        |> Object.transform (Translation(-1.5, 0.33, -0.75))
-        |> Object.transform (Scaling(0.33, 0.33, 0.33))
+        |> Object.transform (Translation(-1.5, 0.25, -0.75))
+        |> Object.transform (Scaling(0.75, 0.75, 0.75))
         |> Object.setMaterial (
             Material.standard
-            |> Material.withColor (Color.create 1. 0.8 0.1)
+            |> Material.withPattern (
+                Pattern.gradient (Color.create 0. 0.1 0.6) (Color.create 0. 0.9 0.5)
+                |> Pattern.transform (Scaling(2., 1., 1.))
+                |> Pattern.transform (Translation(-0.5, 0., 0.)))
             |> Material.withDiffuse 0.7
             |> Material.withSpecular 0.3)
+
 
     let world =
         World.empty
@@ -384,7 +395,7 @@ let main argv =
 
     let stopWatch = System.Diagnostics.Stopwatch.StartNew()
     let ppm =
-        Camera.create 100 50 (Math.PI/3.)
+        Camera.create 1200 600 (Math.PI/3.)
         |> Camera.withTransfom (Transformation.viewTransform (Point.create 0. 1.5 -5.) (Point.create 0. 1. 0.) (Vector.create 0. 1. 0.))
         |> Camera.render world
         |> Canvas.toPPM

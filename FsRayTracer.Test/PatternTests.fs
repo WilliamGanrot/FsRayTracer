@@ -104,3 +104,34 @@ let ``a gradient linearly interpolats between colors``() =
     (pattern |> Pattern.at (Point.create 0.25 0. 0.)) .= Color.create 0.75 0.75 0.75 |> Assert.True
     (pattern |> Pattern.at (Point.create 0.5 0. 0.)) .= Color.create 0.5 0.5 0.5 |> Assert.True
     (pattern |> Pattern.at (Point.create 0.75 0. 0.)) .= Color.create 0.25 0.25 0.25|> Assert.True
+
+[<Fact>]
+let ``a ring should extend in both x and z``() =
+    let pattern = Pattern.rings Color.white Color.black
+    (pattern |> Pattern.at (Point.create 0. 0. 0.)) .= Color.white |> Assert.True
+    (pattern |> Pattern.at (Point.create 1. 0. 0.)) .= Color.black|> Assert.True
+    (pattern |> Pattern.at (Point.create 0. 0. 1.)) .= Color.black |> Assert.True
+    (pattern |> Pattern.at (Point.create 0.708 0. 0.708)) .= Color.black |> Assert.True
+
+
+
+[<Fact>]
+let ``checkers should repeat in x``() = 
+    let pattern = Pattern.checkers Color.white Color.black
+    (pattern |> Pattern.at (Point.create 0. 0. 0.)) .= Color.white |> Assert.True
+    (pattern |> Pattern.at (Point.create 0.99 0. 0.)) .= Color.white|> Assert.True
+    (pattern |> Pattern.at (Point.create 1.01 0. 0.)) .= Color.black |> Assert.True
+
+[<Fact>]
+let ``checkers should repeat in y``() =
+    let pattern = Pattern.checkers Color.white Color.black
+    (pattern |> Pattern.at (Point.create 0. 0. 0.)) .= Color.white |> Assert.True
+    (pattern |> Pattern.at (Point.create 0. 0.99 0.)) .= Color.white|> Assert.True
+    (pattern |> Pattern.at (Point.create 0. 1.01 0.)) .= Color.black |> Assert.True
+
+[<Fact>]
+let ``checkers should repeat in z``() =
+    let pattern = Pattern.checkers Color.white Color.black
+    (pattern |> Pattern.at (Point.create 0. 0. 0.)) .= Color.white |> Assert.True
+    (pattern |> Pattern.at (Point.create 0. 0. 0.99)) .= Color.white|> Assert.True
+    (pattern |> Pattern.at (Point.create 0. 0. 1.01)) .= Color.black |> Assert.True

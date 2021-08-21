@@ -3,9 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31129.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsRayTracer.Tracer", "FsRayTracer.Tracer\FsRayTracer.Tracer.fsproj", "{5E0500CF-5B3C-4F5A-86BF-BA17E2AB3144}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FsRayTracer.Tracer", "FsRayTracer.Tracer\FsRayTracer.Tracer.fsproj", "{5E0500CF-5B3C-4F5A-86BF-BA17E2AB3144}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsRayTracer.Test", "FsRayTracer.Test\FsRayTracer.Test.fsproj", "{E1FAF612-753B-466E-95F8-32015E8AEA06}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FsRayTracer.Test", "FsRayTracer.Test\FsRayTracer.Test.fsproj", "{E1FAF612-753B-466E-95F8-32015E8AEA06}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{D2D122D5-89DB-41AB-8268-B489F7FAB351}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\Pictures\scene.png = ..\..\..\Pictures\scene.png
+		..\..\..\Pictures\scene_w_pattern.png = ..\..\..\Pictures\scene_w_pattern.png
+		..\..\..\Pictures\scene_w_plane.png = ..\..\..\Pictures\scene_w_plane.png
+		..\..\..\Pictures\scene_w_shadows.png = ..\..\..\Pictures\scene_w_shadows.png
+		..\..\..\Pictures\sphere.png = ..\..\..\Pictures\sphere.png
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

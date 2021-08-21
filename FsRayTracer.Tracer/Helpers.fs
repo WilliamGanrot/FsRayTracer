@@ -12,3 +12,12 @@ module Helpers =
 module FloatHelper =
     let equal a b = abs(a - b) < epsilon
 
+
+[<AutoOpen>]
+module Operations =
+    let rec insert v i l =
+        match i, l with
+        | 0, xs -> v::xs
+        | i, x::xs -> x::insert v (i - 1) xs
+        | i, [] -> failwith "index out of range"
+

@@ -17,7 +17,8 @@ module Domain =
           overPoint: Point;
           eyev: Vector;
           inside: bool;
-          normalv: Vector}
+          normalv: Vector;
+          reflectv: Vector}
 
 module Computation =
 
@@ -37,5 +38,6 @@ module Computation =
           overPoint = point + trueNormalv * epsilon;
           eyev = eyev;
           inside = inside;
-          normalv = trueNormalv }
+          normalv = trueNormalv;
+          reflectv = Vector.reflect trueNormalv r.direction }
 

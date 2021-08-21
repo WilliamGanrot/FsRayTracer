@@ -76,7 +76,7 @@ let ``shading an intersection`` () =
     let i = Intersection.create shape 4.0
     let comps = Computation.prepare r i
 
-    let c = World.shadeHit w comps
+    let c = World.shadeHit w World.maxDepth comps
     c .= Color.create 0.38066 0.47583 0.2855 |> Assert.True
 
 [<Fact>]
@@ -92,7 +92,7 @@ let ``shading an intersection from the inside`` () =
     let i = Intersection.create shape 0.5
     let comps = Computation.prepare r i
 
-    let c = World.shadeHit w comps
+    let c = World.shadeHit w World.maxDepth comps
     c .= Color.create 0.90498 0.90498 0.90498 |> Assert.True
 
 
@@ -100,7 +100,7 @@ let ``shading an intersection from the inside`` () =
 let ``the color when a ray misses`` () =
     let w = World.standard
     let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 1. 0.)
-    let c = World.colorAt w r
+    let c = World.colorAt w World.maxDepth r
 
     c .= Color.black |> Assert.True
 
@@ -108,7 +108,7 @@ let ``the color when a ray misses`` () =
 let ``the color when a ray hits`` () =
     let w = World.standard
     let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.)
-    let c = World.colorAt w r
+    let c = World.colorAt w World.maxDepth r
 
     c .= Color.create 0.38066 0.47583 0.2855 |> Assert.True
 
@@ -127,7 +127,7 @@ let ``the color with an intersection behind the ray`` () =
     let r = Ray.create (Point.create 0. 0. 0.75) (Vector.create 0. 0. -1.)
 
     let w = {wpre with objects = [outer;inner]}
-    let c = World.colorAt w r
+    let c = World.colorAt w World.maxDepth r
 
     c .= inner.material.color |> Assert.True
 
@@ -177,9 +177,116 @@ let ``shadeHit is given an intersection in shadow `` () =
     let i = Intersection.create s2 4.
 
     let comps = Computation.prepare r i
-    let c = World.shadeHit w comps
+    let c = World.shadeHit w World.maxDepth comps
     c .= Color.create 0.1 0.1 0.1 |> Assert.True
 
+[<Fact>]
+let ``the reflect color for nonreflective material``() =
+    let shape =
+        Object.plane
+        |> Object.setMaterial {Material.standard with reflectivity = 0.5}
+        |> Object.transform (Translation(0., -1., 0.))
+
+    let w =
+        World.standard
+        |> World.insertObject shape 1
+
+    let r = Ray.create (Point.create 0. 0. 0.) (Vector.create 0. 0. 1.)
+
+    let i = Intersection.create shape 1.
+    let comps = Computation.prepare  r i
+    let color = World.reflectedColor comps World.maxDepth w
+
+    color .= Color.create 0. 0. 0. |> Assert.True
+
+[<Fact>]
+let ``the reflected color for a reflective material``() =
+    let shape =
+        Object.plane
+        |> Object.setMaterial {Material.standard with reflectivity = 0.5}
+        |> Object.transform (Translation(0., -1., 0.))
+
+    let w =
+        World.standard
+        |> World.addObject shape
+
+    let r = Ray.create (Point.create 0. 0. -3.) (Vector.create 0. (-(Math.Sqrt(2.)/2.)) ((Math.Sqrt(2.)/2.)))
+
+    let i = Intersection.create shape (Math.Sqrt(2.))
+
+    let comps = Computation.prepare  r i
+    let color = World.reflectedColor comps World.maxDepth w
+
+    color .= Color.create 0.19032 0.2379 0.14274 |> Assert.True
+
+[<Fact>]
+let ``shadeHit with a reflective material``() =
+    let shape =
+        Object.plane
+        |> Object.setMaterial {Material.standard with reflectivity = 0.5}
+        |> Object.transform (Translation(0., -1., 0.))
+
+    let w =
+        World.standard
+        |> World.addObject shape
+
+    let r = Ray.create (Point.create 0. 0. -3.) (Vector.create 0. (-(Math.Sqrt(2.)/2.)) ((Math.Sqrt(2.)/2.)))
+
+    let i = Intersection.create shape (Math.Sqrt(2.))
+
+    let comps = Computation.prepare  r i
+    let color = World.shadeHit w World.maxDepth comps
+
+    color .= Color.create 0.87677 0.92436 0.82918 |> Assert.True
+
+[<Fact>]
+let ``colorAt with mutually reflective surfaces``() =
+
+    let lower =
+        Object.plane
+        |> Object.setMaterial {Material.standard with reflectivity = 1.}
+        |> Object.transform (Translation(0., -1., 0.))
+
+    let upper =
+        Object.plane
+        |> Object.setMaterial {Material.standard with reflectivity = 1.}
+        |> Object.transform (Translation(0., 1., 0.))
+
+    let w =
+        World.standard
+        |> World.withLight (Light.create (Color.create 1. 1. 1.) (Point.create 0. 0. 0.))
+        |> World.addObject lower
+        |> World.addObject upper
+
+    let r = Ray.create (Point.create 0. 0. 0.) (Vector.create 0. 1. 0.)
+
+    try
+        World.colorAt w World.maxDepth r |> ignore
+        Assert.True
+    with
+    | _ ->
+        Assert.False |> ignore
+        failwith "Failed"
+
+[<Fact>]
+let ``the reflected color at the maximum recursive depth``() =
+
+
+    let shape =
+        Object.plane
+        |> Object.setMaterial {Material.standard with reflectivity = 1.}
+        |> Object.transform (Translation(0., 1., 0.))
+
+    let w =
+        World.standard
+        |> World.withLight (Light.create (Color.create 1. 1. 1.) (Point.create 0. 0. 0.))
+        |> World.addObject shape
+
+    let r = Ray.create (Point.create 0. 0. 0.) (Vector.create 0. 1. 0.)
+    let i = Intersection.create shape (Math.Sqrt(2.))
+    let comps = Computation.prepare r i
+    let color = World.reflectedColor comps World.maxDepth w
+    color .= Color.create 0. 0. 0. |> Assert.True
 
 
 

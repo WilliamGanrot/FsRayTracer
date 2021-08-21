@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{D2D122
 		..\..\..\Pictures\scene.png = ..\..\..\Pictures\scene.png
 		..\..\..\Pictures\scene_w_pattern.png = ..\..\..\Pictures\scene_w_pattern.png
 		..\..\..\Pictures\scene_w_plane.png = ..\..\..\Pictures\scene_w_plane.png
+		..\..\..\Pictures\scene_w_reflection.png = ..\..\..\Pictures\scene_w_reflection.png
 		..\..\..\Pictures\scene_w_shadows.png = ..\..\..\Pictures\scene_w_shadows.png
 		..\..\..\Pictures\sphere.png = ..\..\..\Pictures\sphere.png
 	EndProjectSection

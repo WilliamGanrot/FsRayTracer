@@ -79,7 +79,7 @@ module Camera =
         |> List.map(fun (x, y) ->
             async {
                 printfn "%A %A" y x
-                let color = rayForPixel (float x) (float y) camera |> World.colorAt world
+                let color = rayForPixel (float x) (float y) camera |> World.colorAt world World.maxDepth
                 return (x,y,color)
             })
         |> Async.Parallel

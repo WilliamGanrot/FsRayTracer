@@ -10,12 +10,16 @@ open RayTracer.Transformation
 open RayTracer.Computation
 open RayTracer.Intersection
 open RayTracer.Vector
+open RayTracer.Helpers
+open RayTracer.Constnats
 
 [<AutoOpen>]
 module Domain =
     type World = { light: Light; objects: Object list }
 
 module World =
+
+    let maxDepth = 4
 
     let empty =
         { light = Point.create -10. 10. -10. |> Light.create (Color.create 1. 1. 1.);
@@ -63,11 +67,13 @@ module World =
         | Some hit when hit.t < distance -> true
         |_ -> false
 
-    let shadeHit (w:World) (c:Computation) =
+    let rec shadeHit (w:World) (remaining:int) (c:Computation) =
         let shadowed = isShadowed c.overPoint w
-        Object.lighting c.object.material w.light c.overPoint c.eyev c.normalv shadowed c.object
+        let surface = Object.lighting c.object.material w.light c.overPoint c.eyev c.normalv shadowed c.object
+        let reflected = reflectedColor c remaining w
+        surface + reflected
 
-    let colorAt world ray =
+    and colorAt world remaining ray =
         ray
         |> intersect world
         |> Intersection.hit
@@ -76,11 +82,26 @@ module World =
             | Some intersection ->
                 intersection
                 |> Computation.prepare ray
-                |> shadeHit world
+                |> shadeHit world remaining
             | None -> Color.black
+    
+    and reflectedColor (comp:Computation) remaining world =
+        match (comp.object.material.reflectivity, remaining) with
+        | _, remaining when remaining <= 0 ->
+            Color.black
+        | reflectivenes, _ when reflectivenes < epsilon || -reflectivenes > epsilon ->
+            Color.black
+        | reflectivenes, _  ->
+            let reflectiveRay = Ray.create comp.overPoint comp.reflectv
+            let color = colorAt world remaining reflectiveRay
+
+            color |> Color.mulitplyByScalar reflectivenes
 
     let addObject object world =
         { world with objects = world.objects @ [object] }
+
+    let insertObject  object i world =
+        { world with objects = insert object i world.objects }
 
     let setObjects objects world =
         { world with objects = objects }

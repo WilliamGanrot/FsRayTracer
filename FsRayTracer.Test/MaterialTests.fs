@@ -7,9 +7,14 @@ open RayTracer.Helpers
 open RayTracer.Light
 open RayTracer.Material
 open RayTracer.Color
+open RayTracer.Intersection
+open RayTracer.World
+open RayTracer.Transformation
+open RayTracer.Computation
 open RayTracer.Object
 
 open Xunit
+open RayTracer.Ray
 
 [<Fact>]
 let ``the default material``  () =
@@ -88,3 +93,19 @@ let ``Lightning with eye behind the surface``() =
 
     let result = Object.lighting m light p eyev normalv false (Object.sphere)
     result .= (Color.create 0.1 0.1 0.1) |> Assert.True
+
+[<Fact>]
+let ``Reflectivity for the default material``() =
+    let m = Material.standard
+    m.reflectivity = 0. |> Assert.True
+
+
+[<Fact>]
+let ``precomputing the reflection vector``() =
+    let s = Object.plane
+    let r = Ray.create (Point.create 0. 1. -1.) (Vector.create 0. ((-(Math.Sqrt(2.)))/2.) ((Math.Sqrt(2.))/2.))
+    let i = Intersection.create s (Math.Sqrt(2.))
+    
+    let comps = Computation.prepare r i
+    comps.reflectv .= Vector.create 0. (Math.Sqrt(2.)/2.) ((Math.Sqrt(2.)/2.)) |> Assert.True
+

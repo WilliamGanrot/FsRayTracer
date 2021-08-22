@@ -8,31 +8,50 @@ open RayTracer.Point
 open RayTracer.Material
 open RayTracer.Pattern
 open RayTracer.Color
+open RayTracer.Helpers
 open RayTracer.Light
 
 
 [<AutoOpen>]
 module Domain =
     type Sphere = { id: int; radii: float; }
+        
+        
 
     type Shape =
         | Sphere of Sphere
         | Plane
 
     type Object =
-        { transform: Matrix; material: Material; shape: Shape }
+        { transform: Matrix; material: Material; shape: Shape; id: int}
+
+        static member (.=) (o : Object, o2: Object) =
+            o.transform .= o2.transform && o.material .= o2.material && o.shape = o2.shape
+
 
 module Object =
 
-    let sphere = 
-        let r = new Random()
+
+    let sphere =
+        let r = System.Random()
         let sphere = Sphere { id = r.Next(); radii = 1. }
-        { transform = Matrix.identityMatrix 4; material = Material.standard; shape = sphere }
+        { transform = Matrix.identityMatrix 4; material = Material.standard; shape = sphere; id = r.Next() }
+
+    let glassSphere =
+        let r = System.Random()
+        let sphere = Sphere { id = r.Next(); radii = 1. }
+
+        let m =
+            Material.standard
+            |> Material.WithReflectiveIndex 1.5
+            |> Material.withTransparency 1.
+
+        { transform = Matrix.identityMatrix 4; material = m; shape = sphere; id = r.Next()}
 
     let plane =
         let r = new Random()
         let plane = Plane
-        { transform = Matrix.identityMatrix 4; material = Material.standard; shape = plane }
+        { transform = Matrix.identityMatrix 4; material = Material.standard; shape = plane; id = r.Next();}
 
     let transform t object =
         let t = Transformation.applyToMatrix t object.transform
@@ -102,3 +121,5 @@ module Object =
             | _ ->
                 let factor = Math.Pow(reflectDotEye, material.shininess)
                 ambient + diffuse + (light.intensity |> Color.mulitplyByScalar (material.specular * factor))
+
+

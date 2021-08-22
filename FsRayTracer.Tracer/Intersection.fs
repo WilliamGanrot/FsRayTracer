@@ -16,6 +16,14 @@ module Intersection =
     let intersections (l: Intersection list) : Intersection list =
         l
 
+    let tuplesToIntersections l : Intersection list =
+        let rec c l accl =
+            match l with
+            | []    -> accl
+            | (t,o)::rest  -> c rest (accl @ [create o t])
+
+        c l []
+
     let hit (l: Intersection list) : Option<Intersection>=
         let hitsInfrontOfOrigin =
             l

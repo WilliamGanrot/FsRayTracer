@@ -7,16 +7,6 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FsRayTracer.Tracer", "FsRay
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FsRayTracer.Test", "FsRayTracer.Test\FsRayTracer.Test.fsproj", "{E1FAF612-753B-466E-95F8-32015E8AEA06}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{D2D122D5-89DB-41AB-8268-B489F7FAB351}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\..\Pictures\scene.png = ..\..\..\Pictures\scene.png
-		..\..\..\Pictures\scene_w_pattern.png = ..\..\..\Pictures\scene_w_pattern.png
-		..\..\..\Pictures\scene_w_plane.png = ..\..\..\Pictures\scene_w_plane.png
-		..\..\..\Pictures\scene_w_reflection.png = ..\..\..\Pictures\scene_w_reflection.png
-		..\..\..\Pictures\scene_w_shadows.png = ..\..\..\Pictures\scene_w_shadows.png
-		..\..\..\Pictures\sphere.png = ..\..\..\Pictures\sphere.png
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

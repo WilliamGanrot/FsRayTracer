@@ -9,6 +9,13 @@ module Helpers =
     let (|IsEven|_|) n =
       if n % 2 = 0 then Some () else None
 
+
+    let rec last list = 
+        match list with
+        | h::[] -> h
+        | h::t -> last t
+        | _ -> failwith "not found"
+
 module FloatHelper =
     let equal a b = abs(a - b) < epsilon
 

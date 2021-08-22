@@ -274,18 +274,18 @@ let ``the reflected color at the maximum recursive depth``() =
 
     let shape =
         Object.plane
-        |> Object.setMaterial {Material.standard with reflectivity = 1.}
-        |> Object.transform (Translation(0., 1., 0.))
+        |> Object.setMaterial {Material.standard with reflectivity = 0.5}
+        |> Object.transform (Translation(0., -1., 0.))
 
     let w =
         World.standard
         |> World.withLight (Light.create (Color.create 1. 1. 1.) (Point.create 0. 0. 0.))
         |> World.addObject shape
 
-    let r = Ray.create (Point.create 0. 0. 0.) (Vector.create 0. 1. 0.)
+    let r = Ray.create (Point.create 0. 0. -3.) (Vector.create 0. ((-Math.Sqrt(2.))/2.) (Math.Sqrt(2.)/2.))
     let i = Intersection.create shape (Math.Sqrt(2.))
     let comps = Computation.prepare r i
-    let color = World.reflectedColor comps World.maxDepth w
+    let color = World.reflectedColor comps 0 w
     color .= Color.create 0. 0. 0. |> Assert.True
 
 

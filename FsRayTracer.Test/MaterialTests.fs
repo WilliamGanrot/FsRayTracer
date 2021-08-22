@@ -9,6 +9,7 @@ open RayTracer.Material
 open RayTracer.Color
 open RayTracer.Intersection
 open RayTracer.World
+open RayTracer.Matrix
 open RayTracer.Transformation
 open RayTracer.Computation
 open RayTracer.Object
@@ -108,4 +109,62 @@ let ``precomputing the reflection vector``() =
     
     let comps = Computation.prepare r i
     comps.reflectv .= Vector.create 0. (Math.Sqrt(2.)/2.) ((Math.Sqrt(2.)/2.)) |> Assert.True
+
+
+[<Fact>]
+let ``transparency and reflextion index for the default materialr``() =
+    let m = Material.standard
+    m.transparency = 0. |> Assert.True
+    m.reflectiveIndex = 1. |> Assert.True
+
+[<Fact>]
+let ``a helper for producing a sphere with a glassy material``() =
+    let s = Object.glassSphere
+    s.transform .= Matrix.identityMatrix 4 |> Assert.True
+    s.material.transparency = 1. |> Assert.True
+    s.material.reflectiveIndex = 1.5 |> Assert.True
+
+
+[<Fact>]
+let ``finding n1 and n2 at varios intersections``() =
+    let a =
+        Object.glassSphere
+        |> Object.transform (Scaling(2., 2., 2.))
+        |> Object.setMaterial(
+            Material.standard
+            |> Material.WithReflectiveIndex 1.5)
+
+    let b =
+        Object.glassSphere
+        |> Object.transform (Translation(0., 0., -0.25))
+        |> Object.setMaterial(
+            Material.standard
+            |> Material.WithReflectiveIndex 2.)
+
+    let c =
+        Object.glassSphere
+        |> Object.transform (Translation(0., 0., 0.25))
+        |> Object.setMaterial(
+            Material.standard
+            |> Material.WithReflectiveIndex 2.5)
+
+    let ray = Ray.create (Point.create 0. 0. -4.) (Vector.create 0. 0. 1.)
+
+    let xs = Intersection.tuplesToIntersections [(2.,a); (2.75,b); (3.25, c); (4.75,b); (5.25,c); (6.,a)]
+
+    let expected =
+        [ (1., 1.5);
+          (1.5, 2.);
+          (2., 2.5);
+          (2.5, 2.5);
+          (2.5, 1.5);
+          (1.5, 1.)]
+
+    xs
+    |> List.indexed
+    |> List.iter (fun (i,o) ->
+        let comps = Computation.nValues o ray xs
+        let e = expected.[i]
+        comps = e |> Assert.True
+        )
 

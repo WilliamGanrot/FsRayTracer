@@ -25,9 +25,6 @@ module Domain =
     type Object =
         { transform: Matrix; material: Material; shape: Shape; id: int}
 
-        static member (.=) (o : Object, o2: Object) =
-            o.transform .= o2.transform && o.material .= o2.material && o.shape = o2.shape
-
 
 module Object =
 

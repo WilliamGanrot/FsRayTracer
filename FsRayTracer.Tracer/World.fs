@@ -37,11 +37,11 @@ module World =
             |> Material.withSpecular 0.2
 
         let s1 =
-            Object.sphere
+            Object.sphere()
             |> Object.setMaterial material
 
         let s2 =
-            Object.sphere
+            Object.sphere()
             |> Object.transform (Scaling(0.5, 0.5, 0.5))
 
         { light = light;

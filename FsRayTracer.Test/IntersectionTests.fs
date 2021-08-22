@@ -14,7 +14,7 @@ open RayTracer.Object
 
 [<Fact>]
 let ``an intersection encapsulates t and object`` () =
-    let s = Object.sphere
+    let s = Object.sphere()
     let i = Intersection.create s 3.5
 
     (FloatHelper.equal i.t 3.5) |> Assert.True
@@ -22,7 +22,7 @@ let ``an intersection encapsulates t and object`` () =
 
 [<Fact>]
 let ``aggregating intersections`` () =
-    let s = Object.sphere
+    let s = Object.sphere()
     let i1 = Intersection.create s 1.
     let i2 = Intersection.create s 2.
 
@@ -35,7 +35,7 @@ let ``aggregating intersections`` () =
 [<Fact>]
 let ``intersect sets the object on the intersection`` () =
     let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.)
-    let s = Object.sphere
+    let s = Object.sphere()
     let xs = Ray.intersect s r
 
     xs.Length = 2 |> Assert.True
@@ -44,7 +44,7 @@ let ``intersect sets the object on the intersection`` () =
 
 [<Fact>]
 let ``the hit, when all intersections have positive t`` () =
-    let s = Object.sphere
+    let s = Object.sphere()
     let i1 = Intersection.create s 1.
     let i2 = Intersection.create s 2.
     let xs = Intersection.intersections [i2; i1]
@@ -54,7 +54,7 @@ let ``the hit, when all intersections have positive t`` () =
 
 [<Fact>]
 let ``the hit, when some intersections have negative t`` () =
-    let s = Object.sphere
+    let s = Object.sphere()
     let i1 = Intersection.create s -1.
     let i2 = Intersection.create s 1.
     let xs = Intersection.intersections [i2; i1]
@@ -64,7 +64,7 @@ let ``the hit, when some intersections have negative t`` () =
 
 [<Fact>]
 let ``the hit, when all intersections have negative t`` () =
-    let s = Object.sphere
+    let s = Object.sphere()
     let i1 = Intersection.create s -2.
     let i2 = Intersection.create s -1.
     let xs = Intersection.intersections [i2; i1]
@@ -75,7 +75,7 @@ let ``the hit, when all intersections have negative t`` () =
 
 [<Fact>]
 let ``the hit is always the lowest nonnegative intersection`` () =
-    let s = Object.sphere
+    let s = Object.sphere()
     let i1 = Intersection.create s 5.
     let i2 = Intersection.create s 7.
     let i3 = Intersection.create s -3.

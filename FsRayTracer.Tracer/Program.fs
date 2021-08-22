@@ -264,12 +264,12 @@ let main argv =
             |> Material.withSpecular 0.
 
         let floor =
-            Object.sphere
+            Object.sphere()
             |> Object.transform (Scaling(10., 0.01, 10.))
             |> Object.setMaterial m
 
         let leftWall =
-            Object.sphere
+            Object.sphere()
             |> Object.transform (Translation(0., 0., 5.))
             |> Object.transform (Rotation(Y, -(Math.PI/4.)))
             |> Object.transform (Rotation(X, -(Math.PI/2.)))
@@ -277,7 +277,7 @@ let main argv =
             |> Object.setMaterial m
 
         let rightWall =
-          Object.sphere
+          Object.sphere()
           |> Object.transform (Translation(0., 0., 5.))
           |> Object.transform (Rotation(Y, (Math.PI/4.)))
           |> Object.transform (Rotation(X, (Math.PI/2.)))
@@ -285,7 +285,7 @@ let main argv =
           |> Object.setMaterial m
 
         let middle =
-            Object.sphere
+            Object.sphere()
             |> Object.transform (Translation(-0.5, 1., 0.5))
             |> Object.setMaterial (
                 Material.standard
@@ -294,7 +294,7 @@ let main argv =
                 |> Material.withSpecular 0.3)
 
         let right =
-            Object.sphere
+            Object.sphere()
             |> Object.transform (Translation(1.5, 0.5, 0.5))
             |> Object.transform (Scaling(0.5, 0.5, 0.5))
             |> Object.setMaterial (
@@ -304,7 +304,7 @@ let main argv =
                 |> Material.withSpecular 0.3)
 
         let left =
-            Object.sphere
+            Object.sphere()
             |> Object.transform (Translation(-1.5, 0.33, -0.75))
             |> Object.transform (Scaling(0.33, 0.33, 0.33))
             |> Object.setMaterial (
@@ -337,7 +337,7 @@ let main argv =
 
     
     //let p =
-    //    Object.plane
+    //    Object.plane()
     //    |> Object.setMaterial (
     //        Material.standard
     //        |> Material.withPattern (
@@ -345,7 +345,7 @@ let main argv =
     //            |> Pattern.transform (Translation(0., 0., 2.5))))
     
     //let middle =
-    //    Object.sphere
+    //    Object.sphere()
     //    |> Object.setMaterial (
     //        Material.standard
     //        |> Material.withPattern (
@@ -359,7 +359,7 @@ let main argv =
 
 
     //let right =
-    //    Object.sphere
+    //    Object.sphere()
     //    |> Object.transform (Translation(1.5, 0.5, 0.5))
     //    |> Object.transform (Scaling(0.5, 0.5, 0.5))
     //    |> Object.setMaterial (
@@ -371,7 +371,7 @@ let main argv =
 
 
     //let left =
-    //    Object.sphere
+    //    Object.sphere()
     //    |> Object.transform (Translation(-1.5, 0.25, -0.75))
     //    |> Object.transform (Scaling(0.75, 0.75, 0.75))
     //    |> Object.setMaterial (
@@ -406,7 +406,7 @@ let main argv =
 
     
     let p =
-        Object.plane
+        Object.plane()
         |> Object.setMaterial (
             Material.standard
             |> Material.withPattern (
@@ -415,7 +415,7 @@ let main argv =
             |> Material.withReflectivity 1.)
 
     let middle =
-        Object.sphere
+        Object.sphere()
         |> Object.setMaterial (
             Material.standard
             |> Material.withDiffuse 0.7

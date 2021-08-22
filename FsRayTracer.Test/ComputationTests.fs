@@ -18,7 +18,7 @@ open RayTracer.Constnats
 [<Fact>]
 let ``precomputing the state of an intersection`` () =
     let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.) 
-    let s = Object.sphere
+    let s = Object.sphere()
     let i = Intersection.create s 4.
     let comps = i |> Computation.prepare r
 
@@ -31,7 +31,7 @@ let ``precomputing the state of an intersection`` () =
 [<Fact>]
 let ``the hit, when an intersection occurs on the outside`` () =
     let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.) 
-    let s = Object.sphere
+    let s = Object.sphere()
 
     let comps =
         Intersection.create s 4.
@@ -42,7 +42,7 @@ let ``the hit, when an intersection occurs on the outside`` () =
 [<Fact>]
 let ``the hit, when an intersection occurs on the inside`` () =
     let r = Ray.create (Point.create 0. 0. 0.) (Vector.create 0. 0. 1.) 
-    let s = Object.sphere
+    let s = Object.sphere()
     let i = Intersection.create s 1.
     let comps = i |> Computation.prepare r
 
@@ -55,7 +55,7 @@ let ``the hit, when an intersection occurs on the inside`` () =
 let ``the hit should offset the point`` () =
     let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.) 
     let s =
-        Object.sphere
+        Object.sphere()
         |> Object.transform (Translation(0., 0., 0.1))
 
     let i = Intersection.create s 1.

@@ -14,10 +14,8 @@ open RayTracer.Light
 
 [<AutoOpen>]
 module Domain =
-    type Sphere = { id: int; radii: float; }
+    type Sphere = { radii: float; }
         
-        
-
     type Shape =
         | Sphere of Sphere
         | Plane
@@ -25,18 +23,21 @@ module Domain =
     type Object =
         { transform: Matrix; material: Material; shape: Shape; id: int}
 
-
+        //compares object without id
+         static member (.=.) (p, v : Object) =
+            {p with id = 0} = {v with id = 0}
+        
 module Object =
 
+    let r = System.Random() 
+    let newRandom() = r.Next()
 
-    let sphere =
-        let r = System.Random()
-        let sphere = Sphere { id = r.Next(); radii = 1. }
-        { transform = Matrix.identityMatrix 4; material = Material.standard; shape = sphere; id = r.Next() }
+    let sphere() =
+        let sphere = Sphere { radii = 1. }
+        { transform = Matrix.identityMatrix 4; material = Material.standard; shape = sphere; id = newRandom() }
 
-    let glassSphere =
-        let r = System.Random()
-        let sphere = Sphere { id = r.Next(); radii = 1. }
+    let glassSphere() =
+        let sphere = Sphere { radii = 1. }
 
         let m =
             Material.standard
@@ -45,8 +46,7 @@ module Object =
 
         { transform = Matrix.identityMatrix 4; material = m; shape = sphere; id = r.Next()}
 
-    let plane =
-        let r = new Random()
+    let plane() =
         let plane = Plane
         { transform = Matrix.identityMatrix 4; material = Material.standard; shape = plane; id = r.Next();}
 

@@ -37,17 +37,17 @@ let ``the default world``  () =
         |> Material.withSpecular 0.2
 
     let s1 =
-        Object.sphere
+        Object.sphere()
         |> Object.setMaterial material
 
     let s2 =
-        Object.sphere
+        Object.sphere()
         |> Object.transform (Scaling(0.5, 0.5, 0.5))
 
         
     w.objects.Length = 2 |> Assert.True
-    w.objects |> List.exists (fun x -> x = s1) |> Assert.True
-    w.objects |> List.exists (fun x -> x = s2) |> Assert.True
+    w.objects |> List.exists (fun x -> x .=. s1) |> Assert.True
+    w.objects |> List.exists (fun x -> x .=. s2) |> Assert.True
  
     w.light = light |> Assert.True
 
@@ -162,9 +162,9 @@ let ``there is no shadow when an object is behind the point`` () =
 [<Fact>]
 let ``shadeHit is given an intersection in shadow `` () =
 
-    let s1 = Object.sphere
+    let s1 = Object.sphere()
     let s2 =
-        Object.sphere
+        Object.sphere()
         |> Object.transform (Translation(0., 0., 10.))
 
     let w =
@@ -183,7 +183,7 @@ let ``shadeHit is given an intersection in shadow `` () =
 [<Fact>]
 let ``the reflect color for nonreflective material``() =
     let shape =
-        Object.plane
+        Object.plane()
         |> Object.setMaterial {Material.standard with reflectivity = 0.5}
         |> Object.transform (Translation(0., -1., 0.))
 
@@ -202,7 +202,7 @@ let ``the reflect color for nonreflective material``() =
 [<Fact>]
 let ``the reflected color for a reflective material``() =
     let shape =
-        Object.plane
+        Object.plane()
         |> Object.setMaterial {Material.standard with reflectivity = 0.5}
         |> Object.transform (Translation(0., -1., 0.))
 
@@ -222,7 +222,7 @@ let ``the reflected color for a reflective material``() =
 [<Fact>]
 let ``shadeHit with a reflective material``() =
     let shape =
-        Object.plane
+        Object.plane()
         |> Object.setMaterial {Material.standard with reflectivity = 0.5}
         |> Object.transform (Translation(0., -1., 0.))
 
@@ -243,12 +243,12 @@ let ``shadeHit with a reflective material``() =
 let ``colorAt with mutually reflective surfaces``() =
 
     let lower =
-        Object.plane
+        Object.plane()
         |> Object.setMaterial {Material.standard with reflectivity = 1.}
         |> Object.transform (Translation(0., -1., 0.))
 
     let upper =
-        Object.plane
+        Object.plane()
         |> Object.setMaterial {Material.standard with reflectivity = 1.}
         |> Object.transform (Translation(0., 1., 0.))
 
@@ -273,7 +273,7 @@ let ``the reflected color at the maximum recursive depth``() =
 
 
     let shape =
-        Object.plane
+        Object.plane()
         |> Object.setMaterial {Material.standard with reflectivity = 0.5}
         |> Object.transform (Translation(0., -1., 0.))
 

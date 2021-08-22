@@ -53,8 +53,8 @@ module Computation =
         let removeOrAppendToContainer (intersection: Intersection) (containers: Object list) =
             let objectIsInContainers =
                 containers
-                |> List.map (fun x -> x.GetHashCode())
-                |> List.exists ((=) (intersection.object.GetHashCode()))
+                |> List.map (fun x -> x.id)
+                |> List.exists ((=) (intersection.object.id))
 
             match objectIsInContainers with
             | true -> containers |> List.where(fun o -> o <> intersection.object)

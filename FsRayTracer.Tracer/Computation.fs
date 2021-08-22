@@ -21,35 +21,13 @@ module Domain =
           normalv: Vector;
           reflectv: Vector;
           n1: float;
-          n2: float;}
+          n2: float;
+          underPoint: Point}
 
 module Computation =
 
-    let prepare (r:Ray) (i:Intersection) =
-
-        let t = i.t
-        let object = i.object
-        let point = Ray.position i.t r
-        let eyev = r.direction * -1.
-        let normalv = i.object |> Object.normal point
-        let inside = (Vector.dot normalv eyev) < 0.
-        let trueNormalv = if inside then normalv * -1. else normalv
-
-        { t = t;
-          object = object;
-          point = point;
-          overPoint = point + trueNormalv * epsilon;
-          eyev = eyev;
-          inside = inside;
-          normalv = trueNormalv;
-          reflectv = Vector.reflect trueNormalv r.direction;
-          n1 = 0.;
-          n2 = 0.}
-
-
     let nValues intersection ray (xs:Intersection list) =
 
-        //might be shakey comparison
         let removeOrAppendToContainer (intersection: Intersection) (containers: Object list) =
             let objectIsInContainers =
                 containers
@@ -82,3 +60,28 @@ module Computation =
                 | false, _ -> compute containers' n1' n2 intersectionTail
 
         compute [] 1. 1. xs
+
+    let prepare (r:Ray) (xs:Intersection list) (i:Intersection) =
+
+        let t = i.t
+        let object = i.object
+        let point = Ray.position i.t r
+        let eyev = r.direction * -1.
+        let normalv = i.object |> Object.normal point
+        let inside = (Vector.dot normalv eyev) < 0.
+        let trueNormalv = if inside then normalv * -1. else normalv
+        let n1,n2 = nValues i r xs
+
+        { t = t;
+          object = object;
+          point = point;
+          overPoint = point + trueNormalv * epsilon;
+          eyev = eyev;
+          inside = inside;
+          normalv = trueNormalv;
+          reflectv = Vector.reflect trueNormalv r.direction;
+          n1 = n1;
+          n2 = n2;
+          underPoint = point - trueNormalv * epsilon }
+
+

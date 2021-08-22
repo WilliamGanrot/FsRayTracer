@@ -7,10 +7,13 @@ open RayTracer.Vector
 open RayTracer.Ray
 open RayTracer.Matrix
 open RayTracer.Intersection
+open RayTracer.Transformation
 open RayTracer.Helpers
+open RayTracer.Computation
 
 open Xunit
 open RayTracer.Object
+open RayTracer.Constnats
 
 [<Fact>]
 let ``an intersection encapsulates t and object`` () =
@@ -84,6 +87,18 @@ let ``the hit is always the lowest nonnegative intersection`` () =
 
     let i = xs |> Intersection.hit
     i = Some(i4) |> Assert.True
+
+[<Fact>]
+let ``the under point is offset below the surface`` () =
+    let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.)
+    let shape =
+        Object.glassSphere()
+        |> Object.transform (Translation(0., 0., 1.))
+
+    let i = Intersection.create shape 5.
+    let comps = Computation.prepare r [i] i
+    comps.underPoint.Z > epsilon/2. |> Assert.True
+    comps.point.Z < comps.underPoint.Z |> Assert.True
 
 
 

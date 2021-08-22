@@ -74,7 +74,7 @@ let ``shading an intersection`` () =
     let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.)
     let shape = w.objects.Head
     let i = Intersection.create shape 4.0
-    let comps = Computation.prepare r i
+    let comps = Computation.prepare r [i] i
 
     let c = World.shadeHit w World.maxDepth comps
     c .= Color.create 0.38066 0.47583 0.2855 |> Assert.True
@@ -90,7 +90,7 @@ let ``shading an intersection from the inside`` () =
     let r = Ray.create (Point.create 0. 0. 0.) (Vector.create 0. 0. 1.)
     let shape = w.objects.[1]
     let i = Intersection.create shape 0.5
-    let comps = Computation.prepare r i
+    let comps = Computation.prepare r [i] i
 
     let c = World.shadeHit w World.maxDepth comps
     c .= Color.create 0.90498 0.90498 0.90498 |> Assert.True
@@ -176,7 +176,7 @@ let ``shadeHit is given an intersection in shadow `` () =
     let r = Ray.create (Point.create 0. 0. 5.) (Vector.create 0. 0. 1.)
     let i = Intersection.create s2 4.
 
-    let comps = Computation.prepare r i
+    let comps = Computation.prepare r [i] i 
     let c = World.shadeHit w World.maxDepth comps
     c .= Color.create 0.1 0.1 0.1 |> Assert.True
 
@@ -194,7 +194,7 @@ let ``the reflect color for nonreflective material``() =
     let r = Ray.create (Point.create 0. 0. 0.) (Vector.create 0. 0. 1.)
 
     let i = Intersection.create shape 1.
-    let comps = Computation.prepare  r i
+    let comps = Computation.prepare  r [i] i
     let color = World.reflectedColor comps World.maxDepth w
 
     color .= Color.create 0. 0. 0. |> Assert.True
@@ -214,7 +214,7 @@ let ``the reflected color for a reflective material``() =
 
     let i = Intersection.create shape (Math.Sqrt(2.))
 
-    let comps = Computation.prepare  r i
+    let comps = Computation.prepare  r [i] i
     let color = World.reflectedColor comps World.maxDepth w
 
     color .= Color.create 0.19032 0.2379 0.14274 |> Assert.True
@@ -234,7 +234,7 @@ let ``shadeHit with a reflective material``() =
 
     let i = Intersection.create shape (Math.Sqrt(2.))
 
-    let comps = Computation.prepare  r i
+    let comps = Computation.prepare  r [i] i
     let color = World.shadeHit w World.maxDepth comps
 
     color .= Color.create 0.87677 0.92436 0.82918 |> Assert.True
@@ -284,7 +284,7 @@ let ``the reflected color at the maximum recursive depth``() =
 
     let r = Ray.create (Point.create 0. 0. -3.) (Vector.create 0. ((-Math.Sqrt(2.))/2.) (Math.Sqrt(2.)/2.))
     let i = Intersection.create shape (Math.Sqrt(2.))
-    let comps = Computation.prepare r i
+    let comps = Computation.prepare r [i] i
     let color = World.reflectedColor comps 0 w
     color .= Color.create 0. 0. 0. |> Assert.True
 

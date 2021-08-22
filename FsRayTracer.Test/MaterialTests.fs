@@ -107,7 +107,7 @@ let ``precomputing the reflection vector``() =
     let r = Ray.create (Point.create 0. 1. -1.) (Vector.create 0. ((-(Math.Sqrt(2.)))/2.) ((Math.Sqrt(2.))/2.))
     let i = Intersection.create s (Math.Sqrt(2.))
     
-    let comps = Computation.prepare r i
+    let comps = Computation.prepare r [i] i
     comps.reflectv .= Vector.create 0. (Math.Sqrt(2.)/2.) ((Math.Sqrt(2.)/2.)) |> Assert.True
 
 

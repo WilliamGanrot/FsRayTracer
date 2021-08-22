@@ -81,7 +81,7 @@ module World =
             match hit with
             | Some intersection ->
                 intersection
-                |> Computation.prepare ray
+                |> Computation.prepare ray [intersection]
                 |> shadeHit world remaining
             | None -> Color.black
     

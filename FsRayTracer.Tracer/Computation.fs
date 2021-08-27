@@ -7,13 +7,15 @@ open RayTracer.Intersection
 open RayTracer.Object
 open RayTracer.Constnats
 open RayTracer.Helpers
+open RayTracer.Object
+open System
 
 [<AutoOpen>]
 module Domain =
 
     type Computation =
         { t: float;
-          object: Object;
+          object: RayTracer.Object.Domain.Object;
           point:Point;
           overPoint: Point;
           eyev: Vector;
@@ -28,7 +30,7 @@ module Computation =
 
     let nValues intersection ray (xs:Intersection list) =
 
-        let removeOrAppendToContainer (intersection: Intersection) (containers: Object list) =
+        let removeOrAppendToContainer (intersection: Intersection) (containers: RayTracer.Object.Domain.Object list) =
             let objectIsInContainers =
                 containers
                 |> List.map (fun x -> x.id)
@@ -47,7 +49,7 @@ module Computation =
                 let n1' =
                     match hit, containers with
                     | true, [] -> 1.
-                    | true, _ -> (last containers).material.reflectiveIndex
+                    | true, _ -> (last containers).material.refractiveIndex
                     | false, _ -> n1
 
                 let containers' = removeOrAppendToContainer i containers
@@ -55,7 +57,7 @@ module Computation =
                 match hit, containers' with
                 | true, [] -> (n1', 1.)
                 | true, _ ->
-                    let n2' = (last containers').material.reflectiveIndex
+                    let n2' = (last containers').material.refractiveIndex
                     (n1', n2')
                 | false, _ -> compute containers' n1' n2 intersectionTail
 
@@ -84,4 +86,21 @@ module Computation =
           n2 = n2;
           underPoint = point - trueNormalv * epsilon }
 
+    let shlick comps =
 
+        let reflactance comps cos =
+            let r0 = Math.Pow(((comps.n1 - comps.n2) / (comps.n1 + comps.n2)), 2.)
+            (r0 + (1. - r0) * Math.Pow((1. - cos), 5.))
+
+        let cos = Vector.dot comps.eyev comps.normalv
+        match comps.n1 > comps.n2 with
+        | true ->
+            let n = (comps.n1 / comps.n2)
+            let sin2t = (n*n) * (1. - (cos * cos))
+
+            match sin2t > 1. with
+            | true -> 1.
+            | false ->
+                let cosT = Math.Sqrt(1. - sin2t)
+                reflactance comps cosT
+        | false -> reflactance comps cos

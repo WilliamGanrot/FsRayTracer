@@ -9,6 +9,7 @@ open RayTracer.Intersection
 open RayTracer.Transformation
 open RayTracer.Matrix
 open RayTracer.Constnats
+open RayTracer.Object
 
 [<AutoOpen>]
 module Domain =
@@ -28,7 +29,7 @@ module Ray =
         let d = Transformation.applyToVector t r.direction
         create o d
 
-    let intersect object r =
+    let intersect (object:Object) r =
 
         let ray =
             Matrix.inverse object.transform

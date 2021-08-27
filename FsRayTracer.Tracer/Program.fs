@@ -412,22 +412,40 @@ let main argv =
             |> Material.withPattern (
                 Pattern.checkers (Color.white) (Color.black)
                 |> Pattern.transform (Rotation(Y, 45.)))
-            |> Material.withReflectivity 1.)
+            |> Material.withReflectivity 0.5)
 
     let middle =
         Object.sphere()
         |> Object.setMaterial (
             Material.standard
             |> Material.withDiffuse 0.7
-            |> Material.withSpecular 0.3
+            |> Material.withSpecular 1.
+            |> Material.withShininess 300.
+            |> Material.withReflectivity 0.3
             |> Material.withColor (Color.create 0.7 0. 0.2))
-        |> Object.transform (Translation(0., 1., 1.))
+        |> Object.transform (Translation(0.75, 1., 1.5))
+
+    let glass =
+        Object.glassSphere()
+        |> Object.transform (Translation(-0.75, 0.75, 0.))
+        |> Object.transform (Scaling(0.75, 0.75, 0.75))
+        |> Object.setMaterial(
+            Material.standard
+            |> Material.withColor (Color.create 0. 0. 0.)
+            |> Material.withDiffuse 0.
+            |> Material.withSpecular 0.8
+            |> Material.withReflectivity 1.
+            |> Material.withTransparency 1.
+            |> Material.WithrefractiveIndex 1.5
+            )
+
 
 
     let world =
         World.empty
         |> World.addObject p
         |> World.addObject middle
+        |> World.addObject glass
         |> World.withLight (
             Light.create (Color.create 1. 1. 1.) (Point.create -10. 10. -10.))
 

@@ -41,7 +41,7 @@ module Object =
 
         let m =
             Material.standard
-            |> Material.WithReflectiveIndex 1.5
+            |> Material.WithrefractiveIndex 1.5
             |> Material.withTransparency 1.
 
         { transform = Matrix.identityMatrix 4; material = m; shape = sphere; id = r.Next()}

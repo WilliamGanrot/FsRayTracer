@@ -29,7 +29,7 @@ let ``aggregating intersections`` () =
     let i1 = Intersection.create s 1.
     let i2 = Intersection.create s 2.
 
-    let xs = Intersection.intersections [i1; i2]
+    let xs = [i1; i2]
 
     xs.Length = 2 |> Assert.True
     xs.[0].t = 1. |> Assert.True
@@ -50,7 +50,7 @@ let ``the hit, when all intersections have positive t`` () =
     let s = Object.sphere()
     let i1 = Intersection.create s 1.
     let i2 = Intersection.create s 2.
-    let xs = Intersection.intersections [i2; i1]
+    let xs = [i2; i1]
 
     let i = xs |> Intersection.hit
     i = Some (i1) |> Assert.True
@@ -60,7 +60,7 @@ let ``the hit, when some intersections have negative t`` () =
     let s = Object.sphere()
     let i1 = Intersection.create s -1.
     let i2 = Intersection.create s 1.
-    let xs = Intersection.intersections [i2; i1]
+    let xs = [i2; i1]
 
     let i = xs |> Intersection.hit
     i = Some (i2) |> Assert.True
@@ -70,7 +70,7 @@ let ``the hit, when all intersections have negative t`` () =
     let s = Object.sphere()
     let i1 = Intersection.create s -2.
     let i2 = Intersection.create s -1.
-    let xs = Intersection.intersections [i2; i1]
+    let xs = [i2; i1]
 
     let i = xs |> Intersection.hit
     i = None |> Assert.True
@@ -83,7 +83,7 @@ let ``the hit is always the lowest nonnegative intersection`` () =
     let i2 = Intersection.create s 7.
     let i3 = Intersection.create s -3.
     let i4 = Intersection.create s 2.
-    let xs = Intersection.intersections [i1; i2; i3; i4]
+    let xs = [i1; i2; i3; i4]
 
     let i = xs |> Intersection.hit
     i = Some(i4) |> Assert.True
@@ -99,7 +99,6 @@ let ``the under point is offset below the surface`` () =
     let comps = Computation.prepare r [i] i
     comps.underPoint.Z > epsilon/2. |> Assert.True
     comps.point.Z < comps.underPoint.Z |> Assert.True
-
 
 
 

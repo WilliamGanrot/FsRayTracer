@@ -115,14 +115,14 @@ let ``precomputing the reflection vector``() =
 let ``transparency and reflextion index for the default materialr``() =
     let m = Material.standard
     m.transparency = 0. |> Assert.True
-    m.reflectiveIndex = 1. |> Assert.True
+    m.refractiveIndex = 1. |> Assert.True
 
 [<Fact>]
 let ``a helper for producing a sphere with a glassy material``() =
     let s = Object.glassSphere()
     s.transform .= Matrix.identityMatrix 4 |> Assert.True
     s.material.transparency = 1. |> Assert.True
-    s.material.reflectiveIndex = 1.5 |> Assert.True
+    s.material.refractiveIndex = 1.5 |> Assert.True
 
 
 [<Fact>]
@@ -132,21 +132,21 @@ let ``finding n1 and n2 at varios intersections``() =
         |> Object.transform (Scaling(2., 2., 2.))
         |> Object.setMaterial(
             Material.standard
-            |> Material.WithReflectiveIndex 1.5)
+            |> Material.WithrefractiveIndex 1.5)
 
     let b =
         Object.glassSphere()
         |> Object.transform (Translation(0., 0., -0.25))
         |> Object.setMaterial(
             Material.standard
-            |> Material.WithReflectiveIndex 2.)
+            |> Material.WithrefractiveIndex 2.)
 
     let c =
         Object.glassSphere()
         |> Object.transform (Translation(0., 0., 0.25))
         |> Object.setMaterial(
             Material.standard
-            |> Material.WithReflectiveIndex 2.5)
+            |> Material.WithrefractiveIndex 2.5)
 
     let ray = Ray.create (Point.create 0. 0. -4.) (Vector.create 0. 0. 1.)
 

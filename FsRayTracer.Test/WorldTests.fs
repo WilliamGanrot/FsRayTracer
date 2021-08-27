@@ -289,7 +289,83 @@ let ``the reflected color at the maximum recursive depth``() =
     color .= Color.create 0. 0. 0. |> Assert.True
 
 
+[<Fact>]
+let ``the refracted color with an opaque surface``() =
+    let w = World.standard
+    let shape = w.objects.[0]
+    let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.)
+    let xs = Intersection.tuplesToIntersections [(4.,shape);(6., shape)]
+    let comps = Computation.prepare r xs xs.[0]
 
+    let c = World.refractedColor comps 5 w
+    c .= Color.create 0. 0. 0. |> Assert.True
+
+
+[<Fact>]
+let ``the refracted color at maximum recursive depth``() =
+    let w = World.standard
+    let shape =
+        w.objects.[0]
+        |> Object.setMaterial(
+            Material.standard
+            |> Material.withTransparency 1.
+            |> Material.WithrefractiveIndex 1.5)
+
+    let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.)
+    let xs = Intersection.tuplesToIntersections [(4.,shape);(6., shape)]
+
+    let comps = Computation.prepare r xs xs.[0]
+
+    let c = World.refractedColor comps 0 w
+    c .= Color.create 0. 0. 0. |> Assert.True
+
+[<Fact>]
+let ``the refracted color under total internal reflection``() =
+    let w = World.standard
+    let shape =
+        w.objects.[0]
+        |> Object.setMaterial(
+            Material.standard
+            |> Material.withTransparency 1.
+            |> Material.WithrefractiveIndex 1.5)
+
+    let r = Ray.create (Point.create 0. 0. (Math.Sqrt(2.)/2.)) (Vector.create 0. 1. 0.)
+    let xs = Intersection.tuplesToIntersections [(((Math.Sqrt(-2.)/2.)),shape);((Math.Sqrt(2.)/2.), shape)]
+
+    let comps = Computation.prepare r xs xs.[1]
+
+    let c = World.refractedColor comps 5 w
+    c .= Color.create 0. 0. 0. |> Assert.True
+
+[<Fact>]
+let ``shadehit with a transparent material``() =
     
 
+    let floor =
+        Object.plane()
+        |> Object.transform (Translation(0., -1., 0.))
+        |> Object.setMaterial(
+            Material.standard
+            |> Material.withTransparency 0.5
+            |> Material.WithrefractiveIndex 1.5)
 
+    let ball =
+        Object.sphere()
+        |> Object.setMaterial(
+            Material.standard
+            |> Material.withColor (Color.create 1. 0. 0.)
+            |> Material.withAmbient 0.5)
+        |> Object.transform (Translation(0., -3.5, -0.5))
+
+    let w =
+        World.standard
+        |> World.addObject floor
+        |> World.addObject ball
+
+    let r = Ray.create (Point.create 0. 0. -3.) (Vector.create 0. ((-Math.Sqrt(2.))/2.) (Math.Sqrt(2.)/2.))
+    let xs = Intersection.tuplesToIntersections [(Math.Sqrt(2.), floor)]
+    let comps = Computation.prepare r xs xs.[0]
+    let color = World.shadeHit w 5 comps
+    color .= Color.create 0.93642 0.68642 0.68642 |> Assert.True
+
+  

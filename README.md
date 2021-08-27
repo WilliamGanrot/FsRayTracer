@@ -1,7 +1,7 @@
 # FsRayTracer
 
 ## Chapter 11 - Reflection and Refaction
-![Image](Images/scene_w_reflection.png?raw=true "Title")
+![Image](Images/scene_w_refraction_a_reflection.png?raw=true "Title")
 
 ## Chapter 10
 ![Image](Images/scene_w_pattern.png?raw=true "Title")

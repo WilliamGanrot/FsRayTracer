@@ -56,3 +56,13 @@ module Material =
     let withReflectivity r m = { m with reflectivity = r }
     let withTransparency t m = { m with transparency = t }
     let WithrefractiveIndex ri m = { m with refractiveIndex = ri }
+
+    let toGlass m =
+        m
+        |> WithrefractiveIndex 1.5
+        |> withTransparency 1.
+
+    let superShiny m =
+        m
+        |> withSpecular 1.
+        |> withShininess 300.

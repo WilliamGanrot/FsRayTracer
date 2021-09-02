@@ -121,5 +121,57 @@ let ``a sphere may be assigned a material`` () =
 
     s.material = m |> Assert.True
 
+[<Theory>]
+[<InlineData(5., 0.5, 0., -1., 0., 0., 4., 6.)>]
+[<InlineData(-5., 0.5, 0., 1., 0., 0., 4., 6.)>]
+[<InlineData(0.5, 5., 0., 0., -1., 0., 4., 6.)>]
+[<InlineData(0.5, -5., 0., 0., 1., 0., 4., 6.)>]
+[<InlineData(0.5, 0., 5., 0., 0., -1., 4., 6.)>]
+[<InlineData(0.5, 0., -5., 0., 0., 1., 4., 6.)>]
+[<InlineData(0., 0.5, 0., 0., 0., 1., -1., 1.)>]
+let ``A ray intersects a cube`` (pointX, pointY, pointZ, vectorX, vectorY, vecotrZ, t1, t2) =
+    let c = Object.cube()
+    let r = Ray.create (Point.create pointX pointY pointZ) (Vector.create vectorX vectorY vecotrZ)
+    let xs = Ray.intersect c r
+
+    xs.Length = 2 |> Assert.True
+    FloatHelper.equal xs.[0].t t1 |> Assert.True
+    FloatHelper.equal xs.[1].t t2 |> Assert.True
+
+[<Theory>]
+[<InlineData(-2., 0., 0., 0.2673, 0.5345, 0.8018)>]
+[<InlineData(0., -2., 0., 0.8018, 0.2673, 0.5345)>]
+[<InlineData(0., 0., -2., 0.5345, 0.8018, 0.2673)>]
+[<InlineData(2., 0., -2., 0., 0., -1.)>]
+[<InlineData(0., 2., 2., 0., -1., 0.)>]
+[<InlineData(2., 2., 0., -1., 0., 0.)>]
+
+let ``A ray misses a cube`` (pointX, pointY, pointZ, vectorX, vectorY, vecotrZ) =
+    let c = Object.cube()
+    let r = Ray.create (Point.create pointX pointY pointZ) (Vector.create vectorX vectorY vecotrZ)
+    let xs = Ray.intersect c r
+
+    xs.Length = 0 |> Assert.True
+
+[<Theory>]
+[<InlineData(1., 0.5, -0.8, 1., 0., 0.)>]
+[<InlineData(-1., -0.2, 0.9, -1., 0., 0.)>]
+[<InlineData(-0.4, 1., -0.1, 0., 1., 0.)>]
+[<InlineData(0.3, -1., -0.7, 0., -1., 0.)>]
+[<InlineData(-0.6, 0.3, 1., 0., 0., 1.)>]
+[<InlineData(0.4 ,0.4, -1., 0., 0., -1.)>]
+[<InlineData(1., 1., 1., 1., 0., 0.)>]
+[<InlineData(-1., -1., -1., -1., 0., 0.)>]
+
+let ``the normal surface of a cube`` (pointX, pointY, pointZ, vectorX, vectorY, vecotrZ) =
+
+    let c = Object.cube()
+    let p = Point.create pointX pointY pointZ
+
+    let normal = Object.normal p c
+    let expected = Vector.create vectorX vectorY vecotrZ
+
+    expected .= normal |> Assert.True
+
 
     

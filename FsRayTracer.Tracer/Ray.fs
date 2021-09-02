@@ -62,6 +62,23 @@ module Ray =
                     let t = -(ray.origin.Y / ray.direction.Y)
                     Intersection.create object t
                 [i]
+        | Cube ->
+
+            let (xtmin, xtmax) = Cube.checkAxis ray.origin.X ray.direction.X
+            let (ytmin, ytmax) = Cube.checkAxis ray.origin.Y ray.direction.Y
+            let (ztmin, ztmax) = Cube.checkAxis ray.origin.Z ray.direction.Z
+
+            let tmin = [xtmin; ytmin; ztmin] |> List.max
+            let tmax = [xtmax; ytmax; ztmax] |> List.min
+
+            match tmin > tmax with
+            | true -> []
+            | false ->
+                let i1 = Intersection.create object tmin
+                let i2 = Intersection.create object tmax
+            
+                [i1; i2]
+            
                 
                 
 

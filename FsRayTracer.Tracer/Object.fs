@@ -10,6 +10,7 @@ open RayTracer.Pattern
 open RayTracer.Color
 open RayTracer.Helpers
 open RayTracer.Light
+open RayTracer.Constnats
 
 
 [<AutoOpen>]
@@ -19,6 +20,7 @@ module Domain =
     type Shape =
         | Sphere of Sphere
         | Plane
+        | Cube
 
     type Object =
         { transform: Matrix; material: Material; shape: Shape; id: int}
@@ -41,14 +43,15 @@ module Object =
 
         let m =
             Material.standard
-            |> Material.WithrefractiveIndex 1.5
-            |> Material.withTransparency 1.
+            |> Material.toGlass
 
         { transform = Matrix.identityMatrix 4; material = m; shape = sphere; id = r.Next()}
 
     let plane() =
-        let plane = Plane
-        { transform = Matrix.identityMatrix 4; material = Material.standard; shape = plane; id = r.Next();}
+        { transform = Matrix.identityMatrix 4; material = Material.standard; shape = Plane; id = r.Next();}
+
+    let cube() =
+        { transform = Matrix.identityMatrix 4; material = Material.standard; shape = Cube; id = r.Next();}
 
     let transform t object =
         let t = Transformation.applyToMatrix t object.transform
@@ -62,15 +65,27 @@ module Object =
 
         let objectNormal =
             match object.shape with
-            | Sphere _ -> (objectPoint - (Point.create 0. 0. 0.))
-            | Plane ->    Vector.create 0. 1. 0.
+            | Sphere _ ->
+                (objectPoint - (Point.create 0. 0. 0.))
+            | Plane ->
+                Vector.create 0. 1. 0.
+            | Cube ->
+                let maxc =
+                    [point.X; point.Y; point.Z]
+                    |> List.map (fun v -> Math.Abs(v:float))
+                    |> List.max
+
+                match maxc with
+                | _ when (FloatHelper.equal maxc (Math.Abs(point.X:float))) -> Vector.create point.X 0. 0.
+                | _ when (FloatHelper.equal maxc (Math.Abs(point.Y:float))) -> Vector.create 0. point.Y 0.
+                | _                                                         -> Vector.create 0. 0. point.Z
 
         let worldNormal =
             object.transform
             |> Matrix.inverse
             |> Matrix.Transpose
             |> Matrix.multiplyVector objectNormal
-
+        
         Vector.normalize {worldNormal with W = 0.}
 
     let setMaterial m object =
@@ -120,3 +135,20 @@ module Object =
                 ambient + diffuse + (light.intensity |> Color.mulitplyByScalar (material.specular * factor))
 
 
+module Cube =
+    let checkAxis origin direction =
+        let tMinNumerator = (-1.) - origin
+        let tMaxNumerator = 1. - origin
+
+        let tMin, tMax =
+            match Math.Abs(direction:float) >= epsilon with
+            | true ->
+                let tMin = tMinNumerator / direction
+                let tMax = tMaxNumerator / direction
+                (tMin, tMax)
+            | false ->
+                let tMin = tMinNumerator * infinity
+                let tMax = tMaxNumerator * infinity
+                (tMin, tMax)
+
+        if tMin > tMax then (tMax, tMin) else (tMin, tMax)

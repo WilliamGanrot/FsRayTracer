@@ -403,8 +403,8 @@ let main argv =
 
     //System.IO.File.WriteAllText ("image.pgm", ppm)
 
-
-    
+    (*
+    chapter 12
     let p =
         Object.plane()
         |> Object.setMaterial (
@@ -452,6 +452,57 @@ let main argv =
     let stopWatch = System.Diagnostics.Stopwatch.StartNew()
     let ppm =
         Camera.create 1200 600 (Math.PI/3.)
+        |> Camera.withTransfom (Transformation.viewTransform (Point.create 0. 1.5 -5.) (Point.create 0. 1. 0.) (Vector.create 0. 1. 0.))
+        |> Camera.render world
+        |> Canvas.toPPM
+    stopWatch.Stop()
+
+    System.IO.File.WriteAllText ("image.pgm", ppm)
+    *)
+    
+    let p =
+        Object.plane()
+        |> Object.setMaterial (
+            Material.standard |> Material.withColor (Color.create 0.1 0.4 0.7)
+
+            //|> Material.withPattern (
+            //    Pattern.rings (Color.white) (Color.black))
+            //|> Material.withReflectivity 0.5
+            )
+
+    let middle =
+        Object.cube()
+        |> Object.setMaterial(Material.standard |> Material.withShininess 1. |> Material.withColor Color.red)
+        |> Object.transform (Translation(-0.8, 0.5, 0.))
+        |> Object.transform (Scaling(0.5, 0.5, 0.5))
+        |> Object.transform (Rotation(Y,(Math.PI/6.)))
+        
+
+    //let glass =
+    //    Object.cube()
+    //    |> Object.transform (Translation(-0.75, 0.75, 0.))
+    //    |> Object.transform (Scaling(0.75, 0.75, 0.75))
+    //    |> Object.setMaterial(
+    //        Material.standard
+    //        |> Material.withColor (Color.create 0. 0. 0.)
+    //        |> Material.withDiffuse 0.
+    //        |> Material.withSpecular 0.8
+    //        |> Material.withReflectivity 1.
+    //        |> Material.withTransparency 1.
+    //        |> Material.WithrefractiveIndex 1.5
+    //        )
+
+    let world =
+        World.empty
+        |> World.addObject p
+        |> World.addObject middle
+        //|> World.addObject glass
+        |> World.withLight (
+            Light.create (Color.create 1. 1. 1.) (Point.create -10. 10. -10.))
+
+    let stopWatch = System.Diagnostics.Stopwatch.StartNew()
+    let ppm =
+        Camera.create 100 50 (Math.PI/3.)
         |> Camera.withTransfom (Transformation.viewTransform (Point.create 0. 1.5 -5.) (Point.create 0. 1. 0.) (Vector.create 0. 1. 0.))
         |> Camera.render world
         |> Canvas.toPPM

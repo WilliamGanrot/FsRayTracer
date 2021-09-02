@@ -23,7 +23,7 @@ module Domain =
         | Cube
 
     type Object =
-        { transform: Matrix; material: Material; shape: Shape; id: int}
+        { transform: Matrix; transformInverse: Matrix; material: Material; shape: Shape; id: int}
 
         //compares object without id
          static member (.=.) (p, v : Object) =
@@ -36,7 +36,10 @@ module Object =
 
     let sphere() =
         let sphere = Sphere { radii = 1. }
-        { transform = Matrix.identityMatrix 4; material = Material.standard; shape = sphere; id = newRandom() }
+        { transform = Matrix.identityMatrix 4;
+          transformInverse = Matrix.identityMatrix 4 |> Matrix.inverse;
+          material = Material.standard;
+          shape = sphere; id = newRandom() }
 
     let glassSphere() =
         let sphere = Sphere { radii = 1. }
@@ -45,22 +48,34 @@ module Object =
             Material.standard
             |> Material.toGlass
 
-        { transform = Matrix.identityMatrix 4; material = m; shape = sphere; id = r.Next()}
+        { transform = Matrix.identityMatrix 4;
+          transformInverse = Matrix.identityMatrix 4 |> Matrix.inverse;
+          material = m;
+          shape = sphere;
+          id = r.Next()}
 
     let plane() =
-        { transform = Matrix.identityMatrix 4; material = Material.standard; shape = Plane; id = r.Next();}
+        { transform = Matrix.identityMatrix 4;
+          transformInverse = Matrix.identityMatrix 4 |> Matrix.inverse;
+          material = Material.standard;
+          shape = Plane;
+          id = r.Next();}
 
     let cube() =
-        { transform = Matrix.identityMatrix 4; material = Material.standard; shape = Cube; id = r.Next();}
+        { transform = Matrix.identityMatrix 4;
+          transformInverse= Matrix.identityMatrix 4 |> Matrix.inverse;
+          material = Material.standard;
+          shape = Cube;
+          id = r.Next(); }
 
     let transform t object =
         let t = Transformation.applyToMatrix t object.transform
-        {object with transform = t}
+        { object with transform = t; transformInverse = t |> Matrix.inverse }
 
     let normal point object =
 
         let objectPoint =
-            (Matrix.inverse object.transform)
+            object.transformInverse
             |> Matrix.multiplyPoint point
 
         let objectNormal =
@@ -81,8 +96,7 @@ module Object =
                 | _                                                         -> Vector.create 0. 0. point.Z
 
         let worldNormal =
-            object.transform
-            |> Matrix.inverse
+            object.transformInverse
             |> Matrix.Transpose
             |> Matrix.multiplyVector objectNormal
         

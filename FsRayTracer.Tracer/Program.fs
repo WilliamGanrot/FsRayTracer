@@ -502,7 +502,7 @@ let main argv =
 
     let stopWatch = System.Diagnostics.Stopwatch.StartNew()
     let ppm =
-        Camera.create 100 50 (Math.PI/3.)
+        Camera.create 500 250 (Math.PI/3.)
         |> Camera.withTransfom (Transformation.viewTransform (Point.create 0. 1.5 -5.) (Point.create 0. 1. 0.) (Vector.create 0. 1. 0.))
         |> Camera.render world
         |> Canvas.toPPM

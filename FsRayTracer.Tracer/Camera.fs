@@ -18,6 +18,7 @@ module Domain =
           vsize: int;
           fov: float;
           transform: Matrix;
+          transformInverse: Matrix;
           pixelSize: float;
           halfWidth: float;
           halfHeight: float }
@@ -38,6 +39,7 @@ module Camera =
           vsize = vsize;
           fov = fov;
           transform = Matrix.identityMatrix 4;
+          transformInverse = Matrix.identityMatrix 4 |> Matrix.inverse;
           halfWidth = halfwidth;
           halfHeight = halfheight;
           pixelSize = (halfwidth * 2.) / (float hsize)}
@@ -50,20 +52,18 @@ module Camera =
         let wolrdY = (c.halfHeight - yoffset)
 
         let pixel =
-            c.transform
-            |> Matrix.inverse
+            c.transformInverse
             |> Matrix.multiplyPoint (Point.create wolrdX wolrdY -1.)
 
         let origin =
-            c.transform
-            |> Matrix.inverse
+            c.transformInverse
             |> Matrix.multiplyPoint (Point.create 0. 0. 0.)
 
         let direction = Vector.normalize (pixel - origin)
         Ray.create origin direction
 
     let withTransfom t c =
-        {c with transform = t}
+        { c with transform = t; transformInverse = t |> Matrix.inverse }
 
     let pixels camera =
         [ for y in 0..camera.vsize - 1 do

@@ -32,7 +32,7 @@ module Ray =
     let intersect (object:Object) r =
 
         let ray =
-            Matrix.inverse object.transform
+            object.transformInverse
             |> Matrix
             |> transform r
 

@@ -1,6 +1,6 @@
 namespace RayTracer.Vector
 open RayTracer.Helpers
-open RayTracer.Helpers
+open System
 
     [<AutoOpen>]
     module Domain =
@@ -55,13 +55,15 @@ open RayTracer.Helpers
 
         let divideByscalar (v:Vector) = v / 3.5
 
-        let magnitude (v:Vector) : float = sqrt (v.X * v.X + v.Y * v.Y + v.Z * v.Z)
+        let magnitude (v:Vector) : float = Math.Sqrt(v.X * v.X + v.Y * v.Y + v.Z * v.Z)
 
         let normalize (v1:Vector) : Vector =
-            { X = v1.X / magnitude v1
-              Y = v1.Y / magnitude v1
-              Z = v1.Z / magnitude v1
-              W = v1.W / magnitude v1 }
+            let mag = magnitude v1
+
+            { X = v1.X /. mag
+              Y = v1.Y /. mag
+              Z = v1.Z /. mag
+              W = v1.W /. mag }
 
         let cross (a:Vector) (b:Vector) : Vector =
             create ((a.Y * b.Z) - (a.Z * b.Y)) ((a.Z * b.X) - (a.X * b.Z)) ((a.X * b.Y) - (a.Y * b.X))

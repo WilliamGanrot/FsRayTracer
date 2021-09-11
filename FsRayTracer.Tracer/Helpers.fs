@@ -4,6 +4,9 @@ open RayTracer.Constnats
 [<AutoOpen>]
 module Helpers =
 
+    let r = System.Random() 
+    let newRandom() = r.Next()
+
     let lines (s:string) = s.Split "\n"
 
     let (|IsEven|_|) n =
@@ -16,8 +19,17 @@ module Helpers =
         | h::t -> last t
         | _ -> failwith "not found"
 
+[<AutoOpen>]
 module FloatHelper =
     let equal a b = abs(a - b) < epsilon
+
+    let (/.) (x:float) (s:float) =
+
+        match (x/s) with
+        | f when System.Double.IsNaN(f) -> 0.
+        | f -> f
+
+
 
 
 [<AutoOpen>]

@@ -463,46 +463,72 @@ let main argv =
     let p =
         Object.plane()
         |> Object.setMaterial (
-            Material.standard |> Material.withColor (Color.create 0.1 0.4 0.7)
+            Material.standard
+            |> Material.withPattern ( Pattern.checkers (Color.white) (Color.black) )
+            |> Material.withReflectivity 0.5 )
 
-            //|> Material.withPattern (
-            //    Pattern.rings (Color.white) (Color.black))
-            //|> Material.withReflectivity 0.5
-            )
+    let cyl =
+        { Object.cone() with shape = Cone(0., 1., true) }
+        |> Object.setMaterial(
+            Material.standard
+            |> Material.withColor (Color.create 0.4 0.8 0.2)
+            |> Material.superShiny
+            |> Material.withDiffuse 0.7
+            |> Material.withSpecular 1.
+            |> Material.withShininess 300.
+            |> Material.withReflectivity 0.3
+            |> Material.WithrefractiveIndex 1.5)
+        |> Object.transform (Translation(2.4, 1.5, 0.))
+        |> Object.transform (Rotation(Z,(Math.PI/2.)))
+        //|> Object.transform (Scaling(0.5, 0.5, 0.5))
 
-    let middle =
-        Object.cube()
-        |> Object.setMaterial(Material.standard |> Material.withShininess 1. |> Material.withColor Color.red)
-        |> Object.transform (Translation(-0.8, 0.5, 0.))
-        |> Object.transform (Scaling(0.5, 0.5, 0.5))
-        |> Object.transform (Rotation(Y,(Math.PI/6.)))
+
+    
+    let cone =
+        { Object.cone() with shape = Cylinder(0., 1., true) }
+        |> Object.setMaterial (
+            Material.standard
+            |> Material.withColor (Color.create 0.5 0.4 0.7)
+            |> Material.superShiny
+            //|> Material.withDiffuse 0.7
+            |> Material.withReflectivity 0.4 )
+        |> Object.transform (Translation(-1.2, 1.5, 0.))
+        |> Object.transform (Rotation(Z,-(Math.PI/2.)))
+        |> Object.transform (Scaling(0.5, 2.5, 1.))
+            
+        //|> Object.transform (Translation(2., 0.3, 0.5))
+        //|> Object.transform (Rotation(Y,-(Math.PI/4.5)))
+        //|> Object.transform (Scaling(2., 0.3, 0.5))
+  
+    let sphere =
+        Object.sphere()
+        |> Object.transform (Translation(0., 0.8, 2.5))
+        |> Object.transform (Scaling(0.8, 0.8, 0.8))
         
-
-    //let glass =
-    //    Object.cube()
-    //    |> Object.transform (Translation(-0.75, 0.75, 0.))
-    //    |> Object.transform (Scaling(0.75, 0.75, 0.75))
-    //    |> Object.setMaterial(
-    //        Material.standard
-    //        |> Material.withColor (Color.create 0. 0. 0.)
-    //        |> Material.withDiffuse 0.
-    //        |> Material.withSpecular 0.8
-    //        |> Material.withReflectivity 1.
-    //        |> Material.withTransparency 1.
-    //        |> Material.WithrefractiveIndex 1.5
-    //        )
+        
+        |> Object.setMaterial(
+            Material.standard
+            |> Material.withDiffuse 0.7
+            |> Material.withSpecular 1.
+            |> Material.withShininess 300.
+            |> Material.withReflectivity 0.9
+            |> Material.superShiny
+            |> Material.withColor (Color.black))
+            
 
     let world =
         World.empty
         |> World.addObject p
-        |> World.addObject middle
+        |> World.addObject cone
+        |> World.addObject cyl
+        //|> World.addObject sphere
         //|> World.addObject glass
         |> World.withLight (
             Light.create (Color.create 1. 1. 1.) (Point.create -10. 10. -10.))
 
     let stopWatch = System.Diagnostics.Stopwatch.StartNew()
     let ppm =
-        Camera.create 500 250 (Math.PI/3.)
+        Camera.create 400 200 (Math.PI/3.)
         |> Camera.withTransfom (Transformation.viewTransform (Point.create 0. 1.5 -5.) (Point.create 0. 1. 0.) (Vector.create 0. 1. 0.))
         |> Camera.render world
         |> Canvas.toPPM

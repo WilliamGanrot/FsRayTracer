@@ -10,6 +10,10 @@ open RayTracer.Transformation
 open RayTracer.Matrix
 open RayTracer.Constnats
 open RayTracer.Object
+open RayTracer.Cone
+open RayTracer.Cylinder
+open RayTracer.Cube
+open RayTracer.Helpers
 
 [<AutoOpen>]
 module Domain =
@@ -30,7 +34,7 @@ module Ray =
         create o d
 
     let intersect (object:Object) r =
-
+        
         let ray =
             object.transformInverse
             |> Matrix
@@ -78,6 +82,58 @@ module Ray =
                 let i2 = Intersection.create object tmax
             
                 [i1; i2]
+        | Cylinder (min, max, _) ->
+            let a = (ray.direction.X * ray.direction.X) + (ray.direction.Z * ray.direction.Z)
+
+            match FloatHelper.equal 0. a with
+            | true -> Cylinder.intersectCaps object ray.direction ray.origin []
+            | false ->
+
+                let b = (2. * ray.origin.X * ray.direction.X) + (2. * ray.origin.Z * ray.direction.Z)
+                let c = (ray.origin.X * ray.origin.X) + (ray.origin.Z * ray.origin.Z) - 1.
+                let disc = (b * b) - (4. * a * c)
+
+                let t0 = ((-b) - Math.Pow(disc, 0.5)) / (2. * a)
+                let t1 = ((-b) + Math.Pow(disc, 0.5)) / (2. * a)
+
+                let (t0', t1') = if t0 > t1 then (t1, t0) else (t0, t1)
+
+                let y0 = ray.origin.Y + t0' * ray.direction.Y
+                let xs = if min < y0 && y0 < max then [Intersection.create object t0'] else []
+
+                let y1 = ray.origin.Y + t1' * ray.direction.Y
+                let xs' = if min < y1 && y1 < max then xs @ [Intersection.create object t1'] else xs
+
+                Cylinder.intersectCaps object ray.direction ray.origin xs'
+        | Cone (min, max, _) ->
+
+            let a = Math.Pow(ray.direction.X, 2.) - Math.Pow(ray.direction.Y, 2.) + Math.Pow(ray.direction.Z, 2.)
+            let b = (2. * ray.origin.X * ray.direction.X) - (2. * ray.origin.Y * ray.direction.Y) + (2. * ray.origin.Z * ray.direction.Z) 
+            let c = (ray.origin.X * ray.origin.X) - (ray.origin.Y * ray.origin.Y) + (ray.origin.Z * ray.origin.Z)
+
+            match (FloatHelper.equal a 0.), (FloatHelper.equal b 0.) with
+            | true, true-> Cone.intersectCaps object ray.direction ray.origin []
+            | true, false ->
+                let t = -(c /. (2.*b))
+                Cone.intersectCaps object ray.direction ray.origin [Intersection.create object t]
+            | false, _ ->
+                let disc = (b * b) - (4. * a * c)
+                if disc < 0. then
+                    []
+                else
+
+                    let t0 = (-b - Math.Sqrt(disc)) / (2. * a)
+                    let t1 = (-b + Math.Sqrt(disc)) / (2. * a)
+
+                    let (t0', t1') = if t0 > t1 then (t1, t0) else (t0, t1)
+
+                    let y0 = ray.origin.Y + t0' * ray.direction.Y
+                    let xs = if min < y0 && y0 < max then [Intersection.create object t0'] else []
+
+                    let y1 = ray.origin.Y + t1' * ray.direction.Y
+                    let xs' = if min < y1 && y1 < max then xs @ [Intersection.create object t1'] else xs
+
+                    Cone.intersectCaps object ray.direction ray.origin xs'
             
                 
                 

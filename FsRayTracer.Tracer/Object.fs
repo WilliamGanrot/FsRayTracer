@@ -16,11 +16,13 @@ open RayTracer.Constnats
 [<AutoOpen>]
 module Domain =
     type Sphere = { radii: float; }
-        
+
     type Shape =
         | Sphere of Sphere
         | Plane
         | Cube
+        | Cylinder of minimum: float * maximum: float * closed: bool
+        | Cone of minimum: float * maximum: float * closed: bool
 
     type Object =
         { transform: Matrix; transformInverse: Matrix; material: Material; shape: Shape; id: int}
@@ -31,8 +33,7 @@ module Domain =
         
 module Object =
 
-    let r = System.Random() 
-    let newRandom() = r.Next()
+
 
     let sphere() =
         let sphere = Sphere { radii = 1. }
@@ -52,21 +53,35 @@ module Object =
           transformInverse = Matrix.identityMatrix 4 |> Matrix.inverse;
           material = m;
           shape = sphere;
-          id = r.Next()}
+          id = newRandom()}
 
     let plane() =
         { transform = Matrix.identityMatrix 4;
           transformInverse = Matrix.identityMatrix 4 |> Matrix.inverse;
           material = Material.standard;
           shape = Plane;
-          id = r.Next();}
+          id = newRandom();}
 
     let cube() =
         { transform = Matrix.identityMatrix 4;
           transformInverse= Matrix.identityMatrix 4 |> Matrix.inverse;
           material = Material.standard;
           shape = Cube;
-          id = r.Next(); }
+          id = newRandom(); }
+
+    let cylinder() =
+        { transform = Matrix.identityMatrix 4;
+          transformInverse= Matrix.identityMatrix 4 |> Matrix.inverse;
+          material = Material.standard;
+          shape = Cylinder(-infinity, infinity, false);
+          id = newRandom(); }
+
+    let cone() =
+        { transform = Matrix.identityMatrix 4;
+          transformInverse= Matrix.identityMatrix 4 |> Matrix.inverse;
+          material = Material.standard;
+          shape = Cone(-infinity, infinity, false);
+          id = newRandom(); }
 
     let transform t object =
         let t = Transformation.applyToMatrix t object.transform
@@ -86,21 +101,38 @@ module Object =
                 Vector.create 0. 1. 0.
             | Cube ->
                 let maxc =
-                    [point.X; point.Y; point.Z]
+                    [objectPoint.X; objectPoint.Y; objectPoint.Z]
                     |> List.map (fun v -> Math.Abs(v:float))
                     |> List.max
 
                 match maxc with
-                | _ when (FloatHelper.equal maxc (Math.Abs(point.X:float))) -> Vector.create point.X 0. 0.
-                | _ when (FloatHelper.equal maxc (Math.Abs(point.Y:float))) -> Vector.create 0. point.Y 0.
-                | _                                                         -> Vector.create 0. 0. point.Z
+                | _ when (FloatHelper.equal maxc (Math.Abs(objectPoint.X:float))) -> Vector.create objectPoint.X 0. 0.
+                | _ when (FloatHelper.equal maxc (Math.Abs(objectPoint.Y:float))) -> Vector.create 0. objectPoint.Y 0.
+                | _                                                         -> Vector.create 0. 0. objectPoint.Z
+            | Cylinder (min, max, _) ->
+                let dist = objectPoint.X * objectPoint.X + objectPoint.Z * objectPoint.Z
+
+                match dist < 1. with
+                | true when objectPoint.Y >= max - epsilon -> Vector.create 0. 1. 0.
+                | true when objectPoint.Y <= min + epsilon -> Vector.create 0. -1. 0.
+                | _ -> Vector.create objectPoint.X 0. objectPoint.Z
+            | Cone (min, max, _) ->
+                let dist = objectPoint.X * objectPoint.X + objectPoint.Z * objectPoint.Z
+
+                match dist < 1. with
+                | true when objectPoint.Y >= max - epsilon -> Vector.create 0. 1. 0.
+                | true when objectPoint.Y <= min + epsilon -> Vector.create 0. -1. 0.
+                | _ ->
+                    let y = Math.Sqrt(objectPoint.X * objectPoint.X + objectPoint.Z * objectPoint.Z)
+                    let y' = if objectPoint.Y > 0. then -y else y
+                    Vector.create objectPoint.X y' objectPoint.Z
 
         let worldNormal =
             object.transformInverse
             |> Matrix.Transpose
             |> Matrix.multiplyVector objectNormal
         
-        Vector.normalize {worldNormal with W = 0.}
+        {worldNormal with W = 0.} |> Vector.normalize
 
     let setMaterial m object =
         {object with material = m}
@@ -149,20 +181,3 @@ module Object =
                 ambient + diffuse + (light.intensity |> Color.mulitplyByScalar (material.specular * factor))
 
 
-module Cube =
-    let checkAxis origin direction =
-        let tMinNumerator = (-1.) - origin
-        let tMaxNumerator = 1. - origin
-
-        let tMin, tMax =
-            match Math.Abs(direction:float) >= epsilon with
-            | true ->
-                let tMin = tMinNumerator / direction
-                let tMax = tMaxNumerator / direction
-                (tMin, tMax)
-            | false ->
-                let tMin = tMinNumerator * infinity
-                let tMax = tMaxNumerator * infinity
-                (tMin, tMax)
-
-        if tMin > tMax then (tMax, tMin) else (tMin, tMax)

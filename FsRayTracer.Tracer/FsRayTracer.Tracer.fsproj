@@ -6,11 +6,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+
+      
+
       
       
+
+      
+
       
       <Compile Include="Constnats.fs" />
       <Compile Include="Helpers.fs" />
+
+      <Compile Include="RayDomain.fs" />
+      <Compile Include="ObjectDomain.fs" />
+      <Compile Include="RenderingDomain.fs" />
+
+      <Compile Include="Domain.fs" />
       <Compile Include="Color.fs" />
       
 
@@ -34,10 +46,11 @@
       <Compile Include="Object.fs" />
       
     <Compile Include="Intersection.fs" />
-
+      <Compile Include="Plane.fs" />
       <Compile Include="Cube.fs" />
       <Compile Include="Cone.fs" />
       <Compile Include="Cylinder.fs" />
+      <Compile Include="Sphere.fs" />
       
       <Compile Include="Ray.fs" />
       

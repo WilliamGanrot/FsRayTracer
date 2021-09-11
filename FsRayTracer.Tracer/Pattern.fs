@@ -4,19 +4,10 @@ open RayTracer.Color
 open RayTracer.Point
 open RayTracer.Matrix
 open RayTracer.Transformation
+open RayTracer.ObjectDomain
+open RayTracer.RayDomain
 
 open System
-
-[<AutoOpen>]
-module Domain =
-
-    type PatternType =
-        | Stripes
-        | Gradient
-        | Rings
-        | Checkers
-
-    type Pattern = { transform: Matrix; patternType: PatternType; a: Color; b:Color; }
 
 module Pattern =
 

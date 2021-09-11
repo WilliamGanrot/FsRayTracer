@@ -7,30 +7,15 @@ open RayTracer.Intersection
 open RayTracer.Object
 open RayTracer.Constnats
 open RayTracer.Helpers
-open RayTracer.Object
+open RayTracer.ObjectDomain
+open RayTracer.RayDomain
 open System
-
-[<AutoOpen>]
-module Domain =
-
-    type Computation =
-        { t: float;
-          object: RayTracer.Object.Domain.Object;
-          point:Point;
-          overPoint: Point;
-          eyev: Vector;
-          inside: bool;
-          normalv: Vector;
-          reflectv: Vector;
-          n1: float;
-          n2: float;
-          underPoint: Point}
 
 module Computation =
 
     let nValues intersection ray (xs:Intersection list) =
 
-        let removeOrAppendToContainer (intersection: Intersection) (containers: RayTracer.Object.Domain.Object list) =
+        let removeOrAppendToContainer (intersection: Intersection) (containers: RayTracer.ObjectDomain.ObjectDomain.Object list) =
             let objectIsInContainers =
                 containers
                 |> List.map (fun x -> x.id)

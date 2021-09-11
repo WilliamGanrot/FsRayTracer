@@ -9,6 +9,7 @@ open RayTracer.Intersection
 open RayTracer.Helpers
 open RayTracer.Transformation
 open RayTracer.Color
+open RayTracer.ObjectDomain
 open RayTracer.Pattern
 
 open Xunit

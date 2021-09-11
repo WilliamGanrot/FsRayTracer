@@ -1,17 +1,14 @@
 namespace Raytracer.Canvas
 open RayTracer.Color
+open RayTracer.Domain
+open RayTracer.RenderingDomain
 
-[<AutoOpen>]
-module Domain =
 
-    type ColorCordinat = {X: int; Y:int; Color:Color;}
-
-    type Canvas = {Width: int; Height: int; Pixels: Color [,] }
 
 
 module Canvas =
 
-    let makeCanvas w h = {Width = w; Height = h; Pixels = Array2D.create h w Color.black }
+    let makeCanvas w h = {Width = w; Height = h; Pixels = Array2D.create h w Color.black}
     let getPixel x y canvas = Array2D.get canvas.Pixels y x
     let setPixel x y color canvas = Array2D.set canvas.Pixels y x color
     let toPPM canvas =

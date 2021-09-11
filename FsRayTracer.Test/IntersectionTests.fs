@@ -9,6 +9,7 @@ open RayTracer.Matrix
 open RayTracer.Intersection
 open RayTracer.Transformation
 open RayTracer.Helpers
+open RayTracer.ObjectDomain
 open RayTracer.Computation
 
 open Xunit

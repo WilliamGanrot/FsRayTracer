@@ -7,16 +7,15 @@ open RayTracer.Ray
 open RayTracer.Color
 open RayTracer.Material
 open RayTracer.Transformation
-open RayTracer.Computation
+open RayTracer.Domain
 open RayTracer.Intersection
 open RayTracer.Vector
 open RayTracer.Helpers
 open RayTracer.Constnats
+open RayTracer.Computation
+open RayTracer.RenderingDomain
+open RayTracer.ObjectDomain
 open System
-
-[<AutoOpen>]
-module Domain =
-    type World = { light: Light; objects: RayTracer.Object.Domain.Object list }
 
 module World =
 

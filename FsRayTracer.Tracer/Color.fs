@@ -1,36 +1,9 @@
 
 namespace RayTracer.Color
 open RayTracer.Helpers
+open RayTracer.ObjectDomain
 open System
 
-[<AutoOpen>]
-module Domain =
-
-    type Color =
-        {Red:float; Green:float; Blue:float}
-
-        static member (+) (c1, c2) =
-            { Red = c1.Red + c2.Red
-              Green = c1.Green + c2.Green
-              Blue = c1.Blue + c2.Blue }
-
-        static member (-) (c1, c2) =
-            { Red = c1.Red - c2.Red
-              Green = c1.Green - c2.Green
-              Blue = c1.Blue - c2.Blue }
-
-        static member (*) (c1, c2) =
-            { Red = c1.Red * c2.Red
-              Green = c1.Green * c2.Green
-              Blue = c1.Blue * c2.Blue }
-
-        static member (*) ((c:Color), (scalar:int)) =
-            { Red = c.Red * (float)scalar
-              Green = c.Green * (float)scalar
-              Blue = c.Blue * (float)scalar }
-
-        static member (.=) (c1, c2 : Color) =
-                FloatHelper.equal c1.Red c2.Red && FloatHelper.equal c1.Green c2.Green && FloatHelper.equal c1.Blue c2.Blue
 
 module Color =
 

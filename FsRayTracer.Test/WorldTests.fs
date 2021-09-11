@@ -11,24 +11,18 @@ open RayTracer.World
 open RayTracer.Object
 open RayTracer.Transformation
 open RayTracer.Ray
+open RayTracer.Computation
+open RayTracer.ObjectDomain
 
 open Xunit
 open RayTracer.Intersection
-open RayTracer.Computation
-
-//[<Fact>]
-//let ``creating a world``  () =
-//    let w = World.empty
-//    w.objects.Length = 0 |> Assert.True
-//    w.light = None |> Assert.True
-
 
 [<Fact>]
 let ``the default world``  () =
 
     let w = World.standard
-
-    let light = Light.create (Color.create 1. 1. 1.) (Point.create -10. 10. -10.)
+    let p = (Point.create -10. 10. -10.)
+    let light = Light.create (Color.create 1. 1. 1.) p
 
     let material =
         Material.standard

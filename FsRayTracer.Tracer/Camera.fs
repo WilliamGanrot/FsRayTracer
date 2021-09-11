@@ -7,21 +7,8 @@ open System
 open RayTracer.Point
 open RayTracer.Vector
 open RayTracer.World
+open RayTracer.RenderingDomain
 open Raytracer.Canvas
-
-
-[<AutoOpen>]
-module Domain =
-
-    type Camera =
-        { hsize: int;
-          vsize: int;
-          fov: float;
-          transform: Matrix;
-          transformInverse: Matrix;
-          pixelSize: float;
-          halfWidth: float;
-          halfHeight: float }
 
 module Camera =
 

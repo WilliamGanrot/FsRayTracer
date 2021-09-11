@@ -3,30 +3,9 @@ namespace RayTracer.Matrix
 open RayTracer.Vector
 open RayTracer.Point
 open RayTracer.Helpers
+open RayTracer.ObjectDomain
+open RayTracer.RayDomain
 
-[<AutoOpen>]
-module Domain =
-
-   
-    type Matrix =
-        {dimensions: int; entries: float [,]}
-
-        static member (*) (a: Matrix, b: Matrix) =
-            let entries = 
-                [for rowindex in 0..a.dimensions - 1 do
-                    [for colindex in 0..b.dimensions - 1 do
-                        let row = a.entries.[rowindex,*]
-                        let col = b.entries.[*,colindex]
-                        (Array.map2(fun x y -> x * y) row col) |> Array.sum ]]
-
-            {a with entries = array2D entries}
-
-        static member (.=) (a: Matrix, b: Matrix) =
-
-            let aList = a.entries |> Seq.cast<float> |> Seq.toList
-            let bList = b.entries |> Seq.cast<float> |> Seq.toList
-
-            a.dimensions = b.dimensions && Seq.forall2(fun x y -> FloatHelper.equal x y) aList bList
 
 
 module Matrix =

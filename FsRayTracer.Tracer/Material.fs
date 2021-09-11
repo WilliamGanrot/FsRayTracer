@@ -6,30 +6,8 @@ open RayTracer.Point
 open RayTracer.Vector
 open RayTracer.Helpers
 open RayTracer.Pattern
+open RayTracer.ObjectDomain
 open System
-
-[<AutoOpen>]
-module Domain =
-    type Material =
-        { color: Color;
-          ambient:float;
-          diffuse:float;
-          specular: float;
-          shininess: float;
-          pattern: Pattern Option;
-          reflectivity: float;
-          transparency: float;
-          refractiveIndex: float; }
-
-          static member (.=) (m : Material, m2: Material) =
-            m.color .= m2.color &&
-            FloatHelper.equal m.ambient m2.ambient &&
-            FloatHelper.equal m.diffuse m2.diffuse &&
-            FloatHelper.equal m.specular m2.shininess &&
-            FloatHelper.equal m.reflectivity m2.reflectivity &&
-            FloatHelper.equal m.transparency m2.transparency &&
-            FloatHelper.equal m.refractiveIndex m2.refractiveIndex &&
-            m.pattern = m2.pattern
 
 module Material =
 

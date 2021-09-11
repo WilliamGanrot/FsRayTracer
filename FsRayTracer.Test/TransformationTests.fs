@@ -6,6 +6,7 @@ open RayTracer.Vector
 open RayTracer.Constnats
 open RayTracer.Transformation
 open RayTracer.Matrix
+open RayTracer.ObjectDomain
 
 open Xunit
 open RayTracer.Ray

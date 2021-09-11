@@ -3,6 +3,7 @@ module CanvasTests
 open System
 open Raytracer.Canvas
 open RayTracer.Helpers
+open RayTracer.ObjectDomain
 
 
 open Xunit

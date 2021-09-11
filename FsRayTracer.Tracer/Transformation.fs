@@ -4,23 +4,9 @@ open RayTracer.Matrix
 open System
 open RayTracer.Point
 open RayTracer.Vector
+open RayTracer.ObjectDomain
+open RayTracer.RayDomain
 
-[<AutoOpen>]
-module Domain =
-    type Axis =
-        | X
-        | Y
-        | Z
-
-    type Transformation =
-        | Translation of x:float * y:float * z:float
-        | Scaling of x:float * y:float * z:float
-        | Rotation of axis:Axis * degrees:float
-        | Shering of xy:float * xz:float * yx:float * yz:float * zx:float * zy:float
-        | TransformationGroup of transformations:Transformation list
-        | Matrix of Matrix
-        
-     
 
 module Transformation =
 

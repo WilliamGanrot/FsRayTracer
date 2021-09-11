@@ -3,10 +3,7 @@ namespace RayTracer.Intersection
 open RayTracer.Object
 open RayTracer.Vector
 open RayTracer.Point
-
-[<AutoOpen>]
-module Domain =
-    type Intersection = { t: float; object: Object }
+open RayTracer.ObjectDomain
 
 
 module Intersection =

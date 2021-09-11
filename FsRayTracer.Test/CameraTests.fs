@@ -8,6 +8,7 @@ open RayTracer.Transformation
 open RayTracer.Matrix
 open RayTracer.World
 open RayTracer.Camera
+open RayTracer.ObjectDomain
 
 open Xunit
 open RayTracer.Ray

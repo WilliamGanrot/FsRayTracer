@@ -7,7 +7,7 @@ open RayTracer.Ray
 open RayTracer.Matrix
 open RayTracer.Intersection
 open RayTracer.Helpers
-open RayTracer.Transformation
+open RayTracer.ObjectDomain
 
 
 

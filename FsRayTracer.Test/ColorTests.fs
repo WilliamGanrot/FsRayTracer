@@ -5,6 +5,7 @@ open RayTracer.Point
 open RayTracer.Vector
 open RayTracer.Constnats
 open RayTracer.Color
+open RayTracer.ObjectDomain
 
 open Xunit
 open RayTracer.Helpers

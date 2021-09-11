@@ -10,7 +10,9 @@ open RayTracer.Helpers
 open RayTracer.Transformation
 open RayTracer.Material
 open RayTracer.Light
-open RayTracer.Color
+open RayTracer.Domain
+open RayTracer.ObjectDomain
+open RayTracer.Sphere
 
 open Xunit
 open RayTracer.Object
@@ -23,7 +25,7 @@ let ``a spheres deafult transformation`` () =
 
 [<Fact>]
 let ``changing a phere 's transformation`` () =
-    let s = Object.sphere()
+    let s = Sphere.create()
     let t = Translation(2., 3., 4.)
 
     let s2 = Object.transform t s
@@ -147,7 +149,7 @@ let ``A ray intersects a cube`` (pointX, pointY, pointZ, vectorX, vectorY, vecot
 [<InlineData(2., 2., 0., -1., 0., 0.)>]
 
 let ``A ray misses a cube`` (pointX, pointY, pointZ, vectorX, vectorY, vecotrZ) =
-    let c = Object.cube()
+    let c = Cube.create
     let r = Ray.create (Point.create pointX pointY pointZ) (Vector.create vectorX vectorY vecotrZ)
     let xs = Ray.intersect c r
 

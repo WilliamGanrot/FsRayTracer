@@ -11,83 +11,33 @@ open RayTracer.Color
 open RayTracer.Helpers
 open RayTracer.Light
 open RayTracer.Constnats
+open RayTracer.ObjectDomain
+open RayTracer.RenderingDomain
 
 
-[<AutoOpen>]
-module Domain =
-    type Sphere = { radii: float; }
-
-    type Shape =
-        | Sphere of Sphere
-        | Plane
-        | Cube
-        | Cylinder of minimum: float * maximum: float * closed: bool
-        | Cone of minimum: float * maximum: float * closed: bool
-
-    type Object =
-        { transform: Matrix; transformInverse: Matrix; material: Material; shape: Shape; id: int}
-
-        //compares object without id
-         static member (.=.) (p, v : Object) =
-            {p with id = 0} = {v with id = 0}
-        
 module Object =
 
 
 
-    let sphere() =
-        let sphere = Sphere { radii = 1. }
-        { transform = Matrix.identityMatrix 4;
-          transformInverse = Matrix.identityMatrix 4 |> Matrix.inverse;
-          material = Material.standard;
-          shape = sphere; id = newRandom() }
 
-    let glassSphere() =
-        let sphere = Sphere { radii = 1. }
+    //let glassSphere() =
+    //    let sphere = Sphere
 
-        let m =
-            Material.standard
-            |> Material.toGlass
+    //    let m =
+    //        Material.standard
+    //        |> Material.toGlass
 
-        { transform = Matrix.identityMatrix 4;
-          transformInverse = Matrix.identityMatrix 4 |> Matrix.inverse;
-          material = m;
-          shape = sphere;
-          id = newRandom()}
+    //    { transform = Matrix.identityMatrix 4;
+    //      transformInverse = Matrix.identityMatrix 4 |> Matrix.inverse;
+    //      material = m;
+    //      shape = sphere;
+    //      id = newRandom()}
 
-    let plane() =
-        { transform = Matrix.identityMatrix 4;
-          transformInverse = Matrix.identityMatrix 4 |> Matrix.inverse;
-          material = Material.standard;
-          shape = Plane;
-          id = newRandom();}
-
-    let cube() =
-        { transform = Matrix.identityMatrix 4;
-          transformInverse= Matrix.identityMatrix 4 |> Matrix.inverse;
-          material = Material.standard;
-          shape = Cube;
-          id = newRandom(); }
-
-    let cylinder() =
-        { transform = Matrix.identityMatrix 4;
-          transformInverse= Matrix.identityMatrix 4 |> Matrix.inverse;
-          material = Material.standard;
-          shape = Cylinder(-infinity, infinity, false);
-          id = newRandom(); }
-
-    let cone() =
-        { transform = Matrix.identityMatrix 4;
-          transformInverse= Matrix.identityMatrix 4 |> Matrix.inverse;
-          material = Material.standard;
-          shape = Cone(-infinity, infinity, false);
-          id = newRandom(); }
-
-    let transform t object =
+    let transform t (object:Object) : Object =
         let t = Transformation.applyToMatrix t object.transform
         { object with transform = t; transformInverse = t |> Matrix.inverse }
 
-    let normal point object =
+    let normal point (object:Object) =
 
         let objectPoint =
             object.transformInverse
@@ -137,7 +87,7 @@ module Object =
     let setMaterial m object =
         {object with material = m}
 
-    let pattern (pattern:Pattern) object worldPoint =
+    let pattern (pattern:Pattern) (object:Object) worldPoint =
         let objectPoint =
             object.transform
             |> Matrix.inverse
@@ -150,7 +100,7 @@ module Object =
 
         Pattern.at patternPoint pattern
 
-    let lighting material light point eyevector normalv inShadow object =
+    let lighting material light point eyevector normalv inShadow (object:Object) =
 
         let color =
             match material.pattern with

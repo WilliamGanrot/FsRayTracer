@@ -10,6 +10,7 @@ open RayTracer.Helpers
 open RayTracer.Computation
 open RayTracer.Transformation
 open RayTracer.World
+open RayTracer.ObjectDomain
 
 open Xunit
 open RayTracer.Object

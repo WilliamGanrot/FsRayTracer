@@ -13,6 +13,7 @@ open RayTracer.Matrix
 open RayTracer.Transformation
 open RayTracer.Computation
 open RayTracer.Object
+open RayTracer.ObjectDomain
 
 open Xunit
 open RayTracer.Ray

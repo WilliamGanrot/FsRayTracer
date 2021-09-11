@@ -1,52 +1,14 @@
 namespace RayTracer.Vector
 open RayTracer.Helpers
+open RayTracer.RayDomain
 open System
 
-    [<AutoOpen>]
-    module Domain =
 
-        type Vector =
-            { X : float
-              Y : float
-              Z : float
-              W : float }
-
-            static member (+) (v1, v2) =
-                { X = v1.X + v2.X
-                  Y = v1.Y + v2.Y
-                  Z = v1.Z + v2.Z
-                  W = v1.W + v2.W }
-
-            static member (-) (v1, v2) =
-                { X = v1.X - v2.X
-                  Y = v1.Y - v2.Y
-                  Z = v1.Z - v2.Z
-                  W = v1.W - v2.W }
-
-            static member (*) ((v1:Vector), (value:float)) =
-                { X = v1.X * value
-                  Y = v1.Y * value
-                  Z = v1.Z * value
-                  W = v1.W * value }
-
-            static member (/) ((v1:Vector), (value:float)) =
-                { X = v1.X / value
-                  Y = v1.Y / value
-                  Z = v1.Z / value
-                  W = v1.W / value }
-
-            member this.Negate =
-                { X = -this.X
-                  Y = -this.Y
-                  Z = -this.Z
-                  W = -this.W }
-    
-            static member (.=) (p, v : Vector) = FloatHelper.equal p.X v.X && FloatHelper.equal p.Y v.Y && FloatHelper.equal p.Z v.Z && p.W = v.W
 
  
     module Vector =
 
-        let create x y z =
+        let create x y z : Vector =
             {X = x; Y = y; Z = z; W = 0.0}
 
         let multiblyByScalar (v:Vector) = v * 3.5
@@ -68,7 +30,7 @@ open System
         let cross (a:Vector) (b:Vector) : Vector =
             create ((a.Y * b.Z) - (a.Z * b.Y)) ((a.Z * b.X) - (a.X * b.Z)) ((a.X * b.Y) - (a.Y * b.X))
 
-        let dot a b =
+        let dot (a:Vector) (b:Vector) =
             (a.X * b.X) + (a.Y * b.Y) + (a.Z * b.Z) + (a.W * b.W)
 
         let reflect normal v = 

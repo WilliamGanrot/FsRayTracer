@@ -14,16 +14,8 @@ open RayTracer.Object
 open RayTracer.World
 open RayTracer.Camera
 open RayTracer.Pattern
+open RayTracer.ObjectDomain
 
-type Projectile = {
-    position:Point;
-    velocity:Vector;
-}
-
-type Enviorment = {
-    gravity:Vector;
-    wind:Vector;
-}
 
 [<EntryPoint>]
 let main argv =

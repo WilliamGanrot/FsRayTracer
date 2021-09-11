@@ -13,6 +13,8 @@ open RayTracer.Transformation
 open RayTracer.Ray
 open RayTracer.Computation
 open RayTracer.ObjectDomain
+open RayTracer.Plane
+open RayTracer.Sphere
 
 open Xunit
 open RayTracer.Intersection
@@ -31,11 +33,11 @@ let ``the default world``  () =
         |> Material.withSpecular 0.2
 
     let s1 =
-        Object.sphere()
+        Sphere.create()
         |> Object.setMaterial material
 
     let s2 =
-        Object.sphere()
+        Sphere.create()
         |> Object.transform (Scaling(0.5, 0.5, 0.5))
 
         
@@ -156,9 +158,9 @@ let ``there is no shadow when an object is behind the point`` () =
 [<Fact>]
 let ``shadeHit is given an intersection in shadow `` () =
 
-    let s1 = Object.sphere()
+    let s1 = Sphere.create()
     let s2 =
-        Object.sphere()
+        Sphere.create()
         |> Object.transform (Translation(0., 0., 10.))
 
     let w =
@@ -177,7 +179,7 @@ let ``shadeHit is given an intersection in shadow `` () =
 [<Fact>]
 let ``the reflect color for nonreflective material``() =
     let shape =
-        Object.plane()
+        Plane.create()
         |> Object.setMaterial {Material.standard with reflectivity = 0.5}
         |> Object.transform (Translation(0., -1., 0.))
 
@@ -196,7 +198,7 @@ let ``the reflect color for nonreflective material``() =
 [<Fact>]
 let ``the reflected color for a reflective material``() =
     let shape =
-        Object.plane()
+        Plane.create()
         |> Object.setMaterial {Material.standard with reflectivity = 0.5}
         |> Object.transform (Translation(0., -1., 0.))
 
@@ -216,7 +218,7 @@ let ``the reflected color for a reflective material``() =
 [<Fact>]
 let ``shadeHit with a reflective material``() =
     let shape =
-        Object.plane()
+        Plane.create()
         |> Object.setMaterial {Material.standard with reflectivity = 0.5}
         |> Object.transform (Translation(0., -1., 0.))
 
@@ -237,12 +239,12 @@ let ``shadeHit with a reflective material``() =
 let ``colorAt with mutually reflective surfaces``() =
 
     let lower =
-        Object.plane()
+        Plane.create()
         |> Object.setMaterial {Material.standard with reflectivity = 1.}
         |> Object.transform (Translation(0., -1., 0.))
 
     let upper =
-        Object.plane()
+        Plane.create()
         |> Object.setMaterial {Material.standard with reflectivity = 1.}
         |> Object.transform (Translation(0., 1., 0.))
 
@@ -267,7 +269,7 @@ let ``the reflected color at the maximum recursive depth``() =
 
 
     let shape =
-        Object.plane()
+        Plane.create()
         |> Object.setMaterial {Material.standard with reflectivity = 0.5}
         |> Object.transform (Translation(0., -1., 0.))
 
@@ -336,7 +338,7 @@ let ``shadehit with a transparent material``() =
     
 
     let floor =
-        Object.plane()
+        Plane.create()
         |> Object.transform (Translation(0., -1., 0.))
         |> Object.setMaterial(
             Material.standard
@@ -344,7 +346,7 @@ let ``shadehit with a transparent material``() =
             |> Material.WithrefractiveIndex 1.5)
 
     let ball =
-        Object.sphere()
+        Sphere.create()
         |> Object.setMaterial(
             Material.standard
             |> Material.withColor (Color.create 1. 0. 0.)

@@ -17,22 +17,6 @@ open RayTracer.RenderingDomain
 
 module Object =
 
-
-
-
-    //let glassSphere() =
-    //    let sphere = Sphere
-
-    //    let m =
-    //        Material.standard
-    //        |> Material.toGlass
-
-    //    { transform = Matrix.identityMatrix 4;
-    //      transformInverse = Matrix.identityMatrix 4 |> Matrix.inverse;
-    //      material = m;
-    //      shape = sphere;
-    //      id = newRandom()}
-
     let transform t (object:Object) : Object =
         let t = Transformation.applyToMatrix t object.transform
         { object with transform = t; transformInverse = t |> Matrix.inverse }
@@ -43,39 +27,7 @@ module Object =
             object.transformInverse
             |> Matrix.multiplyPoint point
 
-        let objectNormal =
-            match object.shape with
-            | Sphere _ ->
-                (objectPoint - (Point.create 0. 0. 0.))
-            | Plane ->
-                Vector.create 0. 1. 0.
-            | Cube ->
-                let maxc =
-                    [objectPoint.X; objectPoint.Y; objectPoint.Z]
-                    |> List.map (fun v -> Math.Abs(v:float))
-                    |> List.max
-
-                match maxc with
-                | _ when (FloatHelper.equal maxc (Math.Abs(objectPoint.X:float))) -> Vector.create objectPoint.X 0. 0.
-                | _ when (FloatHelper.equal maxc (Math.Abs(objectPoint.Y:float))) -> Vector.create 0. objectPoint.Y 0.
-                | _                                                         -> Vector.create 0. 0. objectPoint.Z
-            | Cylinder (min, max, _) ->
-                let dist = objectPoint.X * objectPoint.X + objectPoint.Z * objectPoint.Z
-
-                match dist < 1. with
-                | true when objectPoint.Y >= max - epsilon -> Vector.create 0. 1. 0.
-                | true when objectPoint.Y <= min + epsilon -> Vector.create 0. -1. 0.
-                | _ -> Vector.create objectPoint.X 0. objectPoint.Z
-            | Cone (min, max, _) ->
-                let dist = objectPoint.X * objectPoint.X + objectPoint.Z * objectPoint.Z
-
-                match dist < 1. with
-                | true when objectPoint.Y >= max - epsilon -> Vector.create 0. 1. 0.
-                | true when objectPoint.Y <= min + epsilon -> Vector.create 0. -1. 0.
-                | _ ->
-                    let y = Math.Sqrt(objectPoint.X * objectPoint.X + objectPoint.Z * objectPoint.Z)
-                    let y' = if objectPoint.Y > 0. then -y else y
-                    Vector.create objectPoint.X y' objectPoint.Z
+        let objectNormal = object.localNormalAt object.shape objectPoint
 
         let worldNormal =
             object.transformInverse

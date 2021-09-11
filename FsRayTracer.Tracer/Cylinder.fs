@@ -9,6 +9,7 @@ open RayTracer.Material
 open RayTracer.RayDomain
 open RayTracer.ObjectDomain
 open System
+open RayTracer.Constnats
 
 module Cylinder =
     let checkCap (direction:Vector) (origin:Point) t =
@@ -28,6 +29,7 @@ module Cylinder =
 
             let t' = (max - origin.Y) / direction.Y
             if checkCap direction origin t' then xs' @ [Intersection.create cyl t'] else xs'
+        | _ -> failwith "invalid shape, expected a cylinder"
 
     let localIntersect object ray =
         match object.shape with
@@ -56,10 +58,22 @@ module Cylinder =
                 intersectCaps object ray.direction ray.origin xs'
         | _ -> failwith "invalid shape"
 
-    let cylinder() =
+    let localNormalAt shape objectPoint =
+        match shape with
+        | Cylinder(min, max, _) ->
+            let dist = objectPoint.X * objectPoint.X + objectPoint.Z * objectPoint.Z
+
+            match dist < 1. with
+            | true when objectPoint.Y >= max - epsilon -> Vector.create 0. 1. 0.
+            | true when objectPoint.Y <= min + epsilon -> Vector.create 0. -1. 0.
+            | _ -> Vector.create objectPoint.X 0. objectPoint.Z
+        | _ -> failwith "invalid shape, expected cylinder"
+
+    let create() =
         { transform = Matrix.identityMatrix 4;
           transformInverse= Matrix.identityMatrix 4 |> Matrix.inverse;
           material = Material.standard;
           shape = Cylinder(-infinity, infinity, false);
           id = newRandom();
-          localIntersect = localIntersect; }
+          localIntersect = localIntersect;
+          localNormalAt = localNormalAt }

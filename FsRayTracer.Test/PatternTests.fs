@@ -11,6 +11,7 @@ open RayTracer.Transformation
 open RayTracer.Color
 open RayTracer.ObjectDomain
 open RayTracer.Pattern
+open RayTracer.Sphere
 
 open Xunit
 open RayTracer.Object
@@ -55,8 +56,8 @@ let ```lighting wiht a pattern applied``() =
     let eyev = Vector.create 0. 0. -1.
     let normalv = Vector.create 0. 0. -1.
     let light = Light.create (Color.create 1. 1. 1.) (Point.create 0. 0. -10.)
-    let c1 = Object.lighting m light (Point.create 0.9 0. 0.) eyev normalv false (Object.sphere())
-    let c2 = Object.lighting m light (Point.create 1.1 0. 0.) eyev normalv false (Object.sphere())
+    let c1 = Object.lighting m light (Point.create 0.9 0. 0.) eyev normalv false (Sphere.create())
+    let c2 = Object.lighting m light (Point.create 1.1 0. 0.) eyev normalv false (Sphere.create())
     c1 .= (Color.create 1. 1. 1.) |> Assert.True
     c2 .= (Color.create 0. 0. 0.) |> Assert.True
     
@@ -64,7 +65,7 @@ let ```lighting wiht a pattern applied``() =
 let ``stripes wih an object transformation``() =
 
     let o =
-        Object.sphere()
+        Sphere.create()
         |> Object.transform (Scaling(2., 2., 2.))
 
     let p = Pattern.stripes Color.white Color.black
@@ -75,7 +76,7 @@ let ``stripes wih an object transformation``() =
 [<Fact>]
 let ``stripes with a pattern transformation``() =
 
-    let o = Object.sphere()
+    let o = Sphere.create()
     let p =
         Pattern.stripes Color.white Color.black
         |> Pattern.transform (Scaling(2., 2., 2.))
@@ -87,7 +88,7 @@ let ``stripes with a pattern transformation``() =
 let ``stripes with a both an object and pattern transformation``() =
 
     let o =
-        Object.sphere()
+        Sphere.create()
         |> Object.transform (Scaling(2., 2., 2.))
 
     let p =

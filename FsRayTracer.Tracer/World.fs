@@ -7,7 +7,6 @@ open RayTracer.Ray
 open RayTracer.Color
 open RayTracer.Material
 open RayTracer.Transformation
-open RayTracer.Domain
 open RayTracer.Intersection
 open RayTracer.Vector
 open RayTracer.Helpers
@@ -15,6 +14,7 @@ open RayTracer.Constnats
 open RayTracer.Computation
 open RayTracer.RenderingDomain
 open RayTracer.ObjectDomain
+open RayTracer.Sphere
 open System
 
 module World =
@@ -37,21 +37,21 @@ module World =
             |> Material.withSpecular 0.2
 
         let s1 =
-            Object.sphere()
+            Sphere.create()
             |> Object.setMaterial material
 
         let s2 =
-            Object.sphere()
+            Sphere.create()
             |> Object.transform (Scaling(0.5, 0.5, 0.5))
 
         { light = light;
           objects = [s1;s2] }
 
-    let intersect (w:World) r  = 
+    let intersect (w:World) r = 
         w.objects
         |> List.map(fun x -> Ray.intersect x r)
         |> List.fold List.append []
-        |> List.sort
+        |> List.sortBy (fun x -> x.t)
 
     let isShadowed p w =
         let v = w.light.poistion - p

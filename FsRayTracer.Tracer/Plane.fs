@@ -7,6 +7,7 @@ open RayTracer.Constnats
 open RayTracer.Intersection
 open RayTracer.Matrix
 open RayTracer.Material
+open RayTracer.Vector
 
 
 
@@ -21,13 +22,17 @@ module Plane =
                 Intersection.create object t
             [i]
 
-    let create = 
+    let localNormalAt shape objectPoint =
+        Vector.create 0. 1. 0.
+
+    let create() = 
         { transform = Matrix.identityMatrix 4;
           transformInverse = Matrix.identityMatrix 4 |> Matrix.inverse;
           material = Material.standard;
           shape = Plane;
           id = newRandom();
-          localIntersect = localIntersect }
+          localIntersect = localIntersect;
+          localNormalAt = localNormalAt }
 
 
 

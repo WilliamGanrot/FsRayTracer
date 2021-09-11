@@ -7,6 +7,7 @@ open RayTracer.ObjectDomain
 
 
 module Intersection =
+
     let create (o:Object) (t:float) =
         { object = o; t = t }
 

@@ -8,6 +8,8 @@ open RayTracer.Matrix
 open RayTracer.Intersection
 open RayTracer.Helpers
 open RayTracer.ObjectDomain
+open RayTracer.Plane
+open RayTracer.Sphere
 
 
 
@@ -42,7 +44,7 @@ let ``a ray intersects a sphere at two points`` () =
 
     let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.)
 
-    let s = Object.sphere()
+    let s = Sphere.create()
     let xs = Ray.intersect s r
 
     xs.Length = 2 |> Assert.True
@@ -55,7 +57,7 @@ let ``a ray intersects a sphere at tangent`` () =
 
     let r = Ray.create (Point.create 0. 1. -5.) (Vector.create 0. 0. 1.)
 
-    let s = Object.sphere()
+    let s = Sphere.create()
     let xs = Ray.intersect s r
 
     xs.Length = 2 |> Assert.True
@@ -67,7 +69,7 @@ let ``a ray misses a sphere`` () =
 
     let r = Ray.create (Point.create 0. 2. -5.) (Vector.create 0. 0. 1.)
 
-    let s = Object.sphere()
+    let s = Sphere.create()
     let xs = Ray.intersect s r
 
     xs.Length = 0 |> Assert.True
@@ -77,7 +79,7 @@ let ``a ray originates inside a sphere`` () =
 
     let r = Ray.create (Point.create 0. 0. 0.) (Vector.create 0. 0. 1.)
 
-    let s = Object.sphere()
+    let s = Sphere.create()
     let xs = Ray.intersect s r
 
     xs.Length = 2 |> Assert.True
@@ -90,7 +92,7 @@ let ``a sphere is behind a ray`` () =
 
     let r = Ray.create (Point.create 0. 0. 5.) (Vector.create 0. 0. 1.)
 
-    let s = Object.sphere()
+    let s = Sphere.create()
     let xs = Ray.intersect s r
 
     xs.Length = 2 |> Assert.True
@@ -120,7 +122,7 @@ let ``scaling a ray`` () =
 [<Fact>]
 let ``intersect with a ray parallel to the plane`` () =
     let r = Ray.create (Point.create 0. 10. 0.) (Vector.create 0. 0. 1.)
-    let p = Object.plane()
+    let p = Plane.create()
 
     let r2 = Ray.intersect p r
     r2.IsEmpty |> Assert.True
@@ -128,7 +130,7 @@ let ``intersect with a ray parallel to the plane`` () =
 [<Fact>]
 let ``intersect with a rcoplanar ray`` () =
     let r = Ray.create (Point.create 0. 0. 0.) (Vector.create 0. 0. 1.)
-    let p = Object.plane()
+    let p = Plane.create()
 
     let r2 = Ray.intersect p r
     r2.IsEmpty |> Assert.True
@@ -137,19 +139,19 @@ let ``intersect with a rcoplanar ray`` () =
 [<Fact>]
 let ``a ray intersecting a plane from above`` () =
     let r = Ray.create (Point.create 0. 1. 0.) (Vector.create 0. -1. 0.)
-    let p = Object.plane()
+    let p = Plane.create()
 
     let r2 = Ray.intersect p r
     r2.Length = 1 |> Assert.True
     r2.[0].t = 1. |> Assert.True
-    r2.[0].object = p |> Assert.True
+    r2.[0].object .=. p |> Assert.True
 
 [<Fact>]
 let ``a ray intersecting a plane from below`` () =
     let r = Ray.create (Point.create 0. -1. 0.) (Vector.create 0. 1. 0.)
-    let p = Object.plane()
+    let p = Plane.create()
 
     let r2 = Ray.intersect p r
     r2.Length = 1 |> Assert.True
     r2.[0].t = 1. |> Assert.True
-    r2.[0].object = p |> Assert.True
+    r2.[0].object .=. p |> Assert.True

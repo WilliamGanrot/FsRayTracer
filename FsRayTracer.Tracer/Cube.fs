@@ -4,6 +4,7 @@ open RayTracer.RayDomain
 open RayTracer.ObjectDomain
 open RayTracer.Helpers
 open RayTracer.Matrix
+open RayTracer.Vector
 open RayTracer.Material
 
 open System
@@ -45,12 +46,24 @@ module Cube =
         
             [i1; i2]
 
-    let cube() =
+    let localNormalAt shape objectPoint =
+        let maxc =
+            [objectPoint.X; objectPoint.Y; objectPoint.Z]
+            |> List.map (fun v -> Math.Abs(v:float))
+            |> List.max
+
+        match maxc with
+        | _ when (FloatHelper.equal maxc (Math.Abs(objectPoint.X:float))) -> Vector.create objectPoint.X 0. 0.
+        | _ when (FloatHelper.equal maxc (Math.Abs(objectPoint.Y:float))) -> Vector.create 0. objectPoint.Y 0.
+        | _                                                               -> Vector.create 0. 0. objectPoint.Z
+
+    let create() =
         { transform = Matrix.identityMatrix 4;
           transformInverse= Matrix.identityMatrix 4 |> Matrix.inverse;
           material = Material.standard;
           shape = Cube;
           id = newRandom();
-          localIntersect = localIntersect }
+          localIntersect = localIntersect;
+          localNormalAt = localNormalAt; }
 
 

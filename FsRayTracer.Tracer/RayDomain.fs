@@ -1,6 +1,5 @@
 namespace RayTracer.RayDomain
 open RayTracer.Helpers
-open RayTracer.Helpers
 
 [<AutoOpen>]
 module RayDomain = 
@@ -42,6 +41,7 @@ module RayDomain =
               W = -this.W }
     
         static member (.=) (p, v : Vector) = FloatHelper.equal p.X v.X && FloatHelper.equal p.Y v.Y && FloatHelper.equal p.Z v.Z && p.W = v.W
+
     type Point =
         {X: float; Y:float; Z:float; W:float}
 
@@ -51,15 +51,14 @@ module RayDomain =
                   Z = p.Z + v.Z
                   W = p.W + v.W }
 
-
-            static member (-) (p: Point, v : Vector) =
+        static member (-) (p: Point, v : Vector) =
                 { X = p.X - v.X
                   Y = p.Y - v.Y
                   Z = p.Z - v.Z
                   W = p.W - v.W }
 
 
-            static member (-) (p1: Point, p2: Point) : Vector =
+        static member (-) (p1: Point, p2: Point) : Vector =
                 { X = p1.X - p2.X
                   Y = p1.Y - p2.Y
                   Z = p1.Z - p2.Z

@@ -10,6 +10,7 @@ open RayTracer.Material
 open RayTracer.RayDomain
 open RayTracer.ObjectDomain
 open System
+open RayTracer.Constnats
 
 
 module Cone =
@@ -20,7 +21,7 @@ module Cone =
     
         (x * x + z * z) <= y * y
     
-    let intersectCaps (cyl:Object) (direction:Vector) (origin:Point) xs =
+    let intersectCaps cyl (direction:Vector) (origin:Point) xs =
     
         match cyl.shape with
         | Cone (_, _, closed) when closed = false || (FloatHelper.equal direction.Y 0.) -> xs
@@ -31,9 +32,10 @@ module Cone =
     
             let t' = (max - origin.Y) / direction.Y
             if checkCap direction origin t' max then (Intersection.create cyl t') :: xs' else xs'
+        | _ -> failwith "invalid shape, expected a cone"
 
     let localIntersect object ray =
-
+        
         match object.shape with
         | Cone(min, max, _) ->
             let a = Math.Pow(ray.direction.X, 2.) - Math.Pow(ray.direction.Y, 2.) + Math.Pow(ray.direction.Z, 2.)
@@ -63,12 +65,30 @@ module Cone =
                     let xs' = if min < y1 && y1 < max then xs @ [Intersection.create object t1'] else xs
 
                     intersectCaps object ray.direction ray.origin xs'
-        | _ -> failwith "invalid shape"
+        | _ ->
+            let x = object.shape
+            let y = x
+            failwith "invalid shape"
 
-    let create =
+    let localNormalAt shape objectPoint =
+        match shape with
+        | Cone (min, max, _) ->
+            let dist = objectPoint.X * objectPoint.X + objectPoint.Z * objectPoint.Z
+
+            match dist < 1. with
+            | true when objectPoint.Y >= max - epsilon -> Vector.create 0. 1. 0.
+            | true when objectPoint.Y <= min + epsilon -> Vector.create 0. -1. 0.
+            | _ ->
+                let y = Math.Sqrt(objectPoint.X * objectPoint.X + objectPoint.Z * objectPoint.Z)
+                let y' = if objectPoint.Y > 0. then -y else y
+                Vector.create objectPoint.X y' objectPoint.Z
+        | _ -> failwith "invalid shape, expected cone"
+
+    let create() =
         { transform = Matrix.identityMatrix 4;
           transformInverse= Matrix.identityMatrix 4 |> Matrix.inverse;
           material = Material.standard;
           shape = Cone(-infinity, infinity, false);
           id = r.Next();
-          localIntersect = localIntersect }
+          localIntersect = localIntersect;
+          localNormalAt = localNormalAt; }

@@ -10,11 +10,14 @@ open RayTracer.Object
 open RayTracer.Intersection
 open RayTracer.Ray
 open RayTracer.Light
-open RayTracer.Object
+open RayTracer.Cone
 open RayTracer.World
 open RayTracer.Camera
 open RayTracer.Pattern
+open RayTracer.Plane
 open RayTracer.ObjectDomain
+open RayTracer.Cylinder
+open RayTracer.Sphere
 
 
 [<EntryPoint>]
@@ -248,212 +251,9 @@ let main argv =
         *)
 
 
-        (* image 6
-        
-        let m =
-            Material.standard
-            |> Material.withColor (Color.create 1. 0.9 0.9)
-            |> Material.withSpecular 0.
-
-        let floor =
-            Object.sphere()
-            |> Object.transform (Scaling(10., 0.01, 10.))
-            |> Object.setMaterial m
-
-        let leftWall =
-            Object.sphere()
-            |> Object.transform (Translation(0., 0., 5.))
-            |> Object.transform (Rotation(Y, -(Math.PI/4.)))
-            |> Object.transform (Rotation(X, -(Math.PI/2.)))
-            |> Object.transform (Scaling(10., 0.01, 10.))
-            |> Object.setMaterial m
-
-        let rightWall =
-          Object.sphere()
-          |> Object.transform (Translation(0., 0., 5.))
-          |> Object.transform (Rotation(Y, (Math.PI/4.)))
-          |> Object.transform (Rotation(X, (Math.PI/2.)))
-          |> Object.transform (Scaling(10., 0.01, 10.))
-          |> Object.setMaterial m
-
-        let middle =
-            Object.sphere()
-            |> Object.transform (Translation(-0.5, 1., 0.5))
-            |> Object.setMaterial (
-                Material.standard
-                |> Material.withColor (Color.create 0.1 1. 0.5)
-                |> Material.withDiffuse 0.7
-                |> Material.withSpecular 0.3)
-
-        let right =
-            Object.sphere()
-            |> Object.transform (Translation(1.5, 0.5, 0.5))
-            |> Object.transform (Scaling(0.5, 0.5, 0.5))
-            |> Object.setMaterial (
-                Material.standard
-                |> Material.withColor (Color.create 0.5 1. 0.1)
-                |> Material.withDiffuse 0.7
-                |> Material.withSpecular 0.3)
-
-        let left =
-            Object.sphere()
-            |> Object.transform (Translation(-1.5, 0.33, -0.75))
-            |> Object.transform (Scaling(0.33, 0.33, 0.33))
-            |> Object.setMaterial (
-                Material.standard
-                |> Material.withColor (Color.create 1. 0.8 0.1)
-                |> Material.withDiffuse 0.7
-                |> Material.withSpecular 0.3)
-
-        let world =
-            World.empty
-            |> World.addObject floor
-            |> World.addObject leftWall
-            |> World.addObject rightWall
-            |> World.addObject middle
-            |> World.addObject left
-            |> World.addObject right
-            |> World.withLight (
-                Light.create (Color.create 1. 1. 1.) (Point.create -10. 10. -10.))
-
-        let stopWatch = System.Diagnostics.Stopwatch.StartNew()
-        let ppm =
-            Camera.create 50 25 (Math.PI/3.)
-            |> Camera.withTransfom (Transformation.viewTransform (Point.create 0. 1.5 -5.) (Point.create 0. 1. 0.) (Vector.create 0. 1. 0.))
-            |> Camera.render world
-            |> Canvas.toPPM
-        stopWatch.Stop()
-
-        System.IO.File.WriteAllText ("image.pgm", ppm)
-        *)
-
-    
-    //let p =
-    //    Object.plane()
-    //    |> Object.setMaterial (
-    //        Material.standard
-    //        |> Material.withPattern (
-    //            Pattern.rings (Color.white) (Color.create 0.7 0. 0.2)
-    //            |> Pattern.transform (Translation(0., 0., 2.5))))
-    
-    //let middle =
-    //    Object.sphere()
-    //    |> Object.setMaterial (
-    //        Material.standard
-    //        |> Material.withPattern (
-    //            Pattern.stripes (Color.create 0.3 0. 0.) (Color.create 0.5 1. 0.7)
-    //            |> Pattern.transform (Scaling(0.2, 0.2, 0.2))
-    //            |> Pattern.transform (Rotation(Y, -Math.PI/4.)))
-    //        |> Material.withDiffuse 0.7
-    //        |> Material.withSpecular 0.3)
-    //    |> Object.transform (Translation(-0.5, 1., 0.5))
-
-
-
-    //let right =
-    //    Object.sphere()
-    //    |> Object.transform (Translation(1.5, 0.5, 0.5))
-    //    |> Object.transform (Scaling(0.5, 0.5, 0.5))
-    //    |> Object.setMaterial (
-    //        Material.standard
-    //        |> Material.withColor (Color.create 0.9 0.7 0.)
-    //        |> Material.withDiffuse 0.7
-    //        |> Material.withSpecular 0.3)
-
-
-
-    //let left =
-    //    Object.sphere()
-    //    |> Object.transform (Translation(-1.5, 0.25, -0.75))
-    //    |> Object.transform (Scaling(0.75, 0.75, 0.75))
-    //    |> Object.setMaterial (
-    //        Material.standard
-    //        |> Material.withPattern (
-    //            Pattern.gradient (Color.create 0. 0.1 0.6) (Color.create 0. 0.9 0.5)
-    //            |> Pattern.transform (Scaling(2., 1., 1.))
-    //            |> Pattern.transform (Translation(-0.5, 0., 0.)))
-    //        |> Material.withDiffuse 0.7
-    //        |> Material.withSpecular 0.3)
-
-
-    //let world =
-    //    World.empty
-    //    |> World.addObject p
-    //    |> World.addObject middle
-    //    |> World.addObject left
-    //    |> World.addObject right
-    //    |> World.withLight (
-    //        Light.create (Color.create 1. 1. 1.) (Point.create -10. 10. -10.))
-
-    //let stopWatch = System.Diagnostics.Stopwatch.StartNew()
-    //let ppm =
-    //    Camera.create 1200 600 (Math.PI/3.)
-    //    |> Camera.withTransfom (Transformation.viewTransform (Point.create 0. 1.5 -5.) (Point.create 0. 1. 0.) (Vector.create 0. 1. 0.))
-    //    |> Camera.render world
-    //    |> Canvas.toPPM
-    //stopWatch.Stop()
-
-    //System.IO.File.WriteAllText ("image.pgm", ppm)
-
-    (*
-    chapter 12
-    let p =
-        Object.plane()
-        |> Object.setMaterial (
-            Material.standard
-            |> Material.withPattern (
-                Pattern.checkers (Color.white) (Color.black)
-                |> Pattern.transform (Rotation(Y, 45.)))
-            |> Material.withReflectivity 0.5)
-
-    let middle =
-        Object.sphere()
-        |> Object.setMaterial (
-            Material.standard
-            |> Material.withDiffuse 0.7
-            |> Material.withSpecular 1.
-            |> Material.withShininess 300.
-            |> Material.withReflectivity 0.3
-            |> Material.withColor (Color.create 0.7 0. 0.2))
-        |> Object.transform (Translation(0.75, 1., 1.5))
-
-    let glass =
-        Object.glassSphere()
-        |> Object.transform (Translation(-0.75, 0.75, 0.))
-        |> Object.transform (Scaling(0.75, 0.75, 0.75))
-        |> Object.setMaterial(
-            Material.standard
-            |> Material.withColor (Color.create 0. 0. 0.)
-            |> Material.withDiffuse 0.
-            |> Material.withSpecular 0.8
-            |> Material.withReflectivity 1.
-            |> Material.withTransparency 1.
-            |> Material.WithrefractiveIndex 1.5
-            )
-
-
-
-    let world =
-        World.empty
-        |> World.addObject p
-        |> World.addObject middle
-        |> World.addObject glass
-        |> World.withLight (
-            Light.create (Color.create 1. 1. 1.) (Point.create -10. 10. -10.))
-
-    let stopWatch = System.Diagnostics.Stopwatch.StartNew()
-    let ppm =
-        Camera.create 1200 600 (Math.PI/3.)
-        |> Camera.withTransfom (Transformation.viewTransform (Point.create 0. 1.5 -5.) (Point.create 0. 1. 0.) (Vector.create 0. 1. 0.))
-        |> Camera.render world
-        |> Canvas.toPPM
-    stopWatch.Stop()
-
-    System.IO.File.WriteAllText ("image.pgm", ppm)
-    *)
 
     let p =
-        Object.plane()
+        Plane.create()
         |> Object.setMaterial (
             Material.standard
             |> Material.withPattern ( Pattern.stripes (Color.white) (Color.black) )
@@ -465,7 +265,7 @@ let main argv =
             |> Material.WithrefractiveIndex 1.5)
 
     let cone =
-        { Object.cone() with shape = Cone(0., 1., true) }
+        { Cone.create() with shape = Cone(0., 1., true) }
         |> Object.setMaterial(
             Material.standard
             |> Material.withColor (Color.create 0.8 1. 0.7)
@@ -482,7 +282,7 @@ let main argv =
 
     
     let cyl =
-        { Object.cone() with shape = Cylinder(0., 1., true) }
+        { Cylinder.create() with shape = Cylinder(0., 1., true) }
         |> Object.setMaterial (
 
             Material.standard
@@ -500,7 +300,7 @@ let main argv =
         //|> Object.transform (Scaling(2., 0.3, 0.5))
   
     let sphere =
-        Object.sphere()
+        Sphere.create()
         |> Object.transform (Translation(0., 0.8, 2.5))
         |> Object.transform (Scaling(0.8, 0.8, 0.8))
         
@@ -527,7 +327,7 @@ let main argv =
 
     let stopWatch = System.Diagnostics.Stopwatch.StartNew()
     let ppm =
-        Camera.create 1200 600 (Math.PI/3.)
+        Camera.create 300 150 (Math.PI/3.)
         |> Camera.withTransfom (Transformation.viewTransform (Point.create 0. 1.5 -5.) (Point.create 0. 1. 0.) (Vector.create 0. 1. 0.))
         |> Camera.render world
         |> Canvas.toPPM

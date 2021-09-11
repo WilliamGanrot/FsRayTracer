@@ -10,9 +10,11 @@ open RayTracer.Helpers
 open RayTracer.Transformation
 open RayTracer.Material
 open RayTracer.Light
-open RayTracer.Domain
 open RayTracer.ObjectDomain
 open RayTracer.Sphere
+open RayTracer.Cube
+open RayTracer.Cylinder
+open RayTracer.Cone
 
 open Xunit
 open RayTracer.Object
@@ -20,7 +22,7 @@ open RayTracer.Object
 
 [<Fact>]
 let ``a spheres deafult transformation`` () =
-    let s = Object.sphere()
+    let s = Sphere.create()
     (s.transform) .= (Matrix.identityMatrix 4) |> Assert.True
 
 [<Fact>]
@@ -35,7 +37,7 @@ let ``changing a phere 's transformation`` () =
 [<Fact>]
 let ``intersecting a scaled sphere with a ray`` () =
     let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.)
-    let s = Object.sphere()
+    let s = Sphere.create()
 
     let s2 = s |> Object.transform (Scaling(2., 2., 2.))
     let xs = Ray.intersect s2 r
@@ -47,7 +49,7 @@ let ``intersecting a scaled sphere with a ray`` () =
 [<Fact>]
 let ``intersecting a translated sphere with a ray`` () =
     let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.)
-    let s = Object.sphere()
+    let s = Sphere.create()
 
     let s2 = s |> Object.transform (Translation(5., 0., 0.))
     let xs = Ray.intersect s2 r
@@ -57,7 +59,7 @@ let ``intersecting a translated sphere with a ray`` () =
 [<Fact>]
 let ``the normal on a sphere poin on the x axis`` () =
     let p = Point.create 1. 0. 0.
-    let s = Object.sphere()
+    let s = Sphere.create()
     let n = s |> Object.normal p
 
     n .= (Vector.create 1. 0. 0.) |> Assert.True
@@ -65,7 +67,7 @@ let ``the normal on a sphere poin on the x axis`` () =
 [<Fact>]
 let ``the normal on a sphere poin on the y axis`` () =
     let p = Point.create 0. 1. 0.
-    let s = Object.sphere()
+    let s = Sphere.create()
     let n = s |> Object.normal p
 
     n .= (Vector.create 0. 1. 0.) |> Assert.True
@@ -73,7 +75,7 @@ let ``the normal on a sphere poin on the y axis`` () =
 [<Fact>]
 let ``the normal on a sphere poin on the z axis`` () =
     let p = Point.create 0. 0. 1.
-    let s = Object.sphere()
+    let s = Sphere.create()
     let n = s |> Object.normal p
 
     n .= (Vector.create 0. 0. 1.) |> Assert.True
@@ -81,7 +83,7 @@ let ``the normal on a sphere poin on the z axis`` () =
 [<Fact>]
 let ``the normal is a normalized vector`` () =
     let p = Point.create (Math.Pow (3., 0.5)/3.) (Math.Pow (3., 0.5)/3.) (Math.Pow (3., 0.5)/3.)
-    let s = Object.sphere()
+    let s = Sphere.create()
     let n = s |> Object.normal p
 
     n .= Vector.normalize (n) |> Assert.True
@@ -89,7 +91,7 @@ let ``the normal is a normalized vector`` () =
 [<Fact>]
 let ``cumputing the normal on a translated sphere`` () =
     let n =
-        Object.sphere()
+        Sphere.create()
         |> Object.transform (Translation(0., 1., 0.))
         |> Object.normal (Point.create 0. 1.70711 -0.70711)
 
@@ -98,7 +100,7 @@ let ``cumputing the normal on a translated sphere`` () =
 [<Fact>]
 let ``cumputing the normal on a transformed sphere`` () =
     let n =
-        Object.sphere()
+        Sphere.create()
         |> Object.transform (Scaling(1., 0.5, 1.))
         |> Object.transform (Rotation(Z, (Math.PI/5.)))
         |> Object.normal (Point.create 0. (Math.Pow (2., 0.5)/2.) -(Math.Pow (2., 0.5)/2.))
@@ -107,7 +109,7 @@ let ``cumputing the normal on a transformed sphere`` () =
 
 [<Fact>]
 let ``a sphere has a deafult material`` () =
-    let s = Object.sphere()
+    let s = Sphere.create()
     s.material = Material.standard |> Assert.True
 
 [<Fact>]
@@ -118,7 +120,7 @@ let ``a sphere may be assigned a material`` () =
         |> Material.withAmbient 1.
 
     let s =
-        Object.sphere()
+        Sphere.create()
         |> Object.setMaterial m
 
     s.material = m |> Assert.True
@@ -132,7 +134,7 @@ let ``a sphere may be assigned a material`` () =
 [<InlineData(0.5, 0., -5., 0., 0., 1., 4., 6.)>]
 [<InlineData(0., 0.5, 0., 0., 0., 1., -1., 1.)>]
 let ``A ray intersects a cube`` (pointX, pointY, pointZ, vectorX, vectorY, vecotrZ, t1, t2) =
-    let c = Object.cube()
+    let c = Cube.create()
     let r = Ray.create (Point.create pointX pointY pointZ) (Vector.create vectorX vectorY vecotrZ)
     let xs = Ray.intersect c r
 
@@ -149,7 +151,7 @@ let ``A ray intersects a cube`` (pointX, pointY, pointZ, vectorX, vectorY, vecot
 [<InlineData(2., 2., 0., -1., 0., 0.)>]
 
 let ``A ray misses a cube`` (pointX, pointY, pointZ, vectorX, vectorY, vecotrZ) =
-    let c = Cube.create
+    let c = Cube.create()
     let r = Ray.create (Point.create pointX pointY pointZ) (Vector.create vectorX vectorY vecotrZ)
     let xs = Ray.intersect c r
 
@@ -167,7 +169,7 @@ let ``A ray misses a cube`` (pointX, pointY, pointZ, vectorX, vectorY, vecotrZ) 
 
 let ``the normal surface of a cube`` (pointX, pointY, pointZ, vectorX, vectorY, vecotrZ) =
 
-    let c = Object.cube()
+    let c = Cube.create()
     let p = Point.create pointX pointY pointZ
 
     let normal = Object.normal p c
@@ -182,7 +184,7 @@ let ``the normal surface of a cube`` (pointX, pointY, pointZ, vectorX, vectorY, 
 [<InlineData(0., 0., -5., 1., 1., 1.)>]
 let ``a ray misses a cylinder`` (pointX, pointY, pointZ, vectorX, vectorY, vecotorZ) =
     
-    let c = Object.cylinder()
+    let c = Cylinder.create()
     let directon = Vector.create vectorX vectorY vecotorZ |> Vector.normalize
 
     let r = Ray.create (Point.create pointX pointY pointZ) directon 
@@ -196,7 +198,7 @@ let ``a ray misses a cylinder`` (pointX, pointY, pointZ, vectorX, vectorY, vecot
 [<InlineData(0.5, 0., -5., 0.1, 1., 1., 6.80798, 7.08872)>]
 let ``a ray strikes a cylinder`` (pointX, pointY, pointZ, vectorX, vectorY, vecotorZ, t0, t1) =
     
-    let cyl = Object.cylinder()
+    let cyl = Cylinder.create()
     let directon = Vector.create vectorX vectorY vecotorZ |> Vector.normalize
     let r = Ray.create (Point.create pointX pointY pointZ) directon 
 
@@ -213,7 +215,7 @@ let ``a ray strikes a cylinder`` (pointX, pointY, pointZ, vectorX, vectorY, veco
 [<InlineData(-1., 1., 0., -1., 0., 0.)>]
 let ``normal vector on a cylinder`` (pointX, pointY, pointZ, vectorX, vectorY, vecotorZ) =
     
-    let cyl = Object.cylinder()
+    let cyl = Cylinder.create()
     let p = Point.create pointX pointY pointZ
     let n = Object.normal p cyl
 
@@ -221,11 +223,12 @@ let ``normal vector on a cylinder`` (pointX, pointY, pointZ, vectorX, vectorY, v
 
 [<Fact>]
 let ``the default min and max for a cylinder`` () =
-    let cyl = Object.cylinder()
+    let cyl = Cylinder.create()
     match cyl.shape with
     | Cylinder (min, max, closed) ->
         min = -infinity |> Assert.True
         max = infinity |> Assert.True
+    | _ -> true |> Assert.False
 
 
 [<Theory>]
@@ -237,7 +240,7 @@ let ``the default min and max for a cylinder`` () =
 [<InlineData(0., 1.5, -2., 0., 0., 1., 2)>]
 let ``the intersecting a constrained cylinder`` (pointX, pointY, pointZ, vectorX, vectorY, vecotorZ, count) =
 
-    let cyl = {Object.cylinder() with shape = Cylinder(1., 2., false)}
+    let cyl = {Cylinder.create() with shape = Cylinder(1., 2., false)}
     let direction = Vector.create vectorX vectorY vecotorZ |> Vector.normalize
     let r = Ray.create (Point.create pointX pointY pointZ) direction
 
@@ -247,11 +250,12 @@ let ``the intersecting a constrained cylinder`` (pointX, pointY, pointZ, vectorX
 
 [<Fact>]
 let ``the default closed vlye for a cylinder`` () =
-    let cyl = Object.cylinder()
+    let cyl = Cylinder.create()
     match cyl.shape with
     | Cylinder (min, max, closed) ->
         min = -infinity |> Assert.True
         max = infinity |> Assert.True
+    | _ -> true |> Assert.False
 
 
 [<Theory>]
@@ -262,7 +266,7 @@ let ``the default closed vlye for a cylinder`` () =
 [<InlineData(0., -1., -2., 0., 1., 1., 2)>]
 let ``intersecting the caps of a closed cylinder`` (pointX, pointY, pointZ, vectorX, vectorY, vectorZ, count) =
 
-    let cyl = { Object.cylinder() with shape = Cylinder(1., 2., true) }
+    let cyl = { Cylinder.create() with shape = Cylinder(1., 2., true) }
     let direction = Vector.create vectorX vectorY vectorZ |> Vector.normalize
     let r = Ray.create (Point.create pointX pointY pointZ) direction
 
@@ -279,7 +283,7 @@ let ``intersecting the caps of a closed cylinder`` (pointX, pointY, pointZ, vect
 [<InlineData(0., 2., 0.5, 0., 1., 0.)>]
 let ``the normal vector on a cylinder's end caps`` (pointX, pointY, pointZ, vectorX, vectorY, vecotorZ) =
 
-    let cyl = {Object.cylinder() with shape = Cylinder(1., 2., true)}
+    let cyl = {Cylinder.create() with shape = Cylinder(1., 2., true)}
     let n = Object.normal (Point.create pointX pointY pointZ) cyl
     let normal = Vector.create vectorX vectorY vecotorZ
 
@@ -292,7 +296,7 @@ let ``the normal vector on a cylinder's end caps`` (pointX, pointY, pointZ, vect
 [<InlineData(1., 1., -5., -0.5, -1., 1., 4.55006, 49.44994)>]
 let ``intersecting a cone with a ray`` (pointX, pointY, pointZ, vectorX, vectorY, vecotorZ, t0, t1) =
 
-    let cone = Object.cone()
+    let cone = Cone.create()
     let direction = Vector.create vectorX vectorY vecotorZ |> Vector.normalize
     let r = Ray.create (Point.create pointX pointY pointZ) direction
 
@@ -303,7 +307,7 @@ let ``intersecting a cone with a ray`` (pointX, pointY, pointZ, vectorX, vectorY
 
 [<Fact>]
 let ``intersecting a cone with a ray parallel to one of its halves`` () =
-    let cyl = Object.cone()
+    let cyl = Cone.create()
     let direction = Vector.create 0. 1. 1. |> Vector.normalize
     let r = Ray.create (Point.create 0. 0. -1.) direction
     let xs = Ray.intersect cyl r
@@ -318,7 +322,7 @@ let ``intersecting a cone with a ray parallel to one of its halves`` () =
 [<InlineData(0., 0., -0.25, 0., 1., 0., 4)>]
 let ``intersecting a cone's end caps`` (pointX, pointY, pointZ, vectorX, vectorY, vecotorZ, count) =
 
-    let c = { Object.cone() with shape = Cone(-0.5, 0.5, true) }
+    let c = { Cone.create() with shape = Cone(-0.5, 0.5, true) }
     let direction = Vector.create vectorX vectorY vecotorZ |> Vector.normalize
     let r = Ray.create (Point.create pointX pointY pointZ) direction
     let xs = Ray.intersect c r
@@ -330,8 +334,11 @@ let ``intersecting a cone's end caps`` (pointX, pointY, pointZ, vectorX, vectorY
 [<InlineData(-1., -1., 0., -1., 1., 0.)>]
 let ``computing the normal vector on a cone`` (pointX, pointY, pointZ, vectorX, vectorY, vectorZ) =
 
-    let cyl = Object.cone()
+    let cyl = Cone.create()
+    let point = Point.create pointX pointY pointZ
+    let normal = Vector.create vectorX vectorY vectorZ
 
-    let n = Object.normal (Point.create pointX pointY pointZ) cyl
+    let n = cyl.localNormalAt cyl.shape point
+
     n .= (Vector.create vectorX vectorY vectorZ) |> Assert.True
 

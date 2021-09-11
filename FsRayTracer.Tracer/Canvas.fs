@@ -1,6 +1,5 @@
 namespace Raytracer.Canvas
 open RayTracer.Color
-open RayTracer.Domain
 open RayTracer.RenderingDomain
 
 

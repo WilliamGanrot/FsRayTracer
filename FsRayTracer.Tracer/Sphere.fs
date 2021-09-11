@@ -29,6 +29,9 @@ module Sphere =
             let i2 = Intersection.create object t2
             [i1;i2]
 
+    let localNormalAt shape objectPoint =
+        objectPoint - (Point.create 0. 0. 0.)
+
     let create() =
 
         { transform = Matrix.identityMatrix 4;
@@ -36,5 +39,20 @@ module Sphere =
           material = Material.standard;
           shape = Sphere;
           id = newRandom();
-          localIntersect = localIntersect }
+          localIntersect = localIntersect;
+          localNormalAt = localNormalAt; }
+
+    let createGlass() =
+
+        let m =
+            Material.standard
+            |> Material.toGlass
+
+        { transform = Matrix.identityMatrix 4;
+          transformInverse = Matrix.identityMatrix 4 |> Matrix.inverse;
+          material = m;
+          shape = Sphere;
+          id = newRandom();
+          localIntersect = localIntersect;
+          localNormalAt = localNormalAt; }
 

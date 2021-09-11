@@ -21,8 +21,6 @@
       <Compile Include="RayDomain.fs" />
       <Compile Include="ObjectDomain.fs" />
       <Compile Include="RenderingDomain.fs" />
-
-      <Compile Include="Domain.fs" />
       <Compile Include="Color.fs" />
       
 

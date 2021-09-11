@@ -101,19 +101,42 @@ module ObjectDomain =
         | Cylinder of minimum: float * maximum: float * closed: bool
         | Cone of minimum: float * maximum: float * closed: bool
 
-    type Intersection = { t: float; object: Object }
-
-    and Object =
+ 
+    [<CustomEquality; CustomComparison>]
+    type Object =
         { transform: Matrix;
           transformInverse: Matrix;
           material: Material;
           shape: Shape;
-          id: int
-          localIntersect: Object -> Ray -> Intersection list}
+          id: int;
+          localIntersect: Object -> Ray -> Intersection list;
+          localNormalAt: Shape -> Point -> Vector; }
 
-        //compares object without id
-         static member (.=.) (p, v : Object) =
+         //compares object without id
+        static member (.=.) (p, v : Object) =
             p.transform = v.transform && p.transformInverse = v.transformInverse && p.material = v.material && p.shape = v.shape
+
+        override x.Equals(yobj) =
+            match yobj with
+            | :? Object as y -> (x.material = y.material && x.shape = y.shape && x.transform = y.transform && x.transformInverse = y.transformInverse)
+            | _ -> false
+ 
+        override x.GetHashCode() = hash x
+
+        interface System.IComparable with
+          member x.CompareTo yobj =
+              match yobj with
+              | :? Object as y -> compare x y
+              | _ -> invalidArg "yobj" "cannot compare values of different types"
+
+
+    and Intersection =
+        { t: float; object: Object }
+
+        static member (.=.) (p: Intersection, v: Intersection) =
+            p.object .=. v.object && FloatHelper.equal p.t v.t
+
+
 
     type Computation =
         { t: float;

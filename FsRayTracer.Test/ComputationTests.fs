@@ -14,6 +14,8 @@ open RayTracer.ObjectDomain
 
 open Xunit
 open RayTracer.Object
+open RayTracer.Sphere
+open RayTracer.Plane
 
 open RayTracer.Constnats
 open RayTracer.Material
@@ -22,12 +24,12 @@ open RayTracer.Color
 [<Fact>]
 let ``precomputing the state of an intersection`` () =
     let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.) 
-    let s = Object.sphere()
+    let s = Sphere.create()
     let i = Intersection.create s 4.
     let comps = i |> Computation.prepare r [i]
 
     FloatHelper.equal comps.t i.t |> Assert.True
-    comps.object = i.object |> Assert.True
+    comps.object .=. i.object |> Assert.True
     Point.create 0. 0. -1. |> Point.equal comps.point |> Assert.True
     comps.eyev .= Vector.create 0. 0. -1. |> Assert.True
     comps.normalv .= Vector.create 0. 0. -1. |> Assert.True
@@ -35,7 +37,7 @@ let ``precomputing the state of an intersection`` () =
 [<Fact>]
 let ``the hit, when an intersection occurs on the outside`` () =
     let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.) 
-    let s = Object.sphere()
+    let s = Sphere.create()
 
     let comps =
         let i = Intersection.create s 4.
@@ -46,7 +48,7 @@ let ``the hit, when an intersection occurs on the outside`` () =
 [<Fact>]
 let ``the hit, when an intersection occurs on the inside`` () =
     let r = Ray.create (Point.create 0. 0. 0.) (Vector.create 0. 0. 1.) 
-    let s = Object.sphere()
+    let s = Sphere.create()
     let i = Intersection.create s 1.
     let comps = i |> Computation.prepare r [i]
 
@@ -59,7 +61,7 @@ let ``the hit, when an intersection occurs on the inside`` () =
 let ``the hit should offset the point`` () =
     let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.) 
     let s =
-        Object.sphere()
+        Sphere.create()
         |> Object.transform (Translation(0., 0., 0.1))
 
     let i = Intersection.create s 1.
@@ -71,7 +73,7 @@ let ``the hit should offset the point`` () =
 [<Fact>]
 let ``the Shilick approxiation under total internal relfection`` () =
     let r = Ray.create (Point.create 0. 0. (Math.Sqrt(2.)/2.)) (Vector.create 0. 1. 0.)
-    let shape = Object.glassSphere()
+    let shape = Sphere.createGlass()
 
     let xs = Intersection.tuplesToIntersections [((-Math.Sqrt(2.)/2.), shape); ((Math.Sqrt(2.)/2.), shape)]
 
@@ -82,7 +84,7 @@ let ``the Shilick approxiation under total internal relfection`` () =
 [<Fact>]
 let ``the schlick approximation with a perpendicular viewing angle`` () =
     let r = Ray.create (Point.create 0. 0. 0.) (Vector.create 0. 1. 0.)
-    let shape = Object.glassSphere()
+    let shape = Sphere.createGlass()
 
     let xs = Intersection.tuplesToIntersections [(-1., shape); (1., shape)]
 
@@ -94,7 +96,7 @@ let ``the schlick approximation with a perpendicular viewing angle`` () =
 [<Fact>]
 let ``the schlick approxiamtion with small anle and n2 > n1`` () =
     let r = Ray.create (Point.create 0. 0.99 -2.) (Vector.create 0. 0. 1.)
-    let shape = Object.glassSphere()
+    let shape = Sphere.createGlass()
 
     let xs = Intersection.tuplesToIntersections [(1.8589, shape);]
 
@@ -108,7 +110,7 @@ let ``the schlick approxiamtion with small anle and n2 > n1`` () =
 let ``shadehit with a reflective transparent material`` () =
 
     let floor =
-        Object.plane()
+        Plane.create()
         |> Object.transform (Translation(0., -1., 0.))
         |> Object.setMaterial (
             Material.standard
@@ -116,7 +118,7 @@ let ``shadehit with a reflective transparent material`` () =
             |> Material.withTransparency 0.5
             |> Material.WithrefractiveIndex 1.5)
     let ball =
-        Object.sphere()
+        Sphere.create()
         |> Object.setMaterial (
             Material.standard
             |> Material.withColor (Color.create 1. 0. 0.)

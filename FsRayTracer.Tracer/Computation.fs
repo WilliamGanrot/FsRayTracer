@@ -29,7 +29,7 @@ module Computation =
             match intersections with
             | [] -> (n1, n2)
             | i::intersectionTail ->
-                let hit = i = intersection
+                let hit = i .=. intersection
 
                 let n1' =
                     match hit, containers with

@@ -459,40 +459,47 @@ let main argv =
 
     System.IO.File.WriteAllText ("image.pgm", ppm)
     *)
-    
+
     let p =
         Object.plane()
         |> Object.setMaterial (
             Material.standard
-            |> Material.withPattern ( Pattern.checkers (Color.white) (Color.black) )
-            |> Material.withReflectivity 0.5 )
+            |> Material.withPattern ( Pattern.stripes (Color.white) (Color.black) )
+            |> Material.superShiny
+            |> Material.withDiffuse 0.7
+            |> Material.withSpecular 1.
+            |> Material.withShininess 300.
+            |> Material.withReflectivity 0.5
+            |> Material.WithrefractiveIndex 1.5)
 
-    let cyl =
+    let cone =
         { Object.cone() with shape = Cone(0., 1., true) }
         |> Object.setMaterial(
             Material.standard
-            |> Material.withColor (Color.create 0.4 0.8 0.2)
+            |> Material.withColor (Color.create 0.8 1. 0.7)
             |> Material.superShiny
             |> Material.withDiffuse 0.7
             |> Material.withSpecular 1.
             |> Material.withShininess 300.
             |> Material.withReflectivity 0.3
             |> Material.WithrefractiveIndex 1.5)
-        |> Object.transform (Translation(2.4, 1.5, 0.))
+        |> Object.transform (Translation(1.7, 1.5, 2.5))
         |> Object.transform (Rotation(Z,(Math.PI/2.)))
         //|> Object.transform (Scaling(0.5, 0.5, 0.5))
 
 
     
-    let cone =
+    let cyl =
         { Object.cone() with shape = Cylinder(0., 1., true) }
         |> Object.setMaterial (
+
             Material.standard
-            |> Material.withColor (Color.create 0.5 0.4 0.7)
+
             |> Material.superShiny
+            |> Material.withColor (Color.create 0.7 0. 0.3)
             //|> Material.withDiffuse 0.7
             |> Material.withReflectivity 0.4 )
-        |> Object.transform (Translation(-1.2, 1.5, 0.))
+        |> Object.transform (Translation(-1.8, 1.5, 2.5))
         |> Object.transform (Rotation(Z,-(Math.PI/2.)))
         |> Object.transform (Scaling(0.5, 2.5, 1.))
             
@@ -528,7 +535,7 @@ let main argv =
 
     let stopWatch = System.Diagnostics.Stopwatch.StartNew()
     let ppm =
-        Camera.create 400 200 (Math.PI/3.)
+        Camera.create 1200 600 (Math.PI/3.)
         |> Camera.withTransfom (Transformation.viewTransform (Point.create 0. 1.5 -5.) (Point.create 0. 1. 0.) (Vector.create 0. 1. 0.))
         |> Camera.render world
         |> Canvas.toPPM

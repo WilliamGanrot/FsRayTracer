@@ -24,3 +24,13 @@ This project is an F# implementation of a raytracer based on the book "The Ray T
 
 ## Chapter 6 - Light and Shading
 ![Image](Images/sphere.png?raw=true "Title")
+
+## Chapter 5 - Ray-Sphere Intersections
+![Image](Images/scene_w_circle.png?raw=true "Title")
+
+## Chapter 4 - Matrix Transformations
+![Image](Images/scene_dot_circle.png?raw=true "Title")
+
+## Chapter 2 - Drawing on a Canvas
+![Image](Images/scene_w_projectile.png?raw=true "Title")
+

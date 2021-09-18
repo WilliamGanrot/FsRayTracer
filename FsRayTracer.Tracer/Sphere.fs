@@ -6,6 +6,8 @@ open RayTracer.Vector
 open RayTracer.Point
 open RayTracer.Helpers
 open RayTracer.Material
+open RayTracer.Transformation
+open RayTracer.Object
 open RayTracer.Matrix
 open System
 
@@ -40,7 +42,8 @@ module Sphere =
           shape = Sphere;
           id = newRandom();
           localIntersect = localIntersect;
-          localNormalAt = localNormalAt; }
+          localNormalAt = localNormalAt;
+          parent = None }
 
     let createGlass() =
 
@@ -54,5 +57,5 @@ module Sphere =
           shape = Sphere;
           id = newRandom();
           localIntersect = localIntersect;
-          localNormalAt = localNormalAt; }
-
+          localNormalAt = localNormalAt;
+          parent = None }

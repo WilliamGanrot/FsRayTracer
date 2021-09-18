@@ -14,7 +14,9 @@ open RayTracer.ObjectDomain
 open RayTracer.Sphere
 open RayTracer.Cube
 open RayTracer.Cylinder
+open RayTracer.Group
 open RayTracer.Cone
+
 
 open Xunit
 open RayTracer.Object
@@ -342,3 +344,96 @@ let ``computing the normal vector on a cone`` (pointX, pointY, pointZ, vectorX, 
 
     n .= (Vector.create vectorX vectorY vectorZ) |> Assert.True
 
+
+[<Fact>]
+let ``creating a new group`` () =
+    let g = Group.create()
+
+    g.transform .= Matrix.identityMatrix 4 |> Assert.True
+    match g.shape with
+    | Group l -> l.Length = 0 |> Assert.True
+    | _ -> false |> Assert.True 
+
+[<Fact>]
+let ``intersecing a ray with an empty group`` () =
+    let g = Group.create()
+    let r = Ray.create (Point.create 0. 0. 0.) (Vector.create 0. 0. 1.)
+    let xs = Ray.intersect g r
+    xs.IsEmpty |> Assert.True
+
+[<Fact>]
+let ``intersecing a ray with a non empty group`` () =
+
+    let s1 = Sphere.create()
+    let s2 = Sphere.create() |> Object.transform (Translation(0., 0., -3.))
+    let s3 = Sphere.create() |> Object.transform (Translation(5., 0., 0.))
+
+    let g = 
+        Group.create()
+        |> Group.add s1 |> (fun (_, group) -> group )
+        |> Group.add s2 |> (fun (_,group) -> group )
+        |> Group.add s3 |> (fun (_,group) -> group )
+
+
+
+    let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.)
+    let xs = Ray.intersect g r
+    xs.Length = 4 |> Assert.True
+    xs.[0].object .=. s2 |> Assert.True
+    xs.[1].object .=. s2 |> Assert.True
+    xs.[2].object .=. s1 |> Assert.True
+    xs.[3].object .=. s1 |> Assert.True
+
+
+[<Fact>]
+let ``intersecting a transformad group`` () =
+    let g = Group.create() |> Object.transform (Scaling(2., 2., 2.))
+
+    let s = Sphere.create() |> Object.transform (Translation(5., 0., 0.))
+
+    let (_,g') = Group.add s g
+
+    let r = Ray.create (Point.create 10. 0. -10.) (Vector.create 0. 0. 1.)
+
+    let xs = Ray.intersect g' r
+    xs.Length = 2 |> Assert.True
+
+[<Fact>]
+let ``convering a point from world to object space`` () =
+
+    let s = Sphere.create() |> Object.transform (Translation(5., 0., 0.))
+    let g1 = Group.create() |> Object.transform (Rotation(Y, Math.PI/2.))
+    let g2 =  Group.create() |> Object.transform (Scaling(2., 2., 2.))
+
+    let (g2', g1') = Group.add g2 g1
+    let (child, _) = Group.add s g2'
+
+    let p = Object.worldToObject child (Point.create -2. 0. -10.)
+    let expected = Point.create 0. 0. -1.
+    Point.equal p expected |> Assert.True
+
+[<Fact>]
+let ``convering a normal from object to world space`` () =
+
+    let g1 = Group.create() |> Object.transform (Rotation(Y,Math.PI/2.))
+    let g2 =  Group.create() |> Object.transform (Scaling(1., 2., 3.))
+    let (g2', g1') = Group.add g2 g1
+
+    let s = Sphere.create() |> Object.transform (Translation(5., 0., 0.))
+    let (s', _) = Group.add s g2'
+
+    let n = Object.normalToWorld s' (Vector.create (Math.Sqrt(3.)/3.) (Math.Sqrt(3.)/3.) (Math.Sqrt(3.)/3.))
+    n .= Vector.create 0.2857 0.4286 -0.8571 |> Assert.True
+
+[<Fact>]
+let ``finding the normal onn a child object`` () =
+
+    let g1 = Group.create() |> Object.transform (Rotation(Y,Math.PI/2.))
+    let g2 =  Group.create() |> Object.transform (Scaling(1., 2., 3.))
+    let (g2', g1') = Group.add g2 g1
+
+    let s = Sphere.create() |> Object.transform (Translation(5., 0., 0.))
+    let (s', _) = Group.add s g2'
+
+    let n = Object.normal (Point.create 1.7321 1.1547 -5.5774) s' 
+    n .= Vector.create 0.2857 0.4286 -0.8571 |> Assert.True

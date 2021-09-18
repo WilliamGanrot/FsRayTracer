@@ -37,5 +37,5 @@ module Ray =
             object.transformInverse
             |> Matrix
             |> transform r
-        let x = object.shape
+
         object.localIntersect object ray

@@ -64,6 +64,7 @@ module Cube =
           shape = Cube;
           id = newRandom();
           localIntersect = localIntersect;
-          localNormalAt = localNormalAt; }
+          localNormalAt = localNormalAt;
+          parent = None; }
 
 

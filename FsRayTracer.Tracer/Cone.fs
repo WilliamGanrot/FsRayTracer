@@ -91,4 +91,5 @@ module Cone =
           shape = Cone(-infinity, infinity, false);
           id = r.Next();
           localIntersect = localIntersect;
-          localNormalAt = localNormalAt; }
+          localNormalAt = localNormalAt;
+          parent = None }

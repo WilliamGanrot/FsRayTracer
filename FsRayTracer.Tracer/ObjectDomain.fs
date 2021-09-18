@@ -94,40 +94,43 @@ module ObjectDomain =
             FloatHelper.equal m.refractiveIndex m2.refractiveIndex &&
             m.pattern = m2.pattern
 
+
+    [<CustomEquality; CustomComparison>]
     type Shape =
         | Sphere
         | Plane
         | Cube
         | Cylinder of minimum: float * maximum: float * closed: bool
         | Cone of minimum: float * maximum: float * closed: bool
+        | Group of Object list
 
- 
-    [<CustomEquality; CustomComparison>]
-    type Object =
-        { transform: Matrix;
-          transformInverse: Matrix;
-          material: Material;
-          shape: Shape;
-          id: int;
-          localIntersect: Object -> Ray -> Intersection list;
-          localNormalAt: Shape -> Point -> Vector; }
-
-         //compares object without id
-        static member (.=.) (p, v : Object) =
-            p.transform = v.transform && p.transformInverse = v.transformInverse && p.material = v.material && p.shape = v.shape
-
-        override x.Equals(yobj) =
-            match yobj with
-            | :? Object as y -> (x.material = y.material && x.shape = y.shape && x.transform = y.transform && x.transformInverse = y.transformInverse)
-            | _ -> false
+        override x.Equals(y) =
+            (match y with :? Shape -> true | _ -> false)
  
         override x.GetHashCode() = hash x
 
         interface System.IComparable with
           member x.CompareTo yobj =
               match yobj with
-              | :? Object as y -> compare x y
+              | :? Shape as y -> compare x y
               | _ -> invalidArg "yobj" "cannot compare values of different types"
+ 
+    and Object =
+        { transform: Matrix;
+          transformInverse: Matrix;
+          material: Material;
+          shape: Shape;
+          id: int;
+          localIntersect: Object -> Ray -> Intersection list;
+          localNormalAt: Shape -> Point -> Vector;
+          parent: Object Option }
+
+        //compares object without id
+        static member (.=.) (p, v : Object) =
+           p.transform = v.transform && p.transformInverse = v.transformInverse && p.material = v.material && p.shape = v.shape
+
+        static member (<>.) (p, v : Object) =
+           p.transform <> v.transform || p.transformInverse <> v.transformInverse && p.material <> v.material || p.shape <> v.shape
 
 
     and Intersection =

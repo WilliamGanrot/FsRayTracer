@@ -22,7 +22,7 @@ module Computation =
                 |> List.exists ((=) (intersection.object.id))
 
             match objectIsInContainers with
-            | true -> containers |> List.where(fun o -> o <> intersection.object)
+            | true -> containers |> List.where(fun o -> o <>. intersection.object)
             | false -> containers @ [intersection.object]
 
         let rec compute containers n1 n2 intersections =
@@ -54,7 +54,7 @@ module Computation =
         let object = i.object
         let point = Ray.position i.t r
         let eyev = r.direction * -1.
-        let normalv = i.object |> Object.normal point
+        let normalv = Object.normal point i.object
         let inside = (Vector.dot normalv eyev) < 0.
         let trueNormalv = if inside then normalv * -1. else normalv
         let n1,n2 = nValues i r xs

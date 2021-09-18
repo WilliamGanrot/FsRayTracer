@@ -36,4 +36,7 @@ open System
         let reflect normal v = 
             v - (normal * 2. * dot v normal)
 
+        let withW w vector : Vector = 
+            { vector with W = w }
+
         

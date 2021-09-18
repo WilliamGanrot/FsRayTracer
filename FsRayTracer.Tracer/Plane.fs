@@ -32,7 +32,8 @@ module Plane =
           shape = Plane;
           id = newRandom();
           localIntersect = localIntersect;
-          localNormalAt = localNormalAt }
+          localNormalAt = localNormalAt;
+          parent = None; }
 
 
 

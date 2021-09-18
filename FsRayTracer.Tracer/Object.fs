@@ -13,6 +13,7 @@ open RayTracer.Light
 open RayTracer.Constnats
 open RayTracer.ObjectDomain
 open RayTracer.RenderingDomain
+open RayTracer.RayDomain
 
 
 module Object =
@@ -20,21 +21,6 @@ module Object =
     let transform t (object:Object) : Object =
         let t = Transformation.applyToMatrix t object.transform
         { object with transform = t; transformInverse = t |> Matrix.inverse }
-
-    let normal point (object:Object) =
-
-        let objectPoint =
-            object.transformInverse
-            |> Matrix.multiplyPoint point
-
-        let objectNormal = object.localNormalAt object.shape objectPoint
-
-        let worldNormal =
-            object.transformInverse
-            |> Matrix.Transpose
-            |> Matrix.multiplyVector objectNormal
-        
-        {worldNormal with W = 0.} |> Vector.normalize
 
     let setMaterial m object =
         {object with material = m}
@@ -83,3 +69,41 @@ module Object =
                 ambient + diffuse + (light.intensity |> Color.mulitplyByScalar (material.specular * factor))
 
 
+    let rec findParent child (parents:Object list) =
+        match parents with
+        | [] -> None 
+        | parent::t->
+            match parent.shape with
+            | Group(parentChildren) when parentChildren |> List.exists (fun x -> x.id = child.id) ->
+                parentChildren |> List.find (fun parent -> parent.id = child.id) |> Some
+            | Group(_) -> findParent child t
+            | _ -> None
+
+    let rec worldToObject object point =
+        match object.parent with
+        | Some parent ->
+            let point' = worldToObject parent point
+            object.transformInverse |> Matrix.multiplyPoint point'
+        | None -> object.transformInverse |> Matrix.multiplyPoint point
+
+    let rec normalToWorld (object:Object) v : Vector =
+        let normal =
+            object.transformInverse
+            |> Matrix.Transpose
+            |> Matrix.multiplyVector v
+            |> Vector.withW 0.
+            |> Vector.normalize
+
+        let normal' =
+            match object.parent with
+            | Some parent -> normalToWorld parent normal
+            | None -> normal
+
+        normal'
+
+    let normal point (object:Object) =
+
+        let localPoint = worldToObject object point
+        let localNormal = object.localNormalAt object.shape localPoint
+
+        normalToWorld object localNormal

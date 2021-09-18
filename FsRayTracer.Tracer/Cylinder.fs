@@ -76,4 +76,5 @@ module Cylinder =
           shape = Cylinder(-infinity, infinity, false);
           id = newRandom();
           localIntersect = localIntersect;
-          localNormalAt = localNormalAt }
+          localNormalAt = localNormalAt;
+          parent = None; }

@@ -14,6 +14,7 @@ open RayTracer.Cone
 open RayTracer.World
 open RayTracer.Camera
 open RayTracer.Pattern
+open RayTracer.Group
 open RayTracer.Plane
 open RayTracer.ObjectDomain
 open RayTracer.Cylinder
@@ -251,12 +252,51 @@ let main argv =
         *)
 
 
+    
+    let createHexagon() =
+
+        let createHexagonEdge() =
+            { Cylinder.create() with shape = Cylinder(0., 1., false) }
+            |> Object.transform (Translation(0., 0., -1.))
+            |> Object.transform (Rotation(Y, -Math.PI/6.))
+            |> Object.transform (Rotation(Z, -Math.PI/2.))
+            |> Object.transform (Scaling(0.25, 1., 0.25))
+
+
+        let createHexagonCorner() =
+            Sphere.create()
+            |> Object.transform (Translation(0., 0., -1.))
+            |> Object.transform (Scaling(0.25, 0.25, 0.25))
+
+        let createHexagonSide() =
+            let g = Group.create()
+
+            let hc1 = createHexagonCorner()
+            let hc2 = createHexagonEdge()
+            Group.setChildren [hc1;hc2] g
+
+        let hex = Group.create()
+
+
+
+
+
+        let sides =
+            [ for n in [0..5] do
+                let side =
+                    createHexagonSide()
+                    |> Object.transform (Rotation(Y, ((float n) * -Math.PI)/3.))
+                side ]
+
+            //let (_, hex') = Group.add side hex
+            //hex <- hex'
+        Group.setChildren sides hex
+
 
     let p =
         Plane.create()
         |> Object.setMaterial (
             Material.standard
-            |> Material.withPattern ( Pattern.stripes (Color.white) (Color.black) )
             |> Material.superShiny
             |> Material.withDiffuse 0.7
             |> Material.withSpecular 1.
@@ -264,62 +304,69 @@ let main argv =
             |> Material.withReflectivity 0.5
             |> Material.WithrefractiveIndex 1.5)
 
-    let cone =
-        { Cone.create() with shape = Cone(0., 1., true) }
-        |> Object.setMaterial(
-            Material.standard
-            |> Material.withColor (Color.create 0.8 1. 0.7)
-            |> Material.superShiny
-            |> Material.withDiffuse 0.7
-            |> Material.withSpecular 1.
-            |> Material.withShininess 300.
-            |> Material.withReflectivity 0.3
-            |> Material.WithrefractiveIndex 1.5)
-        |> Object.transform (Translation(1.7, 1.5, 2.5))
-        |> Object.transform (Rotation(Z,(Math.PI/2.)))
-        //|> Object.transform (Scaling(0.5, 0.5, 0.5))
+    //let cone =
+    //    { Cone.create() with shape = Cone(0., 1., true) }
+    //    |> Object.setMaterial(
+    //        Material.standard
+    //        |> Material.withColor (Color.create 0.8 1. 0.7)
+    //        |> Material.superShiny
+    //        |> Material.withDiffuse 0.7
+    //        |> Material.withSpecular 1.
+    //        |> Material.withShininess 300.
+    //        |> Material.withReflectivity 0.3
+    //        |> Material.WithrefractiveIndex 1.5)
+    //    |> Object.transform (Translation(1.7, 1.5, 2.5))
+    //    |> Object.transform (Rotation(Z,(Math.PI/2.)))
+    //    //|> Object.transform (Scaling(0.5, 0.5, 0.5))
 
 
     
-    let cyl =
-        { Cylinder.create() with shape = Cylinder(0., 1., true) }
-        |> Object.setMaterial (
+    //let cyl =
+    //    { Cylinder.create() with shape = Cylinder(0., 1., true) }
+    //    |> Object.setMaterial (
 
-            Material.standard
+    //        Material.standard
 
-            |> Material.superShiny
-            |> Material.withColor (Color.create 0.7 0. 0.3)
-            //|> Material.withDiffuse 0.7
-            |> Material.withReflectivity 0.4 )
-        |> Object.transform (Translation(-1.8, 1.5, 2.5))
-        |> Object.transform (Rotation(Z,-(Math.PI/2.)))
-        |> Object.transform (Scaling(0.5, 2.5, 1.))
+    //        |> Material.superShiny
+    //        |> Material.withColor (Color.create 0.7 0. 0.3)
+    //        //|> Material.withDiffuse 0.7
+    //        |> Material.withReflectivity 0.4 )
+    //    |> Object.transform (Translation(-1.8, 1.5, 2.5))
+    //    |> Object.transform (Rotation(Z,-(Math.PI/2.)))
+    //    |> Object.transform (Scaling(0.5, 2.5, 1.))
             
         //|> Object.transform (Translation(2., 0.3, 0.5))
         //|> Object.transform (Rotation(Y,-(Math.PI/4.5)))
         //|> Object.transform (Scaling(2., 0.3, 0.5))
   
-    let sphere =
-        Sphere.create()
-        |> Object.transform (Translation(0., 0.8, 2.5))
-        |> Object.transform (Scaling(0.8, 0.8, 0.8))
+    //let sphere =
+    //    Sphere.create()
+    //    |> Object.transform (Translation(0., 0.8, 2.5))
+    //    |> Object.transform (Scaling(0.8, 0.8, 0.8))
         
         
-        |> Object.setMaterial(
-            Material.standard
-            |> Material.withDiffuse 0.7
-            |> Material.withSpecular 1.
-            |> Material.withShininess 300.
-            |> Material.withReflectivity 0.9
-            |> Material.superShiny
-            |> Material.withColor (Color.black))
-            
+    //    |> Object.setMaterial(
+    //        Material.standard
+    //        |> Material.withDiffuse 0.7
+    //        |> Material.withSpecular 1.
+    //        |> Material.withShininess 300.
+    //        |> Material.withReflectivity 0.9
+    //        |> Material.superShiny
+    //        |> Material.withColor (Color.black))
+
+
+    let x =
+        createHexagon()
+        |> Object.transform(Rotation(X, -Math.PI/6.))
+        |> Object.transform(Translation(0., 1., 0.))
+        
 
     let world =
         World.empty
-        |> World.addObject p
-        |> World.addObject cone
-        |> World.addObject cyl
+        |> World.addObject x
+        //|> World.addObject p
+        //|> World.addObject cone
+        //|> World.addObject cyl
         //|> World.addObject sphere
         //|> World.addObject glass
         |> World.withLight (
@@ -327,7 +374,7 @@ let main argv =
 
     let stopWatch = System.Diagnostics.Stopwatch.StartNew()
     let ppm =
-        Camera.create 300 150 (Math.PI/3.)
+        Camera.create 500 250 (Math.PI/3.)
         |> Camera.withTransfom (Transformation.viewTransform (Point.create 0. 1.5 -5.) (Point.create 0. 1. 0.) (Vector.create 0. 1. 0.))
         |> Camera.render world
         |> Canvas.toPPM

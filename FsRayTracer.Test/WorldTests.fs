@@ -70,7 +70,7 @@ let ``shading an intersection`` () =
     let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.)
     let shape = w.objects.Head
     let i = Intersection.create shape 4.0
-    let comps = Computation.prepare r [i] i
+    let comps = Computation.prepare r [i] [] i
 
     let c = World.shadeHit w World.maxDepth comps
     c .= Color.create 0.38066 0.47583 0.2855 |> Assert.True
@@ -78,7 +78,6 @@ let ``shading an intersection`` () =
 [<Fact>]
 let ``shading an intersection from the inside`` () =
 
-    
     let w =
         World.standard
         |> World.withLight (Light.create (Color.create 1. 1. 1.) (Point.create 0. 0.25 0.))
@@ -86,7 +85,7 @@ let ``shading an intersection from the inside`` () =
     let r = Ray.create (Point.create 0. 0. 0.) (Vector.create 0. 0. 1.)
     let shape = w.objects.[1]
     let i = Intersection.create shape 0.5
-    let comps = Computation.prepare r [i] i
+    let comps = Computation.prepare r [i] [shape] i
 
     let c = World.shadeHit w World.maxDepth comps
     c .= Color.create 0.90498 0.90498 0.90498 |> Assert.True
@@ -172,7 +171,7 @@ let ``shadeHit is given an intersection in shadow `` () =
     let r = Ray.create (Point.create 0. 0. 5.) (Vector.create 0. 0. 1.)
     let i = Intersection.create s2 4.
 
-    let comps = Computation.prepare r [i] i 
+    let comps = Computation.prepare r [i] [] i 
     let c = World.shadeHit w World.maxDepth comps
     c .= Color.create 0.1 0.1 0.1 |> Assert.True
 
@@ -190,7 +189,7 @@ let ``the reflect color for nonreflective material``() =
     let r = Ray.create (Point.create 0. 0. 0.) (Vector.create 0. 0. 1.)
 
     let i = Intersection.create shape 1.
-    let comps = Computation.prepare  r [i] i
+    let comps = Computation.prepare  r [i] [] i
     let color = World.reflectedColor comps World.maxDepth w
 
     color .= Color.create 0. 0. 0. |> Assert.True
@@ -210,7 +209,7 @@ let ``the reflected color for a reflective material``() =
 
     let i = Intersection.create shape (Math.Sqrt(2.))
 
-    let comps = Computation.prepare  r [i] i
+    let comps = Computation.prepare  r [i] [] i
     let color = World.reflectedColor comps World.maxDepth w
 
     color .= Color.create 0.19032 0.2379 0.14274 |> Assert.True
@@ -230,7 +229,7 @@ let ``shadeHit with a reflective material``() =
 
     let i = Intersection.create shape (Math.Sqrt(2.))
 
-    let comps = Computation.prepare  r [i] i
+    let comps = Computation.prepare  r [i] [] i
     let color = World.shadeHit w World.maxDepth comps
 
     color .= Color.create 0.87677 0.92436 0.82918 |> Assert.True
@@ -280,7 +279,7 @@ let ``the reflected color at the maximum recursive depth``() =
 
     let r = Ray.create (Point.create 0. 0. -3.) (Vector.create 0. ((-Math.Sqrt(2.))/2.) (Math.Sqrt(2.)/2.))
     let i = Intersection.create shape (Math.Sqrt(2.))
-    let comps = Computation.prepare r [i] i
+    let comps = Computation.prepare r [i] [] i
     let color = World.reflectedColor comps 0 w
     color .= Color.create 0. 0. 0. |> Assert.True
 
@@ -291,7 +290,7 @@ let ``the refracted color with an opaque surface``() =
     let shape = w.objects.[0]
     let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.)
     let xs = Intersection.tuplesToIntersections [(4.,shape);(6., shape)]
-    let comps = Computation.prepare r xs xs.[0]
+    let comps = Computation.prepare r xs [] xs.[0]
 
     let c = World.refractedColor comps 5 w
     c .= Color.create 0. 0. 0. |> Assert.True
@@ -310,7 +309,7 @@ let ``the refracted color at maximum recursive depth``() =
     let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.)
     let xs = Intersection.tuplesToIntersections [(4.,shape);(6., shape)]
 
-    let comps = Computation.prepare r xs xs.[0]
+    let comps = Computation.prepare r xs [] xs.[0]
 
     let c = World.refractedColor comps 0 w
     c .= Color.create 0. 0. 0. |> Assert.True
@@ -328,7 +327,7 @@ let ``the refracted color under total internal reflection``() =
     let r = Ray.create (Point.create 0. 0. (Math.Sqrt(2.)/2.)) (Vector.create 0. 1. 0.)
     let xs = Intersection.tuplesToIntersections [(((Math.Sqrt(-2.)/2.)),shape);((Math.Sqrt(2.)/2.), shape)]
 
-    let comps = Computation.prepare r xs xs.[1]
+    let comps = Computation.prepare r xs [] xs.[1]
 
     let c = World.refractedColor comps 5 w
     c .= Color.create 0. 0. 0. |> Assert.True
@@ -360,7 +359,7 @@ let ``shadehit with a transparent material``() =
 
     let r = Ray.create (Point.create 0. 0. -3.) (Vector.create 0. ((-Math.Sqrt(2.))/2.) (Math.Sqrt(2.)/2.))
     let xs = Intersection.tuplesToIntersections [(Math.Sqrt(2.), floor)]
-    let comps = Computation.prepare r xs xs.[0]
+    let comps = Computation.prepare r xs [] xs.[0]
     let color = World.shadeHit w 5 comps
     color .= Color.create 0.93642 0.68642 0.68642 |> Assert.True
 

@@ -68,42 +68,67 @@ module Object =
                 let factor = Math.Pow(reflectDotEye, material.shininess)
                 ambient + diffuse + (light.intensity |> Color.mulitplyByScalar (material.specular * factor))
 
+    let gettrail (key:int) (tree:Object list)=
+        let mutable mlist = []
 
-    let rec findParent child (parents:Object list) =
-        match parents with
-        | [] -> None 
-        | parent::t->
-            match parent.shape with
-            | Group(parentChildren) when parentChildren |> List.exists (fun x -> x.id = child.id) ->
-                parentChildren |> List.find (fun parent -> parent.id = child.id) |> Some
-            | Group(_) -> findParent child t
+        let rec loopNode (node: Object) =
+            match node.shape with
+            | _ when node.id = key ->
+                Some node
+            | Group(children) when children.Length <> 0 -> loopChildren children
+            | _ -> None
+            
+    
+        and loopChildren (tree: Object list) =
+            match tree with
+            | h::t ->
+                match loopNode h with
+                | Some v ->
+                    mlist <- mlist @ [h]
+                    Some v
+                | None -> loopChildren t 
+
             | _ -> None
 
-    let rec worldToObject object point =
-        match object.parent with
-        | Some parent ->
-            let point' = worldToObject parent point
-            object.transformInverse |> Matrix.multiplyPoint point'
-        | None -> object.transformInverse |> Matrix.multiplyPoint point
+        loopChildren tree |> ignore
+        mlist
 
-    let rec normalToWorld (object:Object) v : Vector =
-        let normal =
-            object.transformInverse
+    let worldToObject object point topparents =
+        gettrail object.id topparents
+        |> List.rev
+        |> List.fold (fun p o -> Matrix.multiplyPoint p o.transformInverse) point
+
+    let normalToWorld (object:Object) (v:Vector) (topparents) : Vector =
+
+        let handle (o:Object) n =
+            o.transformInverse
             |> Matrix.Transpose
-            |> Matrix.multiplyVector v
+            |> Matrix.multiplyVector n
             |> Vector.withW 0.
             |> Vector.normalize
 
-        let normal' =
-            match object.parent with
-            | Some parent -> normalToWorld parent normal
-            | None -> normal
+        gettrail object.id topparents
+        |> List.fold (fun v o -> handle o v) v
 
-        normal'
+        //let rec loop normal (trail:Object list) =
+        //    match trail with
+        //    | [] -> normal
+        //    | object :: tail ->
+        //        let n =
+        //            object.transformInverse
+        //            |> Matrix.Transpose
+        //            |> Matrix.multiplyVector normal
+        //            |> Vector.withW 0.
+        //            |> Vector.normalize
+        //        loop n tail
 
-    let normal point (object:Object) =
+        //let trail = gettrail object.id topparents
+        //loop v trail
 
-        let localPoint = worldToObject object point
+
+    let normal point topparents (object:Object) =
+
+        let localPoint = worldToObject object point topparents
         let localNormal = object.localNormalAt object.shape localPoint
 
-        normalToWorld object localNormal
+        normalToWorld object localNormal topparents

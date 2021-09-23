@@ -20,236 +20,13 @@ open RayTracer.ObjectDomain
 open RayTracer.Cylinder
 open RayTracer.Sphere
 
+type Node = Node of value:int * children:Node list
+type Node2 = Node2 of value:int * parent: Node2 Option
+
 
 [<EntryPoint>]
 let main argv =
-    (*IMAGE 1*)
-    (*
-    let tick environment projectile =
-        { position = projectile.position + projectile.velocity;
-          velocity = projectile.velocity + environment.gravity + environment.wind }
-
-    let p =
-        { position = Point.create 0. 1. 0.;
-          velocity = (Vector.create 1.0 1.8 0.0 |> Vector.normalize) * 11.25 }
-
-    let e =
-        { gravity = Vector.create 0.0 -0.1 0.0;
-          wind    = Vector.create -0.01 0.0 0.0 }
-
-    let c = Canvas.makeCanvas 900 550
-
-    let rec getProjectiles env proj list =
-        let newProjectile = tick env proj
-
-        match newProjectile.position with
-        | p when p.Y > 0.0 ->
-            list @ [newProjectile] |> getProjectiles e newProjectile
-        | p ->
-            list
-
-    let list = getProjectiles e p [p]
-
-    list
-    |> List.iter(fun p ->
-        Canvas.setPixel (int p.position.X) (c.Height - (int p.position.Y)) Color.red c
-        p |> ignore)
-
-    let ppm = Canvas.toPPM c
-    System.IO.File.WriteAllText("image.pgm", ppm);
-    *)
-
-
-    (*IMAGE 2*)
-    (*
-        let c = Canvas.makeCanvas 400 400
-
-        let angle = (Math.PI)/6.
-        let radius = 3./8. * float c.Width
-
-        let twelwP = Point.create 0. 0. 1.
-
-
-        [1..12]
-        |> List.iter(fun h ->
-            let p =
-                twelwP
-                |> Transformation.applyToPoint (Rotation(Y, (float h) * angle))
-                |> Transformation.applyToPoint (Scaling(radius, 0., radius))
-                |> Transformation.applyToPoint (Translation((float c.Width/2.), 0., (float c.Width/2.)))
-
-            c |> Canvas.setPixel (int p.X) (c.Height-(int p.Z)) Color.red)
-
-
-        let ppm = Canvas.toPPM c
-        System.IO.File.WriteAllText("image.pgm", ppm);
-    *)
-
-    (*IMAGE 3*)
-    (*
-    let rayOrigin = Point.create 0. 0. -5.
-    let wallZ = 10
-    let wallSize = 7.
-    let canvasPixels = 100
-    let pixelSize = wallSize/ (float canvasPixels)
-    let half = wallSize / 2.
-    let canvas = Canvas.makeCanvas canvasPixels canvasPixels
-    let shape = Shape.sphere
-
-    let hits x y =
-        let worldY = half - pixelSize * (float y)
-        let worldX = -half + pixelSize * (float x)
-        let position = Point.create worldX worldY (float wallZ)
-
-        let hit =
-            Vector.normalize (position - rayOrigin)
-            |> Ray.create rayOrigin 
-            |> Ray.intersect shape
-            |> Intersection.hit
-
-        match hit with
-        | Some _ -> Some {X = x; Y = y}
-        | _ -> None
-
-    canvas
-    |> Canvas.cordinats
-    |> List.map (fun c -> hits c.X c.Y)
-    |> List.choose (fun x -> x)
-    |> List.iter(fun c -> Canvas.setPixel c.X c.Y Color.red canvas)
-
-    let ppm = Canvas.toPPM canvas
-    System.IO.File.WriteAllText ("image.pgm", ppm)
-    *)
-
-   (*image 4
-
-   let rayOrigin = Point.create 0. 0. -5.
-      let wallZ = 10
-      let wallSize = 7.
-      let canvasPixels = 800
-      let pixelSize = wallSize/ (float canvasPixels)
-      let half = wallSize / 2.
-      let canvas = Canvas.makeCanvas canvasPixels canvasPixels
-
-      let material = Material.standard |> Material.withColor (Color.create 0.5 0.1 0.7)
-      let shape = Shape.sphere |> Shape.setMaterial material
-
-      let lightPosition = Point.create -10. 10. -10.
-      let lightColor = Color.create 1. 1. 1.
-      let light = Light.create lightColor lightPosition
-
-      let calc x y =
-          let worldY = half - pixelSize * (float y)
-          let worldX = -half + pixelSize * (float x)
-          let position = Point.create worldX worldY (float wallZ)
-
-          let ray =
-              Vector.normalize (position - rayOrigin)
-              |> Ray.create rayOrigin 
-
-          let hit =
-              ray
-              |> Ray.intersect shape
-              |> Intersection.hit
-
-          
-
-          match hit with
-          | Some intersection ->
-              let point = Ray.position intersection.t ray
-              let normal = Shape.normal point intersection.object
-              let eye = ray.direction * -1.
-              let color = Material.lighting intersection.object.material light point eye normal
-              Some {X = x; Y = y; Color = color}
-          | _ -> None
-
-      canvas
-      |> Canvas.cordinats
-      |> List.map (fun c -> calc c.X c.Y)
-      |> List.choose (fun x -> x)
-      |> List.iter(fun c -> Canvas.setPixel c.X c.Y c.Color canvas)
-
-      let ppm = Canvas.toPPM canvas
-      System.IO.File.WriteAllText ("image.pgm", ppm)
-      *)
-        (*
-        image 5
-        let m =
-            Material.standard
-            |> Material.withColor (Color.create 1. 0.9 0.9)
-            |> Material.withSpecular 0.
-
-        let floor =
-            Shape.sphere
-            |> Shape.transform (Scaling(10., 0.01, 10.))
-            |> Shape.setMaterial m
-
-        let leftWall =
-            Shape.sphere
-            |> Shape.transform (Translation(0., 0., 5.))
-            |> Shape.transform (Rotation(Y, -(Math.PI/4.)))
-            |> Shape.transform (Rotation(X, -(Math.PI/2.)))
-            |> Shape.transform (Scaling(10., 0.01, 10.))
-            |> Shape.setMaterial m
-
-        let rightWall =
-          Shape.sphere
-          |> Shape.transform (Translation(0., 0., 5.))
-          |> Shape.transform (Rotation(Y, (Math.PI/4.)))
-          |> Shape.transform (Rotation(X, (Math.PI/2.)))
-          |> Shape.transform (Scaling(10., 0.01, 10.))
-          |> Shape.setMaterial m
-
-        let middle =
-            Shape.sphere
-            |> Shape.transform (Translation(-0.5, 1., 0.5))
-            |> Shape.setMaterial (
-                Material.standard
-                |> Material.withColor (Color.create 0.1 1. 0.5)
-                |> Material.withDiffuse 0.7
-                |> Material.withSpecular 0.3)
-
-        let right =
-            Shape.sphere
-            |> Shape.transform (Translation(1.5, 0.5, 0.5))
-            |> Shape.transform (Scaling(0.5, 0.5, 0.5))
-            |> Shape.setMaterial (
-                Material.standard
-                |> Material.withColor (Color.create 0.5 1. 0.1)
-                |> Material.withDiffuse 0.7
-                |> Material.withSpecular 0.3)
-
-        let left =
-            Shape.sphere
-            |> Shape.transform (Translation(-1.5, 0.33, -0.75))
-            |> Shape.transform (Scaling(0.33, 0.33, 0.33))
-            |> Shape.setMaterial (
-                Material.standard
-                |> Material.withColor (Color.create 1. 0.8 0.1)
-                |> Material.withDiffuse 0.7
-                |> Material.withSpecular 0.3)
-
-        let world =
-            World.empty
-            |> World.addObject floor
-            |> World.addObject leftWall
-            |> World.addObject rightWall
-            |> World.addObject middle
-            |> World.addObject left
-            |> World.addObject right
-            |> World.withLight (
-                Light.create (Color.create 1. 1. 1.) (Point.create -10. 10. -10.))
-
-        let stopWatch = System.Diagnostics.Stopwatch.StartNew()
-        let ppm =
-            Camera.create 50 25 (Math.PI/3.)
-            |> Camera.withTransfom (Transformation.viewTransform (Point.create 0. 1.5 -5.) (Point.create 0. 1. 0.) (Vector.create 0. 1. 0.))
-            |> Camera.render world
-            |> Canvas.toPPM
-        stopWatch.Stop()
-
-        System.IO.File.WriteAllText ("image.pgm", ppm)
-        *)
+  
 
 
     
@@ -355,6 +132,99 @@ let main argv =
     //        |> Material.withColor (Color.black))
 
 
+
+    let tree = [
+        Node(1,
+            [Node(3,
+                  [])
+            ]);
+        Node(2,
+             [
+                 Node(4,
+                    [
+                        Node(6,[])
+                    ]
+                    );
+                 Node(5,
+                 [
+                    Node(7,[]);
+                    Node(8,[])
+                 ])
+             ])
+    
+        ]
+    let tree2 =
+        let n2 =
+            let n2 = Node2(2,None)
+
+            let n4 = Node2(4,Some n2)
+            let n6 = Node2(6,Some n4)
+
+            let n5 = Node2(5,Some n2)
+            let n8 = Node2(8,Some n5)
+            let n7 = Node2(7,Some n5)
+            n2
+        let n1 =
+            let n1 = Node2(1,None)
+
+            let n3 = Node2(3,Some n1)
+            n1
+        [n1; n2]
+    //let findintree (key:int) (tree:Node list) : Node Option =
+    //    let rec loopNode (node: Node) =
+    //        printfn "%A" node |> ignore
+    //        match node with
+    //        | Node(v,_) when v = key ->
+    //            Some node
+    //        | Node(v,children) when children.Length <> 0 -> loopChildren children
+    //        | _ -> None
+            
+    
+    //    and loopChildren (tree: Node list) =
+    //        match tree with
+    //        | h::t ->
+    //            match loopNode h with
+    //            | Some v ->
+    //                printfn "%A" h
+    //                Some h
+    //            | None -> loopChildren t 
+
+    //        | _ -> None
+
+    //    loopChildren tree
+
+    //let v = findintree 3 tree
+    let gettrail (key:int) (tree:Node list)=
+        let mutable mlist = []
+
+        let rec loopNode (node: Node) =
+                match node with
+                | Node(v,_) when v = key ->
+                    Some node
+                | Node(v,children) when children.Length <> 0 -> loopChildren children
+                | _ -> None
+            
+    
+        and loopChildren (tree: Node list) =
+            match tree with
+            | h::t ->
+                match loopNode h with
+                | Some v ->
+                    mlist <- mlist @ [h]
+                    Some v
+                | None -> loopChildren t 
+
+            | _ -> None
+
+        loopChildren tree |> ignore
+        mlist
+
+    let c = gettrail 8 tree
+        //match trail with
+        //| [] -> Matrix.multiplyPoint point object.transformInverse
+        //| _ -> trail |> List.fold (fun p o -> Matrix.multiplyPoint p o.transformInverse) point
+
+
     let x =
         createHexagon()
         |> Object.transform(Rotation(X, -Math.PI/6.))
@@ -374,7 +244,7 @@ let main argv =
 
     let stopWatch = System.Diagnostics.Stopwatch.StartNew()
     let ppm =
-        Camera.create 500 250 (Math.PI/3.)
+        Camera.create 400 200 (Math.PI/3.)
         |> Camera.withTransfom (Transformation.viewTransform (Point.create 0. 1.5 -5.) (Point.create 0. 1. 0.) (Vector.create 0. 1. 0.))
         |> Camera.render world
         |> Canvas.toPPM

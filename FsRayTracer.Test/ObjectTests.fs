@@ -62,7 +62,7 @@ let ``intersecting a translated sphere with a ray`` () =
 let ``the normal on a sphere poin on the x axis`` () =
     let p = Point.create 1. 0. 0.
     let s = Sphere.create()
-    let n = s |> Object.normal p
+    let n = s |> Object.normal p []
 
     n .= (Vector.create 1. 0. 0.) |> Assert.True
 
@@ -70,7 +70,7 @@ let ``the normal on a sphere poin on the x axis`` () =
 let ``the normal on a sphere poin on the y axis`` () =
     let p = Point.create 0. 1. 0.
     let s = Sphere.create()
-    let n = s |> Object.normal p
+    let n = s |> Object.normal p []
 
     n .= (Vector.create 0. 1. 0.) |> Assert.True
 
@@ -78,7 +78,7 @@ let ``the normal on a sphere poin on the y axis`` () =
 let ``the normal on a sphere poin on the z axis`` () =
     let p = Point.create 0. 0. 1.
     let s = Sphere.create()
-    let n = s |> Object.normal p
+    let n = s |> Object.normal p []
 
     n .= (Vector.create 0. 0. 1.) |> Assert.True
 
@@ -86,7 +86,7 @@ let ``the normal on a sphere poin on the z axis`` () =
 let ``the normal is a normalized vector`` () =
     let p = Point.create (Math.Pow (3., 0.5)/3.) (Math.Pow (3., 0.5)/3.) (Math.Pow (3., 0.5)/3.)
     let s = Sphere.create()
-    let n = s |> Object.normal p
+    let n = s |> Object.normal p []
 
     n .= Vector.normalize (n) |> Assert.True
 
@@ -95,9 +95,10 @@ let ``cumputing the normal on a translated sphere`` () =
     let n =
         Sphere.create()
         |> Object.transform (Translation(0., 1., 0.))
-        |> Object.normal (Point.create 0. 1.70711 -0.70711)
+        
 
-    n .= (Vector.create 0. 0.70711 -0.70711) |>  Assert.True
+    let n' = Object.normal (Point.create 0. 1.70711 -0.70711) [n] n
+    n' .= (Vector.create 0. 0.70711 -0.70711) |>  Assert.True
 
 [<Fact>]
 let ``cumputing the normal on a transformed sphere`` () =
@@ -105,9 +106,9 @@ let ``cumputing the normal on a transformed sphere`` () =
         Sphere.create()
         |> Object.transform (Scaling(1., 0.5, 1.))
         |> Object.transform (Rotation(Z, (Math.PI/5.)))
-        |> Object.normal (Point.create 0. (Math.Pow (2., 0.5)/2.) -(Math.Pow (2., 0.5)/2.))
+    let n' = Object.normal (Point.create 0. (Math.Pow (2., 0.5)/2.) -(Math.Pow (2., 0.5)/2.)) [n] n
 
-    n .= (Vector.create 0. 0.97014 -0.24254) |>  Assert.True
+    n' .= (Vector.create 0. 0.97014 -0.24254) |>  Assert.True
 
 [<Fact>]
 let ``a sphere has a deafult material`` () =
@@ -174,7 +175,7 @@ let ``the normal surface of a cube`` (pointX, pointY, pointZ, vectorX, vectorY, 
     let c = Cube.create()
     let p = Point.create pointX pointY pointZ
 
-    let normal = Object.normal p c
+    let normal = Object.normal p [] c
     let expected = Vector.create vectorX vectorY vecotrZ
 
     expected .= normal |> Assert.True
@@ -219,7 +220,7 @@ let ``normal vector on a cylinder`` (pointX, pointY, pointZ, vectorX, vectorY, v
     
     let cyl = Cylinder.create()
     let p = Point.create pointX pointY pointZ
-    let n = Object.normal p cyl
+    let n = Object.normal p [] cyl
 
     n .= (Vector.create vectorX vectorY vecotorZ) |> Assert.True
 
@@ -286,7 +287,7 @@ let ``intersecting the caps of a closed cylinder`` (pointX, pointY, pointZ, vect
 let ``the normal vector on a cylinder's end caps`` (pointX, pointY, pointZ, vectorX, vectorY, vecotorZ) =
 
     let cyl = {Cylinder.create() with shape = Cylinder(1., 2., true)}
-    let n = Object.normal (Point.create pointX pointY pointZ) cyl
+    let n = Object.normal (Point.create pointX pointY pointZ) [] cyl
     let normal = Vector.create vectorX vectorY vecotorZ
 
     n .= normal |> Assert.True
@@ -405,10 +406,14 @@ let ``convering a point from world to object space`` () =
     let g1 = Group.create() |> Object.transform (Rotation(Y, Math.PI/2.))
     let g2 =  Group.create() |> Object.transform (Scaling(2., 2., 2.))
 
-    let (g2', g1') = Group.add g2 g1
-    let (child, _) = Group.add s g2'
+    let g1' = Group.setChildren [s] g1
+    let g2' = Group.setChildren [g1'] g2
 
-    let p = Object.worldToObject child (Point.create -2. 0. -10.)
+    //let (g2', g1') = Group.add g2 g1
+    //let (child, g2'') = Group.add s g2'
+    //let l = [g2'']
+
+    let p = Object.worldToObject s (Point.create -2. 0. -10.) [g2']
     let expected = Point.create 0. 0. -1.
     Point.equal p expected |> Assert.True
 
@@ -417,12 +422,13 @@ let ``convering a normal from object to world space`` () =
 
     let g1 = Group.create() |> Object.transform (Rotation(Y,Math.PI/2.))
     let g2 =  Group.create() |> Object.transform (Scaling(1., 2., 3.))
-    let (g2', g1') = Group.add g2 g1
-
     let s = Sphere.create() |> Object.transform (Translation(5., 0., 0.))
-    let (s', _) = Group.add s g2'
 
-    let n = Object.normalToWorld s' (Vector.create (Math.Sqrt(3.)/3.) (Math.Sqrt(3.)/3.) (Math.Sqrt(3.)/3.))
+    let g2' = Group.setChildren [s] g2
+    let g1' = Group.setChildren [g2'] g1
+
+    let sqr = (Math.Sqrt(3.)/3.)
+    let n = Object.normalToWorld s (Vector.create sqr sqr sqr) [g1']
     n .= Vector.create 0.2857 0.4286 -0.8571 |> Assert.True
 
 [<Fact>]
@@ -430,10 +436,12 @@ let ``finding the normal onn a child object`` () =
 
     let g1 = Group.create() |> Object.transform (Rotation(Y,Math.PI/2.))
     let g2 =  Group.create() |> Object.transform (Scaling(1., 2., 3.))
-    let (g2', g1') = Group.add g2 g1
-
     let s = Sphere.create() |> Object.transform (Translation(5., 0., 0.))
-    let (s', _) = Group.add s g2'
 
-    let n = Object.normal (Point.create 1.7321 1.1547 -5.5774) s' 
+    let g2' = Group.setChildren [s] g2
+    let g1' = Group.setChildren [g2'] g1
+    let x = g1'
+    
+
+    let n = Object.normal (Point.create 1.7321 1.1547 -5.5774) [g1'] s
     n .= Vector.create 0.2857 0.4286 -0.8571 |> Assert.True

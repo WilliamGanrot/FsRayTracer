@@ -110,7 +110,7 @@ let ``the under point is offset below the surface`` () =
         |> Object.transform (Translation(0., 0., 1.))
 
     let i = Intersection.create shape 5.
-    let comps = Computation.prepare r [i] i
+    let comps = Computation.prepare r [i] [shape] i
     comps.underPoint.Z > epsilon/2. |> Assert.True
     comps.point.Z < comps.underPoint.Z |> Assert.True
 

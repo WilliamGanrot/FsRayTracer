@@ -48,13 +48,13 @@ module Computation =
 
         compute [] 1. 1. xs
 
-    let prepare (r:Ray) (xs:Intersection list) (i:Intersection) =
+    let prepare (r:Ray) (xs:Intersection list) (topparents:ObjectDomain.Object list) (i:Intersection) =
 
         let t = i.t
         let object = i.object
         let point = Ray.position i.t r
         let eyev = r.direction * -1.
-        let normalv = Object.normal point i.object
+        let normalv = Object.normal point topparents i.object
         let inside = (Vector.dot normalv eyev) < 0.
         let trueNormalv = if inside then normalv * -1. else normalv
         let n1,n2 = nValues i r xs

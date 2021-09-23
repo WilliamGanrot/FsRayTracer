@@ -90,7 +90,7 @@ module World =
             match hit with
             | Some intersection ->
                 intersection
-                |> Computation.prepare ray [intersection]
+                |> Computation.prepare ray [intersection] world.objects
                 |> shadeHit world remaining
             | None -> Color.black
     

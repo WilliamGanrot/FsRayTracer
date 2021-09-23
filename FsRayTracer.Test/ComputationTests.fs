@@ -26,7 +26,7 @@ let ``precomputing the state of an intersection`` () =
     let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.) 
     let s = Sphere.create()
     let i = Intersection.create s 4.
-    let comps = i |> Computation.prepare r [i]
+    let comps = i |> Computation.prepare r [i] []
 
     FloatHelper.equal comps.t i.t |> Assert.True
     comps.object .=. i.object |> Assert.True
@@ -41,7 +41,7 @@ let ``the hit, when an intersection occurs on the outside`` () =
 
     let comps =
         let i = Intersection.create s 4.
-        Computation.prepare r [i] i
+        Computation.prepare r [i] [] i
 
     comps.inside |> Assert.False
 
@@ -50,7 +50,7 @@ let ``the hit, when an intersection occurs on the inside`` () =
     let r = Ray.create (Point.create 0. 0. 0.) (Vector.create 0. 0. 1.) 
     let s = Sphere.create()
     let i = Intersection.create s 1.
-    let comps = i |> Computation.prepare r [i]
+    let comps = i |> Computation.prepare r [i] []
 
     comps.point |> Point.equal (Point.create 0. 0. 1.) |> Assert.True
     comps.eyev .= (Vector.create 0. 0. -1.) |> Assert.True
@@ -65,7 +65,7 @@ let ``the hit should offset the point`` () =
         |> Object.transform (Translation(0., 0., 0.1))
 
     let i = Intersection.create s 1.
-    let comps = i |> Computation.prepare r [i]
+    let comps = i |> Computation.prepare r [i] []
 
     comps.overPoint.Z < -(epsilon/2.) |> Assert.True
     comps.point.Z > comps.overPoint.Z |> Assert.True
@@ -77,7 +77,7 @@ let ``the Shilick approxiation under total internal relfection`` () =
 
     let xs = Intersection.tuplesToIntersections [((-Math.Sqrt(2.)/2.), shape); ((Math.Sqrt(2.)/2.), shape)]
 
-    let comps = Computation.prepare r xs xs.[1]
+    let comps = Computation.prepare r xs [] xs.[1]
     let reflectance = Computation.shlick comps
     FloatHelper.equal reflectance 1. |> Assert.True
 
@@ -88,7 +88,7 @@ let ``the schlick approximation with a perpendicular viewing angle`` () =
 
     let xs = Intersection.tuplesToIntersections [(-1., shape); (1., shape)]
 
-    let comps = Computation.prepare r xs xs.[1]
+    let comps = Computation.prepare r xs [] xs.[1]
     let reflectance = Computation.shlick comps
 
     FloatHelper.equal reflectance 0.04 |> Assert.True
@@ -100,7 +100,7 @@ let ``the schlick approxiamtion with small anle and n2 > n1`` () =
 
     let xs = Intersection.tuplesToIntersections [(1.8589, shape);]
 
-    let comps = Computation.prepare r xs xs.[0]
+    let comps = Computation.prepare r xs [] xs.[0]
     let reflectance = Computation.shlick comps
 
     FloatHelper.equal reflectance 0.48873 |> Assert.True
@@ -133,7 +133,7 @@ let ``shadehit with a reflective transparent material`` () =
     let r = Ray.create (Point.create 0. 0. -3.) (Vector.create 0. (-Math.Sqrt(2.)/2.) (Math.Sqrt(2.)/2.))
 
     let xs = Intersection.tuplesToIntersections [(Math.Sqrt(2.), floor)]
-    let comps = Computation.prepare r xs xs.[0]
+    let comps = Computation.prepare r xs [] xs.[0]
 
     let color = World.shadeHit w 5 comps
 

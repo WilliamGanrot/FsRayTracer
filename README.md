@@ -1,7 +1,10 @@
 # FsRayTracer
 This project is an F# implementation of a raytracer based on the book "The Ray Tracer Challenge: A Test-Driven Guide to Your First 3D Renderer" by James Buck
 
-## Chapter 13- Cylinders and cones
+## Chapter 14 - Groups
+![Image](Images/group.png?raw=true "Title")
+
+## Chapter 13 - Cylinders and cones
 ![Image](Images/scene_w_cylinder_cone.png?raw=true "Title")
 
 ## Chapter 12 - Cubes
@@ -24,3 +27,13 @@ This project is an F# implementation of a raytracer based on the book "The Ray T
 
 ## Chapter 6 - Light and Shading
 ![Image](Images/sphere.png?raw=true "Title")
+
+## Chapter 5 - Ray-Sphere Intersections
+![Image](Images/scene_w_circle.png?raw=true "Title")
+
+## Chapter 4 - Matrix Transformations
+![Image](Images/scene_dot_circle.png?raw=true "Title")
+
+## Chapter 2 - Drawing on a Canvas
+![Image](Images/scene_w_projectile.png?raw=true "Title")
+

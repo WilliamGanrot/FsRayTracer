@@ -1,0 +1,154 @@
+namespace RayTracer.OBJFile
+open RayTracer.Sphere
+open RayTracer.ObjectDomain
+open FSharp.Text.RegexProvider
+open RayTracer.RayDomain
+open RayTracer.Ray
+open RayTracer.Point
+open System.Collections.Generic
+open RayTracer.Triangle
+open RayTracer.Group
+
+module OBJFile =
+
+    type ParseResult = { defaultGroup: Object list; vertices: Point list; groups: Object list; topGroup: Object}
+    type LexResult = { shapes: Object list; vertices: Point list; }
+
+    type VertexRegexPattern = Regex< @"(?<shape>[v]) (?<f1>(-?[0-9]\d*(\.\d+)?)) (?<f2>(-?[0-9]\d*(\.\d+)?)) (?<f3>(-?[0-9]\d*(\.\d+)?))$" >
+    type TraingleRegexPattern = Regex< @"(?<shape>[f]) (?<i1>(\d+)) (?<i2>(\d+)) (?<i3>(\d+))$" >
+    type PolygonRegexPattern = Regex< @"(?<shape>[f]) (?<i1>(\d+)) (?<i2>(\d+)) (?<i3>(\d+)) (?<i4>(\d+)) (?<i5>(\d+))$" >
+    type GroupRegexPattern = Regex< @"(?<group>[g]) (?<name>(\w*))$" >
+
+    //type OBJShape =
+    //    | OBJTriangle of i1 : int * i2:int * i3:int
+    //    | ObjPoly of i1 : int * i2:int * i3:int * i4:int * i5:int
+    //    | ObjGroup of name: string
+
+    type OBJEnteties =
+        | OBJVertex of Point
+        | OBJTriangle of i1 : int * i2:int * i3:int
+        | ObjPoly of i1 : int * i2:int * i3:int * i4:int * i5:int
+        | ObjGroup of name: string
+
+
+    let (|VertexRegex|_|) input =
+        match VertexRegexPattern().TryTypedMatch(input) with
+        | Some m -> Some (OBJVertex (Point.create (float m.f1.Value) (float m.f2.Value) (float m.f3.Value)))
+        | None -> None
+
+    let (|TraingleRegex|_|) input =
+        match TraingleRegexPattern().TryTypedMatch(input) with
+        | Some m -> Some(OBJTriangle((int m.i1.Value), (int m.i2.Value), (int m.i3.Value)))
+        | None -> None
+
+    let (|PolyRegex|_|) input =
+        match PolygonRegexPattern().TryTypedMatch(input) with
+        | Some m -> Some(ObjPoly((int m.i1.Value), (int m.i2.Value), (int m.i3.Value), (int m.i4.Value), (int m.i5.Value)))
+        | None -> None
+
+    
+    let (|GroupRegex|_|) input =
+        match GroupRegexPattern().TryTypedMatch(input) with
+        | Some m ->
+            Some(ObjGroup(m.Name))
+        | None -> None
+
+
+    let lexer (s:string) : LexResult =
+        let objEnteties =
+            let parseLine s =
+                match s with
+                | VertexRegex m -> Some (m)
+                | TraingleRegex m -> Some (m)
+                | PolyRegex m -> Some (m)
+                | GroupRegex m -> Some (m)
+                | _ -> None
+
+            let sp = s.Split("\n")
+            sp
+            |> Array.choose parseLine
+            |> Array.toList
+
+        let vertices =
+            let filterVertices x =
+                match x with
+                | OBJVertex v -> Some v
+                | _ -> None 
+
+            objEnteties
+            |> List.choose filterVertices 
+
+        let shapes =
+            let getVertexAtIndex i (vertices: OBJEnteties list) =
+                match vertices.[i] with
+                | OBJVertex p -> p
+                | _ -> failwith "expected a vertex"
+
+            let filterShape (x:OBJEnteties) =
+                match x with
+                | OBJTriangle(i1,i2,i3) ->
+                    let p1 = getVertexAtIndex (i1-1) objEnteties
+                    let p2 = getVertexAtIndex (i2-1) objEnteties
+                    let p3 = getVertexAtIndex (i3-1) objEnteties
+                    Some([Triangle.create(p1,p2,p3)])
+                | ObjPoly(i1,i2,i3,i4,i5) ->
+                    let p1 = getVertexAtIndex (i1-1) objEnteties
+                    let p2 = getVertexAtIndex (i2-1) objEnteties
+                    let p3 = getVertexAtIndex (i3-1) objEnteties
+                    let p4 = getVertexAtIndex (i4-1) objEnteties
+                    let p5 = getVertexAtIndex (i5-1) objEnteties
+
+                    let t1 = Triangle.create(p1,p2,p3)
+                    let t2 = Triangle.create(p1,p3,p4)
+                    let t3 = Triangle.create(p1,p4,p5)
+                    Some ([t1;t2;t3])
+                | ObjGroup m -> Some([Group.create()])
+                | _ -> None
+            
+
+            objEnteties
+            |> List.choose filterShape
+            |> List.collect (fun x -> x)
+
+        { shapes = shapes; vertices = vertices; }
+
+    let parseFile (s:string) =
+
+        let rec loop (objects:Object list) (lastGroup: Object Option) (acc:ParseResult) = 
+            match objects with
+            | h::t ->
+                match h.shape, lastGroup with
+                | Group(_), None ->
+                    let groupsList = [h] @ acc.groups
+                    loop t (Some h) {acc with groups = groupsList }
+                | Group(_), Some g ->
+                    let topGroup' = Group.addChildren [g] acc.topGroup
+                    let groups' = [h] @ acc.groups;
+                    let acc' = {acc with topGroup = topGroup'; groups = groups'}
+                    loop t (Some h) acc'
+                | Traingle(_), None ->
+                    let topGroup' = Group.addChildren [h] acc.topGroup
+                    let defaultGroup' = acc.defaultGroup @ [h]
+                    let acc' = {acc with defaultGroup = defaultGroup'; topGroup = topGroup'}
+                    loop t lastGroup acc'
+                | Traingle(_), Some(group) ->
+
+                        let groups' =
+                            let group' =
+                                let chlidren = Group.getChildren group
+                                Group.setChildren ([h] @ chlidren) group
+
+                            let filterd = acc.groups |> List.filter(fun x -> x.id <> group.id)
+                            filterd @ [group']
+                        let defaultGroup' = acc.defaultGroup @ [h]
+                        let acc' = {acc with groups = groups'; defaultGroup = defaultGroup'}
+                        loop t lastGroup acc'
+                | _ -> failwith "error"
+            | [] -> acc
+
+        let lex = lexer s
+        let parseResult = loop lex.shapes None {defaultGroup = []; groups = []; vertices = lex.vertices; topGroup = Group.create()}
+        parseResult
+        
+
+

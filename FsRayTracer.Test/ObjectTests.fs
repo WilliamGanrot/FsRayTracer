@@ -16,6 +16,8 @@ open RayTracer.Cube
 open RayTracer.Cylinder
 open RayTracer.Group
 open RayTracer.Cone
+open RayTracer.Vector
+open RayTracer.Triangle
 
 
 open Xunit
@@ -370,11 +372,7 @@ let ``intersecing a ray with a non empty group`` () =
     let s3 = Sphere.create() |> Object.transform (Translation(5., 0., 0.))
 
     let g = 
-        Group.create()
-        |> Group.add s1 |> (fun (_, group) -> group )
-        |> Group.add s2 |> (fun (_,group) -> group )
-        |> Group.add s3 |> (fun (_,group) -> group )
-
+        Group.setChildren [s1;s2;s3] (Group.create())
 
 
     let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.)
@@ -392,7 +390,7 @@ let ``intersecting a transformad group`` () =
 
     let s = Sphere.create() |> Object.transform (Translation(5., 0., 0.))
 
-    let (_,g') = Group.add s g
+    let g' = Group.setChildren [s] g
 
     let r = Ray.create (Point.create 10. 0. -10.) (Vector.create 0. 0. 1.)
 
@@ -445,3 +443,111 @@ let ``finding the normal onn a child object`` () =
 
     let n = Object.normal (Point.create 1.7321 1.1547 -5.5774) [g1'] s
     n .= Vector.create 0.2857 0.4286 -0.8571 |> Assert.True
+
+
+[<Fact>]
+let ``constructing a traingle`` () =
+
+    let p1 = Point.create 0. 1. 0.
+    let p2 = Point.create -1. 0. 0.
+    let p3 = Point.create 1. 0. 0.
+
+    let t = Triangle.create(p1,p2,p3)
+
+    match t.shape with
+    | Traingle(p1', p2', p3', e1, e2, n) ->
+        
+        Point.equal p1' p1 |> Assert.True
+        Point.equal p2' p2 |> Assert.True
+        Point.equal p3' p3 |> Assert.True
+
+        e1 .= (Vector.create -1. -1. 0.) |> Assert.True
+        e2 .= (Vector.create 1. -1. 0.) |> Assert.True
+        n .= (Vector.create 0. 0. -1.) |> Assert.True
+
+[<Fact>]
+let ``finding the normal on a triangle`` () =
+
+    let p1 = Point.create 0. 1. 0.
+    let p2 = Point.create -1. 0. 0.
+    let p3 = Point.create 1. 0. 0.
+
+    let t = Triangle.create(p1,p2,p3)
+
+    let n1 = t.localNormalAt t.shape (Point.create 0. 0.5 0.)
+    let n2 = t.localNormalAt t.shape (Point.create -0.5 0.75 0.)
+    let n3 = t.localNormalAt t.shape (Point.create 0.5 0.25 0.)
+
+    match t.shape with
+    | Traingle(_,_,_,_,_,n) ->
+        n .= n1 |> Assert.True
+        n .= n2 |> Assert.True
+        n .= n3 |> Assert.True
+    
+[<Fact>]
+let ``intersecting a ray parallel to the triangle`` () =
+
+    let p1 = Point.create 0. 1. 0.
+    let p2 = Point.create -1. 0. 0.
+    let p3 = Point.create 1. 0. 0.
+
+    let t = Triangle.create(p1,p2,p3)
+
+    let r = Ray.create (Point.create 0. -1. -2.) (Vector.create 0. 1. 0.)
+
+    let xs = t.localIntersect t r
+    xs.IsEmpty |> Assert.True
+    
+[<Fact>]
+let ``a ray misses the p1-p3 edge`` () =
+
+    let p1 = Point.create 0. 1. 0.
+    let p2 = Point.create -1. 0. 0.
+    let p3 = Point.create 1. 0. 0.
+
+    let t = Triangle.create(p1,p2,p3)
+
+    let r = Ray.create (Point.create 1. 1. -2.) (Vector.create 0. 0. 1.)
+
+    let xs = t.localIntersect t r
+    xs.IsEmpty |> Assert.True
+    
+[<Fact>]
+let ``a ray misses the p1-p2 edge`` () =
+
+    let p1 = Point.create 0. 1. 0.
+    let p2 = Point.create -1. 0. 0.
+    let p3 = Point.create 1. 0. 0.
+
+    let t = Triangle.create(p1,p2,p3)
+    let r = Ray.create (Point.create -1. 1. -2.) (Vector.create 0. 0. 1.)
+
+    let xs = t.localIntersect t r
+    xs.IsEmpty |> Assert.True
+    
+[<Fact>]
+let ``a ray misses the p2-p3 edge`` () =
+
+    let p1 = Point.create 0. 1. 0.
+    let p2 = Point.create -1. 0. 0.
+    let p3 = Point.create 1. 0. 0.
+
+    let t = Triangle.create(p1,p2,p3)
+    let r = Ray.create (Point.create 0. -1. -2.) (Vector.create 0. 0. 1.)
+
+    let xs = t.localIntersect t r
+    xs.IsEmpty |> Assert.True
+    
+[<Fact>]
+let ``a ray strikes a triangle`` () =
+
+    let p1 = Point.create 0. 1. 0.
+    let p2 = Point.create -1. 0. 0.
+    let p3 = Point.create 1. 0. 0.
+
+    let t = Triangle.create(p1,p2,p3)
+    let r = Ray.create (Point.create 0. 0.5 -2.) (Vector.create 0. 0. 1.)
+
+    let xs = t.localIntersect t r
+    xs.Length = 1 |> Assert.True
+    FloatHelper.equal xs.[0].t 2. |> Assert.True

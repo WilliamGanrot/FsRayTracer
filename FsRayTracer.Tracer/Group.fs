@@ -33,6 +33,11 @@ module Group =
     let localNormalAt object worldPoint =
         failwith "group does not have localNormalAt"
 
+    let getChildren objGroup =
+        match objGroup.shape with
+        | Group(l) -> l
+        | _ -> failwith "expected object with shape group"
+
     let create () =
         { transform = Matrix.identityMatrix 4;
           transformInverse = Matrix.identityMatrix 4 |> Matrix.inverse;
@@ -43,32 +48,12 @@ module Group =
           localNormalAt = localNormalAt;
           parent = None }
 
-
     let setChildren children parent =
         { parent with shape = Group(children) }
+
+    let addChildren children parent =
+        match parent.shape with
+        | Group g -> { parent with shape = Group(children @ g) }
+        | _ -> failwith "expected a group"
             
-
-    // returns object with new child and object with new parent
-    let add objectToAdd group =
-        match group.shape with
-        | Group l ->
-            let uppdatedChild = { objectToAdd with parent = Some group }
-
-            let newCildren = l @ [uppdatedChild]
-            let group = { group with shape = Group(newCildren) }
-
-            (uppdatedChild, group)
-        | _ -> failwith "can only add object to Shape.Group objects"
-
-    // returns object with new child and list of updated children with new parent
-    let addList (objectsToAdd: Object list) (group:Object) =
-        let rec loop objects groupAcc =
-            match objects with
-            | [] ->
-                group
-            | h::t ->
-                let (group, child) = add h groupAcc
-                loop t group
-
-        loop objectsToAdd group
 

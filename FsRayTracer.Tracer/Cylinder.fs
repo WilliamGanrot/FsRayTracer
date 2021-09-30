@@ -57,7 +57,7 @@ module Cylinder =
                 intersectCaps object ray.direction ray.origin xs'
         | _ -> failwith "invalid shape"
 
-    let localNormalAt shape objectPoint =
+    let localNormalAt shape objectPoint i =
         match shape with
         | Cylinder(min, max, _) ->
             let dist = objectPoint.X * objectPoint.X + objectPoint.Z * objectPoint.Z

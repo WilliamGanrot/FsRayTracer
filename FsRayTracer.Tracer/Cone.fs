@@ -70,7 +70,7 @@ module Cone =
             let y = x
             failwith "invalid shape"
 
-    let localNormalAt shape objectPoint =
+    let localNormalAt shape objectPoint i =
         match shape with
         | Cone (min, max, _) ->
             let dist = objectPoint.X * objectPoint.X + objectPoint.Z * objectPoint.Z

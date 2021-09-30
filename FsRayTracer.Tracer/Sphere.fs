@@ -30,7 +30,7 @@ module Sphere =
             let i2 = Intersection.create object t2
             [i1;i2]
 
-    let localNormalAt shape objectPoint =
+    let localNormalAt shape objectPoint i =
         objectPoint - (Point.create 0. 0. 0.)
 
     let create() =

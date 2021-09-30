@@ -11,6 +11,7 @@ open RayTracer.Transformation
 open RayTracer.Helpers
 open RayTracer.ObjectDomain
 open RayTracer.Computation
+open RayTracer.Triangle
 open RayTracer.Sphere
 
 open Xunit
@@ -113,6 +114,15 @@ let ``the under point is offset below the surface`` () =
     let comps = Computation.prepare r [i] [shape] i
     comps.underPoint.Z > epsilon/2. |> Assert.True
     comps.point.Z < comps.underPoint.Z |> Assert.True
+    
+[<Fact>]
+let ``an intersection ac envausulate u and v`` () =
+    let s = Triangle.create((Point.create 0. 1. 0.),(Point.create -1. 0. 0.),(Point.create 1. 0. 0.))
+    let i = Intersection.intersectWithUV 3.5 0.2 0.4 s
+    match i.uv with
+    | Some (u,v) ->
+        FloatHelper.equal 0.2 u |> Assert.True
+        FloatHelper.equal 0.4 v |> Assert.True
 
 
 

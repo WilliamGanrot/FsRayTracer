@@ -18,7 +18,10 @@ open RayTracer.Group
 open RayTracer.Cone
 open RayTracer.Vector
 open RayTracer.Triangle
+open RayTracer.World
 open RayTracer.BoundingBox
+open RayTracer.Computation
+
 
 
 open Xunit
@@ -65,7 +68,7 @@ let ``intersecting a translated sphere with a ray`` () =
 let ``the normal on a sphere poin on the x axis`` () =
     let p = Point.create 1. 0. 0.
     let s = Sphere.create()
-    let n = s |> Object.normal p []
+    let n = Object.normal p [] s None
 
     n .= (Vector.create 1. 0. 0.) |> Assert.True
 
@@ -73,7 +76,7 @@ let ``the normal on a sphere poin on the x axis`` () =
 let ``the normal on a sphere poin on the y axis`` () =
     let p = Point.create 0. 1. 0.
     let s = Sphere.create()
-    let n = s |> Object.normal p []
+    let n = Object.normal p [] s None
 
     n .= (Vector.create 0. 1. 0.) |> Assert.True
 
@@ -81,7 +84,7 @@ let ``the normal on a sphere poin on the y axis`` () =
 let ``the normal on a sphere poin on the z axis`` () =
     let p = Point.create 0. 0. 1.
     let s = Sphere.create()
-    let n = s |> Object.normal p []
+    let n = Object.normal p [] s None
 
     n .= (Vector.create 0. 0. 1.) |> Assert.True
 
@@ -89,7 +92,7 @@ let ``the normal on a sphere poin on the z axis`` () =
 let ``the normal is a normalized vector`` () =
     let p = Point.create (Math.Pow (3., 0.5)/3.) (Math.Pow (3., 0.5)/3.) (Math.Pow (3., 0.5)/3.)
     let s = Sphere.create()
-    let n = s |> Object.normal p []
+    let n = Object.normal p [] s None
 
     n .= Vector.normalize (n) |> Assert.True
 
@@ -100,7 +103,7 @@ let ``cumputing the normal on a translated sphere`` () =
         |> Object.transform (Translation(0., 1., 0.))
         
 
-    let n' = Object.normal (Point.create 0. 1.70711 -0.70711) [n] n
+    let n' = Object.normal (Point.create 0. 1.70711 -0.70711) [n] n None
     n' .= (Vector.create 0. 0.70711 -0.70711) |>  Assert.True
 
 [<Fact>]
@@ -109,7 +112,7 @@ let ``cumputing the normal on a transformed sphere`` () =
         Sphere.create()
         |> Object.transform (Scaling(1., 0.5, 1.))
         |> Object.transform (Rotation(Z, (Math.PI/5.)))
-    let n' = Object.normal (Point.create 0. (Math.Pow (2., 0.5)/2.) -(Math.Pow (2., 0.5)/2.)) [n] n
+    let n' = Object.normal (Point.create 0. (Math.Pow (2., 0.5)/2.) -(Math.Pow (2., 0.5)/2.)) [n] n None
 
     n' .= (Vector.create 0. 0.97014 -0.24254) |>  Assert.True
 
@@ -178,7 +181,7 @@ let ``the normal surface of a cube`` (pointX, pointY, pointZ, vectorX, vectorY, 
     let c = Cube.create()
     let p = Point.create pointX pointY pointZ
 
-    let normal = Object.normal p [] c
+    let normal = Object.normal p [] c None
     let expected = Vector.create vectorX vectorY vecotrZ
 
     expected .= normal |> Assert.True
@@ -223,7 +226,7 @@ let ``normal vector on a cylinder`` (pointX, pointY, pointZ, vectorX, vectorY, v
     
     let cyl = Cylinder.create()
     let p = Point.create pointX pointY pointZ
-    let n = Object.normal p [] cyl
+    let n = Object.normal p [] cyl None
 
     n .= (Vector.create vectorX vectorY vecotorZ) |> Assert.True
 
@@ -290,8 +293,8 @@ let ``intersecting the caps of a closed cylinder`` (pointX, pointY, pointZ, vect
 let ``the normal vector on a cylinder's end caps`` (pointX, pointY, pointZ, vectorX, vectorY, vecotorZ) =
 
     let cyl = {Cylinder.create() with shape = Cylinder(1., 2., true)}
-    let n = Object.normal (Point.create pointX pointY pointZ) [] cyl
-    let normal = Vector.create vectorX vectorY vecotorZ
+    let n = Object.normal (Point.create pointX pointY pointZ) [] cyl None
+    let normal = Vector.create vectorX vectorY vecotorZ 
 
     n .= normal |> Assert.True
 
@@ -344,7 +347,7 @@ let ``computing the normal vector on a cone`` (pointX, pointY, pointZ, vectorX, 
     let point = Point.create pointX pointY pointZ
     let normal = Vector.create vectorX vectorY vectorZ
 
-    let n = cyl.localNormalAt cyl.shape point
+    let n = cyl.localNormalAt cyl.shape point None
 
     n .= (Vector.create vectorX vectorY vectorZ) |> Assert.True
 
@@ -442,7 +445,7 @@ let ``finding the normal onn a child object`` () =
     let x = g1'
     
 
-    let n = Object.normal (Point.create 1.7321 1.1547 -5.5774) [g1'] s
+    let n = Object.normal (Point.create 1.7321 1.1547 -5.5774) [g1'] s None
     n .= Vector.create 0.2857 0.4286 -0.8571 |> Assert.True
 
 
@@ -475,9 +478,9 @@ let ``finding the normal on a triangle`` () =
 
     let t = Triangle.create(p1,p2,p3)
 
-    let n1 = t.localNormalAt t.shape (Point.create 0. 0.5 0.)
-    let n2 = t.localNormalAt t.shape (Point.create -0.5 0.75 0.)
-    let n3 = t.localNormalAt t.shape (Point.create 0.5 0.25 0.)
+    let n1 = t.localNormalAt t.shape (Point.create 0. 0.5 0.) None
+    let n2 = t.localNormalAt t.shape (Point.create -0.5 0.75 0.) None
+    let n3 = t.localNormalAt t.shape (Point.create 0.5 0.25 0.) None
 
     match t.shape with
     | Traingle(_,_,_,_,_,n) ->
@@ -589,4 +592,81 @@ let ``A group has a bounding box that contains its children``() =
 
     Point.equal box.min (Point.create -4.5 -3. -5.) |> Assert.True
     Point.equal box.max (Point.create 4. 7. 4.5) |> Assert.True
+
+[<Fact>]
+let ``Constructing a smooth triangle``() =
+    let p1 = Point.create 0. 1. 0.
+    let p2 = Point.create -1. 0. 0.
+    let p3 = Point.create 1. 0. 0.
+    let n1 = Vector.create 0. 1. 0.
+    let n2 = Vector.create -1. 0. 0.
+    let n3 = Vector.create 1. 0. 0.
+    let tri = Triangle.createSmooth(p1, p2, p3, n1, n2, n3)
+
+    match tri.shape with
+    | SmoothTraingle(p1',p2',p3',e1',e2',n1',n2',n3') ->
+
+        Point.equal p1 p1' |> Assert.True
+        Point.equal p2 p2' |> Assert.True
+        Point.equal p3 p3' |> Assert.True
+
+        n1 .= n1' |> Assert.True
+        n2 .= n2' |> Assert.True
+        n3 .= n3' |> Assert.True
+
+
+[<Fact>]
+let ``an intersection with a mooth tiangle sures uv``() =
+    let p1 = Point.create 0. 1. 0.
+    let p2 = Point.create -1. 0. 0.
+    let p3 = Point.create 1. 0. 0.
+    let n1 = Vector.create 0. 1. 0.
+    let n2 = Vector.create -1. 0. 0.
+    let n3 = Vector.create 1. 0. 0.
+    let tri = Triangle.createSmooth (p1, p2, p3, n1, n2, n3)
+
+    let r = Ray.create (Point.create -0.2 0.3 -2.) (Vector.create 0. 0. 1.)
+    let xs = tri.localIntersect tri r
+    match xs.[0].uv with
+    | Some(u,v) ->
+        FloatHelper.equal 0.45 u |> Assert.True
+        FloatHelper.equal 0.25 v |> Assert.True
+
+[<Fact>]
+let ``a smooth triange uses uv to interpolate the normal``() =
+    let p1 = Point.create 0. 1. 0.
+    let p2 = Point.create -1. 0. 0.
+    let p3 = Point.create 1. 0. 0.
+    let n1 = Vector.create 0. 1. 0.
+    let n2 = Vector.create -1. 0. 0.
+    let n3 = Vector.create 1. 0. 0.
+    let tri = Triangle.createSmooth (p1, p2, p3, n1, n2, n3)
+
+    let i = Intersection.intersectWithUV 1. 0.45 0.25 tri
+    let n = Object.normal (Point.create 0. 0. 0.) [tri] tri (Some i)
+
+    let r = Ray.create (Point.create -0.2 0.3 -2.) (Vector.create 0. 0. 1.)
+    let xs = tri.localIntersect tri r
+    match xs.[0].uv with
+    | Some(u,v) ->
+        FloatHelper.equal 0.45 u |> Assert.True
+        FloatHelper.equal 0.25 v |> Assert.True
+        
+[<Fact>]
+let ``preparing the normal on a ooth triangle``() =
+    let p1 = Point.create 0. 1. 0.
+    let p2 = Point.create -1. 0. 0.
+    let p3 = Point.create 1. 0. 0.
+    let n1 = Vector.create 0. 1. 0.
+    let n2 = Vector.create -1. 0. 0.
+    let n3 = Vector.create 1. 0. 0.
+    let tri = Triangle.createSmooth (p1, p2, p3, n1, n2, n3)
+
+    let i = Intersection.intersectWithUV 1. 0.45 0.25 tri
+    let r = Ray.create (Point.create -0.2 0.3 -2.) (Vector.create 0. 0. 1.)
+
+    let xs = [i]
+    let comps = Computation.prepare r xs [tri] i
+
+    (Vector.create -0.5547 0.83205 0.) .= comps.normalv |> Assert.True
 

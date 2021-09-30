@@ -46,7 +46,7 @@ module Cube =
         
             [i1; i2]
 
-    let localNormalAt shape objectPoint =
+    let localNormalAt shape objectPoint i =
         let maxc =
             [objectPoint.X; objectPoint.Y; objectPoint.Z]
             |> List.map (fun v -> Math.Abs(v:float))

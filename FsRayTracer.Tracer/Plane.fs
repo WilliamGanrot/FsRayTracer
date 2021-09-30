@@ -22,7 +22,7 @@ module Plane =
                 Intersection.create object t
             [i]
 
-    let localNormalAt shape objectPoint =
+    let localNormalAt shape objectPoint i =
         Vector.create 0. 1. 0.
 
     let create() = 

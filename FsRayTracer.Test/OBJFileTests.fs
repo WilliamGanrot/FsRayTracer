@@ -15,7 +15,7 @@ let ``vertex records`` () =
             v -1.00 0.500 0.00\n\
             v 1 0 0\n\
             v 1 1 0"
-    let parser = OBJFile.parseFile s
+    let parser = OBJFile.parseFile (s.Split "\n")
 
     let v = parser.vertices
     let v1 = v.[0]
@@ -38,7 +38,7 @@ let ``parsing triangle face`` () =
             f 1 3 4"
 
         
-    let parser = OBJFile.parseFile s
+    let parser = OBJFile.parseFile (s.Split "\n")
     let t1 = parser.defaultGroup.[0]
     let t2 = parser.defaultGroup.[1]
 
@@ -67,7 +67,7 @@ let ``triangulating polygons`` () =
             f 1 2 3 4 5"
 
         
-    let parser = OBJFile.parseFile s
+    let parser = OBJFile.parseFile (s.Split "\n")
     let t1 = parser.defaultGroup.[0]
     let t2 = parser.defaultGroup.[1]
     let t3 = parser.defaultGroup.[2]
@@ -106,7 +106,7 @@ let ``triangles in groups`` () =
             g SecoundGroup\n\
             f 1 3 4"
 
-    let parser = OBJFile.parseFile s
+    let parser = OBJFile.parseFile (s.Split "\n")
     let g1 = parser.groups.[0]
     let g2 = parser.groups.[1]
 
@@ -140,6 +140,6 @@ let ``converting an obj file to a group`` () =
             g SecoundGroup\n\
             f 1 3 4"
 
-    let parser = OBJFile.parseFile file
+    let parser = OBJFile.parseFile (file.Split "\n")
     parser.groups.Length = 2 |> Assert.True
    

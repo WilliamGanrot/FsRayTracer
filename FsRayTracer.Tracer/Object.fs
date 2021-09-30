@@ -115,10 +115,10 @@ module Object =
         gettrail object.id topparents
         |> List.fold (fun v o -> handle o v) v
 
-    let normal point topparents (object:Object) =
+    let normal point topparents (object:Object) (i: Intersection Option)=
 
         let localPoint = worldToObject object point topparents
-        let localNormal = object.localNormalAt object.shape localPoint
+        let localNormal = object.localNormalAt object.shape localPoint i
 
         normalToWorld object localNormal topparents
 

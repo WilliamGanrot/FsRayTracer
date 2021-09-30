@@ -50,26 +50,26 @@ module Computation =
 
     let prepare (r:Ray) (xs:Intersection list) (topparents:ObjectDomain.Object list) (i:Intersection) =
 
-        let t = i.t
-        let object = i.object
-        let point = Ray.position i.t r
-        let eyev = r.direction * -1.
-        let normalv = Object.normal point topparents i.object
-        let inside = (Vector.dot normalv eyev) < 0.
-        let trueNormalv = if inside then normalv * -1. else normalv
-        let n1,n2 = nValues i r xs
+         let t = i.t
+         let object = i.object
+         let point = Ray.position i.t r
+         let eyev = r.direction * -1.
+         let normalv = Object.normal point topparents i.object (Some(i))
+         let inside = (Vector.dot normalv eyev) < 0.
+         let trueNormalv = if inside then normalv * -1. else normalv
+         let n1,n2 = nValues i r xs
 
-        { t = t;
-          object = object;
-          point = point;
-          overPoint = point + trueNormalv * epsilon;
-          eyev = eyev;
-          inside = inside;
-          normalv = trueNormalv;
-          reflectv = Vector.reflect trueNormalv r.direction;
-          n1 = n1;
-          n2 = n2;
-          underPoint = point - trueNormalv * epsilon }
+         { t = t;
+           object = object;
+           point = point;
+           overPoint = point + trueNormalv * epsilon;
+           eyev = eyev;
+           inside = inside;
+           normalv = trueNormalv;
+           reflectv = Vector.reflect trueNormalv r.direction;
+           n1 = n1;
+           n2 = n2;
+           underPoint = point - trueNormalv * epsilon }
 
     let shlick comps =
 

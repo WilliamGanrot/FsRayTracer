@@ -149,10 +149,11 @@ module OBJFile =
 
         let lex = lexer s
         let parseResult = loop lex.shapes None {defaultGroup = []; groups = []; vertices = lex.vertices; topGroup = Group.create()}
-        let g =
-            List.chunkBySize 100 parseResult.defaultGroup
-            |> List.map (fun x -> Group.create() |> Group.setChildren x)
-        {parseResult with groups = g}
+        parseResult
+        //let g =
+        //    List.chunkBySize 100 parseResult.defaultGroup
+        //    |> List.map (fun x -> Group.create() |> Group.setChildren x)
+        //{parseResult with groups = g}
 
 
 

@@ -7,6 +7,8 @@ open RayTracer.RayDomain
 open RayTracer.Point
 open RayTracer.Group
 open RayTracer.Helpers
+open RayTracer.RayDomain
+open RayTracer.Vector
 
 [<Fact>]
 let ``vertex records`` () =
@@ -142,4 +144,47 @@ let ``converting an obj file to a group`` () =
 
     let parser = OBJFile.parseFile (file.Split "\n")
     parser.groups.Length = 2 |> Assert.True
+
+
+[<Fact>]
+let ``vertex normal records`` () =
+    let file =
+           "vn 0 0 1\n\
+            vn 0.707 0 -0.707\n\
+            vn 1 2 3"
+
+    let parser = OBJFile.parseFile (file.Split "\n")
+    parser.normals.[0] = (Vector.create 0. 0. 1.) |> Assert.True
+    parser.normals.[1] = (Vector.create 0.707 0. -0.707) |> Assert.True
+    parser.normals.[2] = (Vector.create 1. 2. 3.) |> Assert.True
+   
+
+[<Fact>]
+let ``faces with normals`` () =
+    let file =
+           "v 0 1 0\n\
+            v -1 0 0\n\
+            v 1 0 0\n\
+            vn -1 0 0\n\
+            vn 1 0 0\n\
+            vn 0 1 0\n\
+            f 1//3 2//1 3//2\n\
+            f 1/0/3 2/102/1 3/14/2"
+
+    let parser = OBJFile.parseFile (file.Split "\n")
+    let g = parser.defaultGroup
+    let t1 = g.[0]
+    let t2 = g.[1]
+
+    match t1.shape with
+    | SmoothTraingle(p1,p2,p3,_,_,n1,n2,n3) ->
+        Point.equal p1 parser.vertices.[1-1] |> Assert.True
+        Point.equal p2 parser.vertices.[2-1] |> Assert.True
+        Point.equal p3 parser.vertices.[3-1] |> Assert.True
+
+        n1 .= parser.normals.[3-1] |> Assert.True
+        n2 .= parser.normals.[1-1] |> Assert.True
+        n3 .= parser.normals.[2-1] |> Assert.True
+    | _ -> failwith ""
+    t2 .=. t1 |> Assert.True
    

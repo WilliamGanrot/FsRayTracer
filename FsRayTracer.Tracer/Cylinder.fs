@@ -1,7 +1,6 @@
 namespace RayTracer.Cylinder
 open RayTracer.Vector
 open RayTracer.Point
-open RayTracer.Object
 open RayTracer.Matrix
 open RayTracer.Helpers
 open RayTracer.Intersection
@@ -69,12 +68,16 @@ module Cylinder =
             | _ -> Vector.create objectPoint.X 0. objectPoint.Z
         | _ -> failwith "invalid shape, expected cylinder"
 
-    let create() =
+    let build(cyl) =
         { transform = Matrix.identityMatrix 4;
           transformInverse= Matrix.identityMatrix 4 |> Matrix.inverse;
           material = Material.standard;
-          shape = Cylinder(-infinity, infinity, false);
+          shape = cyl;
           id = newRandom();
           localIntersect = localIntersect;
           localNormalAt = localNormalAt;
-          parent = None; }
+          bounds = None}
+
+    let create() = build (Cylinder(-infinity, infinity, false))
+
+    

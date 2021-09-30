@@ -33,7 +33,7 @@ module Plane =
           id = newRandom();
           localIntersect = localIntersect;
           localNormalAt = localNormalAt;
-          parent = None; }
+          bounds = None}
 
 
 

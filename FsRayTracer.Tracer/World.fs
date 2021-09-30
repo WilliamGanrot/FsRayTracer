@@ -129,13 +129,13 @@ module World =
 
             color
 
-    let addObject object world =
+    let addObject (object) (world:World) =
         { world with objects = world.objects @ [object] }
 
-    let insertObject  object i world =
+    let insertObject  object i (world:World) =
         { world with objects = insert object i world.objects }
 
-    let setObjects objects world =
+    let setObjects objects (world:World) =
         { world with objects = objects }
 
     let withLight l world =

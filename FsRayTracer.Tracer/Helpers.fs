@@ -1,5 +1,6 @@
 namespace RayTracer.Helpers
 open RayTracer.Constnats
+open System
 
 [<AutoOpen>]
 module Helpers =
@@ -21,7 +22,7 @@ module Helpers =
 
 [<AutoOpen>]
 module FloatHelper =
-    let equal a b = abs(a - b) < epsilon
+    let equal a b = abs(a - b) <= epsilon || (Double.IsPositiveInfinity(a) && Double.IsPositiveInfinity(b)) || (Double.IsNegativeInfinity(a) && Double.IsNegativeInfinity(b))
 
     let (/.) (x:float) (s:float) =
 

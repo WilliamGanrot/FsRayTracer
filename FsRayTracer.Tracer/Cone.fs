@@ -1,10 +1,10 @@
 namespace RayTracer.Cone
 open RayTracer.Vector
 open RayTracer.Point
-open RayTracer.Object
+
 open RayTracer.Helpers
 open RayTracer.Intersection
-open RayTracer.Object
+
 open RayTracer.Matrix
 open RayTracer.Material
 open RayTracer.RayDomain
@@ -84,12 +84,17 @@ module Cone =
                 Vector.create objectPoint.X y' objectPoint.Z
         | _ -> failwith "invalid shape, expected cone"
 
-    let create() =
+    let build cone =
         { transform = Matrix.identityMatrix 4;
           transformInverse= Matrix.identityMatrix 4 |> Matrix.inverse;
           material = Material.standard;
-          shape = Cone(-infinity, infinity, false);
+          shape = cone;
           id = r.Next();
           localIntersect = localIntersect;
           localNormalAt = localNormalAt;
-          parent = None }
+          bounds = None }
+    
+    let create() = build (Cone(-infinity, infinity, false))
+
+
+    

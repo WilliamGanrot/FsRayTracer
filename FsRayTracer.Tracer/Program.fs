@@ -70,18 +70,24 @@ let main argv =
         Group.setChildren sides hex
 
     let parser =
-            let x = File.ReadAllLines "../../../../OBJModels/teapot.obj" |> Array.fold (fun r s -> r + s + "\n") ""
-            OBJFile.parseFile x
+            let f = File.ReadAllLines "../../../../OBJModels/teapot.obj"
+            //let folded = f |> Array.fold (fun r s -> r + s + "\n") ""
+            OBJFile.parseFile f
+
+    let g =
+        parser.groups
+        |> List.map(fun x -> x |> Object.transform (Translation(0.,-1., 5.)))
 
     let world =
         World.empty
-        |> World.addObject (parser.topGroup |> Object.transform (Translation(0.,-1., 3.)))
+        |> World.setObjects g
+        //|> World.addObject (parser.topGroup |> Object.transform (Translation(0.,0., 3.)))
         |> World.withLight (
             Light.create (Color.create 1. 1. 1.) (Point.create -10. 10. -10.))
 
     let stopWatch = System.Diagnostics.Stopwatch.StartNew()
     let ppm =
-        Camera.create 100 50 (Math.PI/3.)
+        Camera.create 150 75 (Math.PI/3.)
         |> Camera.withTransfom (Transformation.viewTransform (Point.create 0. 1.5 -5.) (Point.create 0. 1. 0.) (Vector.create 0. 1. 0.))
         |> Camera.render world
         |> Canvas.toPPM

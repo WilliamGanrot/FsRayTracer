@@ -18,6 +18,7 @@ open RayTracer.Group
 open RayTracer.Cone
 open RayTracer.Vector
 open RayTracer.Triangle
+open RayTracer.BoundingBox
 
 
 open Xunit
@@ -551,3 +552,41 @@ let ``a ray strikes a triangle`` () =
     let xs = t.localIntersect t r
     xs.Length = 1 |> Assert.True
     FloatHelper.equal xs.[0].t 2. |> Assert.True
+
+
+[<Fact>]
+let ``Querying a shape's bounding box in its parent's space``() =
+
+    let s =
+        Sphere.create()
+        |> Object.transform (Translation(1., -3., 5.))
+        |> Object.transform (Scaling(0.5, 2., 4.))
+        
+
+    let box = BoundingBox.parentSpaceBoundsOf s
+
+    Point.equal box.min (Point.create 0.5 -5. 1.) |> Assert.True
+    Point.equal box.max (Point.create 1.5 -1. 9.) |> Assert.True
+
+[<Fact>]
+let ``A group has a bounding box that contains its children``() =
+
+    let s =
+        Sphere.create()
+        |> Object.transform (Translation(2., 5., -3.))
+        |> Object.transform (Scaling(2., 2., 2.))
+
+    let c =
+        Cylinder.build(Cylinder(-2., 2., false))
+        |> Object.transform (Translation(-4., -1., 4.))
+        |> Object.transform (Scaling(0.5, 1., 0.5))
+
+    let shape =
+        Group.create()
+        |> Group.setChildren [s;c]
+
+    let box = BoundingBox.boundsOf shape
+
+    Point.equal box.min (Point.create -4.5 -3. -5.) |> Assert.True
+    Point.equal box.max (Point.create 4. 7. 4.5) |> Assert.True
+

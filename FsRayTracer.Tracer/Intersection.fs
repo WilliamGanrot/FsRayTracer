@@ -1,6 +1,5 @@
 namespace RayTracer.Intersection
 
-open RayTracer.Object
 open RayTracer.Vector
 open RayTracer.Point
 open RayTracer.ObjectDomain

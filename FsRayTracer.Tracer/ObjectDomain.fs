@@ -104,7 +104,7 @@ module ObjectDomain =
         | Cone of minimum: float * maximum: float * closed: bool
         | Group of Object list
         | Traingle of p1: Point * p2: Point * p3: Point * e1: Vector * e2: Vector * normal: Vector
-
+        
         override x.Equals(y) =
             (match y with :? Shape -> true | _ -> false)
  
@@ -124,7 +124,7 @@ module ObjectDomain =
           id: int;
           localIntersect: Object -> Ray -> Intersection list;
           localNormalAt: Shape -> Point -> Vector;
-          parent: Object Option }
+          bounds: BoundingBox Option}
 
         //compares object without id
         static member (.=.) (p, v : Object) =
@@ -140,7 +140,7 @@ module ObjectDomain =
         static member (.=.) (p: Intersection, v: Intersection) =
             p.object .=. v.object && FloatHelper.equal p.t v.t
 
-
+    and BoundingBox = {min: Point; max: Point;(* objects: Object list*)}
 
     type Computation =
         { t: float;

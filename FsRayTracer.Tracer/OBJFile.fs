@@ -54,7 +54,7 @@ module OBJFile =
         | None -> None
 
 
-    let lexer (s:string) : LexResult =
+    let lexer (s:string []) : LexResult =
         let objEnteties =
             let parseLine s =
                 match s with
@@ -64,8 +64,7 @@ module OBJFile =
                 | GroupRegex m -> Some (m)
                 | _ -> None
 
-            let sp = s.Split("\n")
-            sp
+            s
             |> Array.choose parseLine
             |> Array.toList
 
@@ -112,7 +111,7 @@ module OBJFile =
 
         { shapes = shapes; vertices = vertices; }
 
-    let parseFile (s:string) =
+    let parseFile (s:string []) =
 
         let rec loop (objects:Object list) (lastGroup: Object Option) (acc:ParseResult) = 
             match objects with
@@ -132,23 +131,28 @@ module OBJFile =
                     let acc' = {acc with defaultGroup = defaultGroup'; topGroup = topGroup'}
                     loop t lastGroup acc'
                 | Traingle(_), Some(group) ->
+                        let group' =
+                            let chlidren = Group.getChildren group
+                            Group.setChildren ([h] @ chlidren) group
 
                         let groups' =
-                            let group' =
-                                let chlidren = Group.getChildren group
-                                Group.setChildren ([h] @ chlidren) group
+                            let filterd =
+                                acc.groups
+                                |> List.filter(fun x -> x.id <> group.id)
 
-                            let filterd = acc.groups |> List.filter(fun x -> x.id <> group.id)
                             filterd @ [group']
                         let defaultGroup' = acc.defaultGroup @ [h]
                         let acc' = {acc with groups = groups'; defaultGroup = defaultGroup'}
-                        loop t lastGroup acc'
+                        loop t (Some(group')) acc'
                 | _ -> failwith "error"
             | [] -> acc
 
         let lex = lexer s
         let parseResult = loop lex.shapes None {defaultGroup = []; groups = []; vertices = lex.vertices; topGroup = Group.create()}
-        parseResult
-        
+        let g =
+            List.chunkBySize 100 parseResult.defaultGroup
+            |> List.map (fun x -> Group.create() |> Group.setChildren x)
+        {parseResult with groups = g}
+
 
 

@@ -14,14 +14,18 @@ open RayTracer.Constnats
 open RayTracer.ObjectDomain
 open RayTracer.RenderingDomain
 open RayTracer.RayDomain
+open RayTracer.BoundingBox
 
 
 module Object =
 
     let transform t (object:Object) : Object =
         let t = Transformation.applyToMatrix t object.transform
-        { object with transform = t; transformInverse = t |> Matrix.inverse }
-
+        let object' = { object with transform = t; transformInverse = t |> Matrix.inverse }
+        match object'.bounds with
+        | Some b -> {object' with bounds = BoundingBox.boundsOf object' |> Some}
+        | None -> object'
+        
     let setMaterial m object =
         {object with material = m}
 
@@ -68,7 +72,7 @@ module Object =
                 let factor = Math.Pow(reflectDotEye, material.shininess)
                 ambient + diffuse + (light.intensity |> Color.mulitplyByScalar (material.specular * factor))
 
-    let gettrail (key:int) (tree:Object list)=
+    let gettrail (key:int) (tree:Object list) =
         let mutable mlist = []
 
         let rec loopNode (node: Object) =
@@ -93,7 +97,8 @@ module Object =
         loopChildren tree |> ignore
         mlist
 
-    let worldToObject object point topparents =
+    let worldToObject (object:Object) point topparents =
+
         gettrail object.id topparents
         |> List.rev
         |> List.fold (fun p o -> Matrix.multiplyPoint p o.transformInverse) point
@@ -110,25 +115,10 @@ module Object =
         gettrail object.id topparents
         |> List.fold (fun v o -> handle o v) v
 
-        //let rec loop normal (trail:Object list) =
-        //    match trail with
-        //    | [] -> normal
-        //    | object :: tail ->
-        //        let n =
-        //            object.transformInverse
-        //            |> Matrix.Transpose
-        //            |> Matrix.multiplyVector normal
-        //            |> Vector.withW 0.
-        //            |> Vector.normalize
-        //        loop n tail
-
-        //let trail = gettrail object.id topparents
-        //loop v trail
-
-
     let normal point topparents (object:Object) =
 
         let localPoint = worldToObject object point topparents
         let localNormal = object.localNormalAt object.shape localPoint
 
         normalToWorld object localNormal topparents
+

@@ -12,9 +12,9 @@ open RayTracer.Intersection
 
 
 module Cube =
-    let checkAxis origin direction =
-        let tMinNumerator = (-1.) - origin
-        let tMaxNumerator = 1. - origin
+    let checkAxis origin direction min max=
+        let tMinNumerator = min - origin
+        let tMaxNumerator = max - origin
 
         let tMin, tMax =
             match Math.Abs(direction:float) >= epsilon with
@@ -31,9 +31,9 @@ module Cube =
 
     let localIntersect object ray =
 
-        let (xtmin, xtmax) = checkAxis ray.origin.X ray.direction.X
-        let (ytmin, ytmax) = checkAxis ray.origin.Y ray.direction.Y
-        let (ztmin, ztmax) = checkAxis ray.origin.Z ray.direction.Z
+        let (xtmin, xtmax) = checkAxis ray.origin.X ray.direction.X -1. 1.
+        let (ytmin, ytmax) = checkAxis ray.origin.Y ray.direction.Y -1. 1.
+        let (ztmin, ztmax) = checkAxis ray.origin.Z ray.direction.Z -1. 1.
 
         let tmin = [xtmin; ytmin; ztmin] |> List.max
         let tmax = [xtmax; ytmax; ztmax] |> List.min
@@ -65,6 +65,6 @@ module Cube =
           id = newRandom();
           localIntersect = localIntersect;
           localNormalAt = localNormalAt;
-          parent = None; }
+          bounds = None}
 
 

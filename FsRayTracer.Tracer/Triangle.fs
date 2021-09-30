@@ -54,5 +54,5 @@ module Triangle =
           id = r.Next();
           localIntersect = localIntersect;
           localNormalAt = localNormalAt;
-          parent = None }
+          bounds = None}
 

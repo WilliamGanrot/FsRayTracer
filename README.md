@@ -2,7 +2,7 @@
 This project is an F# implementation of a raytracer based on the book "The Ray Tracer Challenge: A Test-Driven Guide to Your First 3D Renderer" by James Buck
 
 ## Chapter 15 - Triangles
-![Image](Images/teapot.png?raw=true "Title")
+![Image](Images/teapot_green.png?raw=true "Title")
 
 ## Chapter 14 - Groups
 ![Image](Images/group.png?raw=true "Title")

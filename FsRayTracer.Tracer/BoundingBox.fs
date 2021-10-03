@@ -63,6 +63,11 @@ module BoundingBox =
             |> addPoint p1
             |> addPoint p2
             |> addPoint p3
+        | SmoothTraingle(p1,p2,p3,e1,e2,n1,n2,n3) ->
+            create None
+            |> addPoint p1
+            |> addPoint p2
+            |> addPoint p3
         | Group children ->
 
             //let mutable box = create None

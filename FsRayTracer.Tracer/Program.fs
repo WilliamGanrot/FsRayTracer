@@ -70,25 +70,41 @@ let main argv =
         Group.setChildren sides hex
 
     let parser =
-            let f = File.ReadAllLines "../../../../OBJModels/teapot.obj"
+            let f =
+                File.ReadAllLines "../../../../OBJModels/teapot.obj"
+                |> Array.map(fun x -> x.TrimEnd())
             //let folded = f |> Array.fold (fun r s -> r + s + "\n") ""
             OBJFile.parseFile f
 
+    //let g =
+    //    parser.defaultGroup
+    //    |> List.map(fun x -> x |> Object.transform (Translation(0.,-1., 5.)))
     let g =
-        parser.groups
-        |> List.map(fun x -> x |> Object.transform (Translation(0.,-1., 5.)))
+
+        let lg=
+            parser.defaultGroup
+            |> List.map (fun x -> x |> Object.setMaterial (Material.standard |> Material.withColor (Color.create 0.1 0.5 0.3)))
+            |> List.chunkBySize 250 
+            |> List.map (fun x -> Group.create() |> Group.setChildren x)
+            
+
+        Group.create()
+        |> Group.setChildren lg
+        |> Object.transform (Rotation(Y, Math.PI/5.))
+        |> Object.transform (Translation(-3.5,-2.6, 4.5))
+        |> Object.transform (Scaling(1.5,1.5,1.5))
 
     let world =
         World.empty
-        |> World.setObjects g
+        |> World.addObject g
         //|> World.addObject (parser.topGroup |> Object.transform (Translation(0.,0., 3.)))
         |> World.withLight (
             Light.create (Color.create 1. 1. 1.) (Point.create -10. 10. -10.))
 
     let stopWatch = System.Diagnostics.Stopwatch.StartNew()
     let ppm =
-        Camera.create 150 75 (Math.PI/3.)
-        |> Camera.withTransfom (Transformation.viewTransform (Point.create 0. 1.5 -5.) (Point.create 0. 1. 0.) (Vector.create 0. 1. 0.))
+        Camera.create 1200 600 (Math.PI/3.)
+        |> Camera.withTransfom (Transformation.viewTransform (Point.create 0. 3.5 -8.) (Point.create 0. 1. 0.) (Vector.create 0. 1. 0.))
         |> Camera.render world
         |> Canvas.toPPM
     stopWatch.Stop()

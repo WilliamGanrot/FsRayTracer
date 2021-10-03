@@ -12,19 +12,19 @@ open RayTracer.Group
 
 module OBJFile =
 
-    type ParseResult = { defaultGroup: Object list; vertices: Point list; groups: Object list; topGroup: Object; normals: Vector list}
+    type ParseResult = { defaultGroup: Object list; vertices: Point list; groups: Object list; normals: Vector list}
     type LexResult = { shapes: Object list; vertices: Point list; normals: Vector list}
 
-    type VertexRegexPattern = Regex< @"(?<shape>[v]) (?<f1>(-?[0-9]\d*(\.\d+)?)) (?<f2>(-?[0-9]\d*(\.\d+)?)) (?<f3>(-?[0-9]\d*(\.\d+)?))$" >
-    type NormalRegexPattern = Regex< @"(?<shape>[vn]) (?<f1>(-?[0-9]\d*(\.\d+)?)) (?<f2>(-?[0-9]\d*(\.\d+)?)) (?<f3>(-?[0-9]\d*(\.\d+)?))$" >
+    type VertexRegexPattern = Regex< @"(?<shape>[v])\s+(?<f1>(-?[0-9]\d*(\.\d+)?)) (?<f2>(-?[0-9]\d*(\.\d+)?)) (?<f3>(-?[0-9]\d*(\.\d+)?))$" >
+    type NormalRegexPattern = Regex< @"(?<shape>[vn])\s+(?<f1>(-?[0-9]\d*(\.\d+)?)) (?<f2>(-?[0-9]\d*(\.\d+)?)) (?<f3>(-?[0-9]\d*(\.\d+)?))$" >
 
-    type FaceWTextureRegexPattern = Regex< @"(?<shape>[f]) (?<i1>(\d+))\/(?<m1>(\d+))\/(?<n1>(\d+)) (?<i2>(\d+))\/(?<m2>(\d+))\/(?<n2>(\d+)) (?<i3>(\d+))\/(?<m3>(\d+))\/(?<n3>(\d+))$" >
-    type FaceWNormalsRegexPattern = Regex< @"(?<shape>[f]) (?<i1>(\d+))\/\/(?<n1>(\d+)) (?<i2>(\d+))\/\/(?<n2>(\d+)) (?<i3>(\d+))\/\/(?<n3>(\d+))$" >
-    type FaceRegexPattern = Regex< @"(?<shape>[f]) (?<i1>(\d+)) (?<i2>(\d+)) (?<i3>(\d+))$" >
+    type FaceWTextureRegexPattern = Regex< @"(?<shape>[f])\s+(?<i1>(\d+))\/(?<m1>(\d+))\/(?<n1>(\d+)) (?<i2>(\d+))\/(?<m2>(\d+))\/(?<n2>(\d+)) (?<i3>(\d+))\/(?<m3>(\d+))\/(?<n3>(\d+))$" >
+    type FaceWNormalsRegexPattern = Regex< @"(?<shape>[f])\s+(?<i1>(\d+))\/\/(?<n1>(\d+)) (?<i2>(\d+))\/\/(?<n2>(\d+)) (?<i3>(\d+))\/\/(?<n3>(\d+))$" >
+    type FaceRegexPattern = Regex< @"(?<shape>[f])\s+(?<i1>(\d+)) (?<i2>(\d+)) (?<i3>(\d+))$" >
 
 
-    type PolygonRegexPattern = Regex< @"(?<shape>[f]) (?<i1>(\d+)) (?<i2>(\d+)) (?<i3>(\d+)) (?<i4>(\d+)) (?<i5>(\d+))$" >
-    type GroupRegexPattern = Regex< @"(?<group>[g]) (?<name>(\w*))$" >
+    type PolygonRegexPattern = Regex< @"(?<shape>[f])\s+(?<i1>(\d+)) (?<i2>(\d+)) (?<i3>(\d+)) (?<i4>(\d+)) (?<i5>(\d+))$" >
+    type GroupRegexPattern = Regex< @"(?<group>[g])\s+(?<name>(\w*))$" >
 
     type OBJEnteties =
         | OBJVertex of Point
@@ -126,7 +126,7 @@ module OBJFile =
             let getVertexAtIndex i (vertices: OBJEnteties list) =
                 match vertices.[i] with
                 | OBJVertex p -> p
-                | _ -> failwith "expected a vertex"
+                | x -> failwith "expected a vertex"
 
             let getNormalAtIndex i (normals: Vector list) = normals.[i]
 
@@ -191,14 +191,12 @@ module OBJFile =
                     let groupsList = [h] @ acc.groups
                     loop t (Some h) {acc with groups = groupsList }
                 | Group(_), Some g ->
-                    let topGroup' = Group.addChildren [g] acc.topGroup
                     let groups' = [h] @ acc.groups;
-                    let acc' = {acc with topGroup = topGroup'; groups = groups'}
+                    let acc' = {acc with groups = groups'}
                     loop t (Some h) acc'
                 | (Traingle(_) | SmoothTraingle(_)), None ->
-                    let topGroup' = Group.addChildren [h] acc.topGroup
                     let defaultGroup' = acc.defaultGroup @ [h]
-                    let acc' = {acc with defaultGroup = defaultGroup'; topGroup = topGroup'}
+                    let acc' = {acc with defaultGroup = defaultGroup'; }
                     loop t lastGroup acc'
                 | (Traingle(_) | SmoothTraingle(_)), Some(group) ->
                         let group' =
@@ -218,7 +216,7 @@ module OBJFile =
             | [] -> acc
 
         let lex = lexer s
-        let parseResult = loop lex.shapes None {defaultGroup = []; groups = []; vertices = lex.vertices; topGroup = Group.create(); normals = lex.normals}
+        let parseResult = loop lex.shapes None {defaultGroup = []; groups = []; vertices = lex.vertices; normals = lex.normals}
         parseResult
         //let g =
         //    List.chunkBySize 100 parseResult.defaultGroup

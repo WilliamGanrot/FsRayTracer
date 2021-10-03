@@ -125,7 +125,7 @@ module ObjectDomain =
           id: int;
           localIntersect: Object -> Ray -> Intersection list;
           localNormalAt: Shape -> Point -> Intersection Option -> Vector;
-          bounds: BoundingBox Option}
+          bounds: BoundingBox}
 
         //compares object without id
         static member (.=.) (p, v : Object) =

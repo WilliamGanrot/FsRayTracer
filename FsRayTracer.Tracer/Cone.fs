@@ -9,7 +9,9 @@ open RayTracer.Matrix
 open RayTracer.Material
 open RayTracer.RayDomain
 open RayTracer.ObjectDomain
+open RayTracer.BoundingBox
 open System
+
 open RayTracer.Constnats
 
 
@@ -92,7 +94,7 @@ module Cone =
           id = r.Next();
           localIntersect = localIntersect;
           localNormalAt = localNormalAt;
-          bounds = None }
+          bounds = BoundingBox.boundsOf cone}
     
     let create() = build (Cone(-infinity, infinity, false))
 

@@ -7,6 +7,7 @@ open RayTracer.Point
 open RayTracer.Helpers
 open RayTracer.Material
 open RayTracer.Transformation
+open RayTracer.BoundingBox
 open RayTracer.Matrix
 open System
 
@@ -42,7 +43,7 @@ module Sphere =
           id = newRandom();
           localIntersect = localIntersect;
           localNormalAt = localNormalAt;
-          bounds = None }
+          bounds = BoundingBox.boundsOf Sphere }
 
     let createGlass() =
 
@@ -57,4 +58,4 @@ module Sphere =
           id = newRandom();
           localIntersect = localIntersect;
           localNormalAt = localNormalAt;
-          bounds = None }
+          bounds = BoundingBox.boundsOf Sphere }

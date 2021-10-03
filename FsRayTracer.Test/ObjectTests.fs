@@ -584,11 +584,11 @@ let ``A group has a bounding box that contains its children``() =
         |> Object.transform (Translation(-4., -1., 4.))
         |> Object.transform (Scaling(0.5, 1., 0.5))
 
-    let shape =
+    let object =
         Group.create()
         |> Group.setChildren [s;c]
 
-    let box = BoundingBox.boundsOf shape
+    let box = BoundingBox.boundsOf object.shape
 
     Point.equal box.min (Point.create -4.5 -3. -5.) |> Assert.True
     Point.equal box.max (Point.create 4. 7. 4.5) |> Assert.True
@@ -670,3 +670,16 @@ let ``preparing the normal on a ooth triangle``() =
 
     (Vector.create -0.5547 0.83205 0.) .= comps.normalv |> Assert.True
 
+[<Fact>]
+let ``partitioning a groups children``() =
+    let s1 = Sphere.create() |> Object.transform (Translation(-2., 0., 0.))
+    let s2 = Sphere.create() |> Object.transform (Translation(2., 0., 0.))
+    let s3 = Sphere.create()
+
+    let g = Group.create() |> Group.setChildren [s1;s2;s3]
+    let x = BoundingBox.partitionChildren g
+
+    x.rest.Length = 1 |> Assert.True
+    x.left.Length = 1 |> Assert.True
+    x.right.Length = 1 |> Assert.True
+    

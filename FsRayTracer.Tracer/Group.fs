@@ -20,8 +20,8 @@ module Group =
 
     let localIntersect object ray =
 
-        match object.bounds with
-        | Some b when (BoundingBox.intersects ray b) ->
+        match (BoundingBox.intersects ray object.bounds) with
+        | true ->
             let rec loop (objects: Object list) acc =
                 match objects with
                 | [] -> acc
@@ -44,15 +44,15 @@ module Group =
               id = newRandom();
               localIntersect = localIntersect;
               localNormalAt = localNormalAt;
-              bounds = None }
-        {t with bounds = BoundingBox.boundsOf t |> Some}
+              bounds = BoundingBox.boundsOf (Group []) }
+        t
 
     let setChildren children parent =
         { parent with shape = Group(children) }
 
     let addChildren children parent =
         match parent.shape with
-        | Group g -> { parent with shape = Group(children @ g) }
+        | Group g -> { parent with shape = Group(children @ g); bounds = BoundingBox.boundsOf (Group(children @ g))  }
         | _ -> failwith "expected a group"
             
 

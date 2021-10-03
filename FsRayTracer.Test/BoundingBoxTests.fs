@@ -14,6 +14,7 @@ open RayTracer.Cube
 open RayTracer.Cylinder
 open RayTracer.Cone
 open RayTracer.Triangle
+open RayTracer.Object
 open RayTracer.Vector
 open RayTracer.Ray
 open System
@@ -50,7 +51,7 @@ let ``Adding points to an empty bounding box``() =
 [<Fact>]
 let ``A sphere has a bounding box``() =
     let s = Sphere.create()
-    let box = BoundingBox.boundsOf s
+    let box = BoundingBox.boundsOf s.shape
 
     Point.equal box.min (Point.create -1. -1. -1.) |> Assert.True
     Point.equal box.max (Point.create 1. 1. 1.) |> Assert.True
@@ -58,7 +59,7 @@ let ``A sphere has a bounding box``() =
 [<Fact>]
 let ``A plane has a bounding box``() =
     let s = Plane.create()
-    let box = BoundingBox.boundsOf s
+    let box = BoundingBox.boundsOf s.shape
 
     Point.equal box.min (Point.create -infinity 0. -infinity) |> Assert.True
     Point.equal box.max (Point.create infinity 0. infinity) |> Assert.True
@@ -67,7 +68,7 @@ let ``A plane has a bounding box``() =
 [<Fact>]
 let ``A cube has a bounding box``() =
     let s = Cube.create()
-    let box = BoundingBox.boundsOf s
+    let box = BoundingBox.boundsOf s.shape
 
     Point.equal box.min (Point.create -1. -1. -1.) |> Assert.True
     Point.equal box.max (Point.create 1. 1. 1.)
@@ -75,7 +76,7 @@ let ``A cube has a bounding box``() =
 [<Fact>]
 let ``An unbounded cylinder has a bounding box``() =
     let s = Cylinder.create()
-    let box = BoundingBox.boundsOf s
+    let box = BoundingBox.boundsOf s.shape
 
     Point.equal box.min (Point.create -1. -infinity -1.) |> Assert.True
     Point.equal box.max (Point.create 1. infinity 1.) |> Assert.True
@@ -83,7 +84,7 @@ let ``An unbounded cylinder has a bounding box``() =
 [<Fact>]
 let ``A bounded cylinder has a bounding box``() =
     let s = Cylinder.build(Cylinder(-5., 3., false))
-    let box = BoundingBox.boundsOf s
+    let box = BoundingBox.boundsOf s.shape
 
     Point.equal box.min (Point.create -1. -5. -1.) |> Assert.True
     Point.equal box.max (Point.create 1. 3. 1.) |> Assert.True
@@ -91,7 +92,7 @@ let ``A bounded cylinder has a bounding box``() =
 [<Fact>]
 let ``An unbounded cone has a bounding box``() =
     let s = Cone.create()
-    let box = BoundingBox.boundsOf s
+    let box = BoundingBox.boundsOf s.shape
 
     Point.equal box.min (Point.create -infinity -infinity -infinity) |> Assert.True
     Point.equal box.max (Point.create infinity infinity infinity) |> Assert.True
@@ -99,7 +100,7 @@ let ``An unbounded cone has a bounding box``() =
 [<Fact>]
 let ``A bounded cone has a bounding box``() =
     let s = Cone.build(Cone(-5., 3., false))
-    let box = BoundingBox.boundsOf s
+    let box = BoundingBox.boundsOf s.shape
 
     Point.equal box.min (Point.create -5. -5. -5.) |> Assert.True
     Point.equal box.max (Point.create 5. 3. 5.) |> Assert.True
@@ -111,7 +112,7 @@ let ``A triangle has a bounding box``() =
     let p3 = Point.create 2. -1. -1.
 
     let s = Triangle.create (p1, p2, p3)
-    let box = BoundingBox.boundsOf s
+    let box = BoundingBox.boundsOf s.shape
 
     Point.equal box.min (Point.create -3. -1. -4.) |> Assert.True
     Point.equal box.max (Point.create 6. 7. 2.) |> Assert.True
@@ -218,16 +219,64 @@ let ``Intersecting a ray with a non-cubic bounding box``(ox, oy, oz, dx,dy,dz, r
     (BoundingBox.intersects ray box) = result |> Assert.True
 
 
+[<Fact>]
+let ``Splitting a perfect cube``() =
+    let box = BoundingBox.create (Some((Point.create -1. -4. -5.),(Point.create 9. 6. 5.)))
+
+    let left, right = BoundingBox.split box
+    
+    Point.equal left.min (Point.create -1. -4. -5.) |> Assert.True
+    Point.equal left.max (Point.create 4. 6. 5.) |> Assert.True
+    Point.equal right.min (Point.create 4. -4. -5.) |> Assert.True
+    Point.equal right.max (Point.create 9. 6. 5.) |> Assert.True
 
 
+[<Fact>]
+let ``Splitting an x-wide box``() =
+    let box = BoundingBox.create (Some((Point.create -1. -2. -3.),(Point.create 9. 5.5 3.)))
+
+    let left, right = BoundingBox.split box
+    
+    Point.equal left.min (Point.create -1. -2. -3.) |> Assert.True
+    Point.equal left.max (Point.create 4. 5.5 3.) |> Assert.True
+    Point.equal right.min (Point.create 4. -2. -3.) |> Assert.True
+    Point.equal right.max (Point.create 9. 5.5 3.) |> Assert.True
+    
+[<Fact>]
+let ``Splitting an y-wide box``() =
+    let box = BoundingBox.create (Some((Point.create -1. -2. -3.),(Point.create 5. 8. 3.)))
+
+    let left, right = BoundingBox.split box
+    
+    Point.equal left.min (Point.create -1. -2. -3.) |> Assert.True
+    Point.equal left.max (Point.create 5. 3. 3.) |> Assert.True
+    Point.equal right.min (Point.create -1. 3. -3.) |> Assert.True
+    Point.equal right.max (Point.create 5. 8. 3.) |> Assert.True
+
+[<Fact>]
+let ``Splitting an z-wide box``() =
+    let box = BoundingBox.create (Some((Point.create -1. -2. -3.),(Point.create 5. 3. 7.)))
+
+    let left, right = BoundingBox.split box
+    
+    Point.equal left.min (Point.create -1. -2. -3.) |> Assert.True
+    Point.equal left.max (Point.create 5. 3. 2.) |> Assert.True
+    Point.equal right.min (Point.create -1. -2. 2.) |> Assert.True
+    Point.equal right.max (Point.create 5. 3. 7.) |> Assert.True
+
+    
+
+        
 //[<Fact>]
-//let ``Splitting a perfect cubex``() =
-//    let box = BoundingBox.create (Some((Point.create -1. -4. -5.),(Point.create 9. 6. 5.)))
-//    let left, right = BoundingBox.split box
+//let ``partitioning a groups children``() =
+//    let s1 = Sphere.create() 
+//    let s2 = Sphere.create() 
 
-//    Point.equal left.min (Point.create -1. -4. -5.) |> Assert.True
-//    Point.equal left.max (Point.create 4. 6. 5.) |> Assert.True
-//    Point.equal right.min (Point.create 4. -4. -5.) |> Assert.True
-//    Point.equal right.max (Point.create 9. 6. 5.) |> Assert.True
+//    let g =
+//        Group.create()
+//        |> Groupmake [s1;s2]
+
+//    let (left,right) = BoundingBox.partitionChildren g
+//    0
 
     

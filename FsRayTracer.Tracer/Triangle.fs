@@ -7,6 +7,7 @@ open RayTracer.Vector
 open RayTracer.RayDomain
 open RayTracer.Constnats
 open RayTracer.Intersection
+open RayTracer.BoundingBox
 
 module Triangle =
 
@@ -84,7 +85,7 @@ module Triangle =
           id = r.Next();
           localIntersect = localIntersect;
           localNormalAt = localNormalAt;
-          bounds = None}
+          bounds = BoundingBox.boundsOf (Traingle(p1, p2, p3, e1, e2, n))}
 
     let createSmooth((p1:Point), (p2:Point), (p3:Point), n1, n2, n3) =
 
@@ -98,5 +99,5 @@ module Triangle =
           id = r.Next();
           localIntersect = localIntersect;
           localNormalAt = localNormalAt;
-          bounds = None}
+          bounds = BoundingBox.boundsOf (SmoothTraingle(p1, p2, p3, e1, e2, n1, n2, n3))}
 

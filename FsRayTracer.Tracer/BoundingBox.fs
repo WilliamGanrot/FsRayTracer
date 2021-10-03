@@ -4,9 +4,30 @@ open RayTracer.RayDomain
 open RayTracer.Point
 open RayTracer.Transformation
 open RayTracer.Matrix
-open RayTracer.Cube
+open RayTracer.ObjectDomain
+
+open RayTracer.Helpers
+open System
+open RayTracer.Constnats
 
 module BoundingBox =
+
+    let checkAxis origin direction min max=
+        let tMinNumerator = min - origin
+        let tMaxNumerator = max - origin
+
+        let tMin, tMax =
+            match Math.Abs(direction:float) >= epsilon with
+            | true ->
+                let tMin = tMinNumerator / direction
+                let tMax = tMaxNumerator / direction
+                (tMin, tMax)
+            | false ->
+                let tMin = tMinNumerator * infinity
+                let tMax = tMaxNumerator * infinity
+                (tMin, tMax)
+
+        if tMin > tMax then (tMax, tMin) else (tMin, tMax)
 
     let create (t: Option<(Point*Point)>) : BoundingBox =
         match t with
@@ -37,12 +58,12 @@ module BoundingBox =
         |> addPoint childBox.max
 
 
-    let rec parentSpaceBoundsOf object =
-        boundsOf object
+    let rec parentSpaceBoundsOf (object:RayTracer.ObjectDomain.ObjectDomain.Object) =
+        boundsOf object.shape
         |> transform (Matrix(object.transform))
 
-    and boundsOf (object:Object) : BoundingBox =
-        match object.shape with
+    and boundsOf (shape:Shape) : BoundingBox =
+        match shape with
         | Sphere -> create (Some((Point.create -1. -1. -1.), (Point.create 1. 1. 1.)))
         | Plane -> create (Some((Point.create -infinity 0. -infinity), (Point.create infinity 0. infinity)))
         | Cube -> create (Some((Point.create -1. -1. -1.), (Point.create 1. 1. 1.)))
@@ -70,12 +91,6 @@ module BoundingBox =
             |> addPoint p3
         | Group children ->
 
-            //let mutable box = create None
-            //for child in children do
-            //    let cbox = parentSpaceBoundsOf child
-            //    box <- addBox cbox box
-                
-            //box
             children
             |> List.map (fun c -> parentSpaceBoundsOf c)
             |> List.fold (fun box cbox -> addBox cbox box) (create None)
@@ -101,9 +116,9 @@ module BoundingBox =
     let intersects ray box =
 
 
-        let (xtmin, xtmax) = Cube.checkAxis ray.origin.X ray.direction.X box.min.X box.max.X
-        let (ytmin, ytmax) = Cube.checkAxis ray.origin.Y ray.direction.Y box.min.Y box.max.Y
-        let (ztmin, ztmax) = Cube.checkAxis ray.origin.Z ray.direction.Z box.min.Z box.max.Z
+        let (xtmin, xtmax) = checkAxis ray.origin.X ray.direction.X box.min.X box.max.X
+        let (ytmin, ytmax) = checkAxis ray.origin.Y ray.direction.Y box.min.Y box.max.Y
+        let (ztmin, ztmax) = checkAxis ray.origin.Z ray.direction.Z box.min.Z box.max.Z
 
         let tmin = [xtmin; ytmin; ztmin] |> List.max
         let tmax = [xtmax; ytmax; ztmax] |> List.min
@@ -118,3 +133,62 @@ module BoundingBox =
         point.Z >= box.min.Z && point.Z <= box.max.Z
 
     let containsBox childBox box = (containsPoint childBox.min box) && (containsPoint childBox.max box)
+
+    let split (box:BoundingBox) =
+
+        let dx = box.max.X - box.min.X
+        let dy = box.max.Y - box.min.Y
+        let dz = box.max.Z - box.min.Z
+
+        let greatest = [dx;dy;dz] |> List.max
+
+        let (midMin, midMax) = 
+            let x0 = box.min.X
+            let y0 = box.min.Y
+            let z0 = box.min.Z
+            let x1 = box.max.X
+            let y1 = box.max.Y
+            let z1 = box.max.Z
+
+            match greatest with
+            | g when (FloatHelper.equal g dx) ->
+                let x0' = x0 + dx /2.
+                let x1' = x0 + dx /2.
+                ((Point.create x0' y0 z0), (Point.create x1' y1 z1))
+            | g when (FloatHelper.equal g dy) ->
+                let y0' = y0 + dy /2.
+                let y1' = y0 + dy /2.
+                ((Point.create x0 y0' z0), (Point.create x1 y1' z1))
+            | _ ->
+                let z0' = z0 + dz /2.
+                let z1' = z0 + dz /2.
+                ((Point.create x0 y0 z0'), (Point.create x1 y1 z1'))
+
+        let left = create (Some(box.min, midMax))
+        let right = create (Some(midMin, box.max))
+        (left, right)
+
+    let partitionChildren g =
+        match g.shape with
+        | Group children ->
+  
+            let left, right = g.shape |> boundsOf |> split
+
+            let rec loop children leftlist rightlist restlist =
+                match children with
+                | [] -> {| left = leftlist; right = rightlist; rest = restlist |}
+                | child::t ->
+
+                    if containsBox child.bounds left then
+                        let leftlist' = [child] @ leftlist
+                        loop t leftlist' rightlist restlist
+                    else if containsBox child.bounds right then
+                        let rightlist' = [child] @ rightlist
+                        loop t leftlist rightlist' restlist
+                    else
+                        let restlist' = [child] @ restlist
+                        loop t leftlist rightlist restlist'
+            loop children [] [] []
+
+        | _ -> failwith ""
+

@@ -7,6 +7,7 @@ open RayTracer.Intersection
 open RayTracer.Material
 open RayTracer.RayDomain
 open RayTracer.ObjectDomain
+open RayTracer.BoundingBox
 open System
 open RayTracer.Constnats
 
@@ -76,7 +77,7 @@ module Cylinder =
           id = newRandom();
           localIntersect = localIntersect;
           localNormalAt = localNormalAt;
-          bounds = None}
+          bounds = BoundingBox.boundsOf cyl }
 
     let create() = build (Cylinder(-infinity, infinity, false))
 

@@ -7,6 +7,7 @@ open RayTracer.Constnats
 open RayTracer.Intersection
 open RayTracer.Matrix
 open RayTracer.Material
+open RayTracer.BoundingBox
 open RayTracer.Vector
 
 
@@ -33,7 +34,7 @@ module Plane =
           id = newRandom();
           localIntersect = localIntersect;
           localNormalAt = localNormalAt;
-          bounds = None}
+          bounds = BoundingBox.boundsOf Plane}
 
 
 

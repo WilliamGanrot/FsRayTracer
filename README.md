@@ -1,7 +1,10 @@
 # FsRayTracer
 This project is an F# implementation of a raytracer based on the book "The Ray Tracer Challenge: A Test-Driven Guide to Your First 3D Renderer" by James Buck
 
-## Chapter 15 - Triangles
+## Chapter 16 - Constructive Solif Geometry (CSG)
+![Image](Images/csg.png?raw=true "Title")
+
+## Chapter 15 - Triangles and OBJFiles
 ![Image](Images/teapot_green.png?raw=true "Title")
 
 ## Chapter 14 - Groups

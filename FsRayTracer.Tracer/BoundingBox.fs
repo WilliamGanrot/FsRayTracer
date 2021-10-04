@@ -4,10 +4,28 @@ open RayTracer.RayDomain
 open RayTracer.Point
 open RayTracer.Transformation
 open RayTracer.Matrix
-open RayTracer.Cube
+open RayTracer.Constnats
+
+open System
+
 
 module BoundingBox =
+    let checkAxis origin direction min max=
+        let tMinNumerator = min - origin
+        let tMaxNumerator = max - origin
 
+        let tMin, tMax =
+            match Math.Abs(direction:float) >= epsilon with
+            | true ->
+                let tMin = tMinNumerator / direction
+                let tMax = tMaxNumerator / direction
+                (tMin, tMax)
+            | false ->
+                let tMin = tMinNumerator * infinity
+                let tMax = tMaxNumerator * infinity
+                (tMin, tMax)
+
+        if tMin > tMax then (tMax, tMin) else (tMin, tMax)
     let create (t: Option<(Point*Point)>) : BoundingBox =
         match t with
         | Some (min,max) -> {min = min; max = max;}
@@ -41,7 +59,7 @@ module BoundingBox =
         boundsOf object
         |> transform (Matrix(object.transform))
 
-    and boundsOf (object:Object) : BoundingBox =
+    and boundsOf (object) : BoundingBox =
         match object.shape with
         | Sphere -> create (Some((Point.create -1. -1. -1.), (Point.create 1. 1. 1.)))
         | Plane -> create (Some((Point.create -infinity 0. -infinity), (Point.create infinity 0. infinity)))
@@ -58,7 +76,7 @@ module BoundingBox =
             let min' = Point.create -limit min -limit
             let max' = Point.create limit max limit
             create (Some(min', max'))
-        | Traingle(p1,p2,p3,e1,e2,n) ->
+        | Triangle(p1,p2,p3,e1,e2,n) ->
             create None
             |> addPoint p1
             |> addPoint p2
@@ -101,9 +119,9 @@ module BoundingBox =
     let intersects ray box =
 
 
-        let (xtmin, xtmax) = Cube.checkAxis ray.origin.X ray.direction.X box.min.X box.max.X
-        let (ytmin, ytmax) = Cube.checkAxis ray.origin.Y ray.direction.Y box.min.Y box.max.Y
-        let (ztmin, ztmax) = Cube.checkAxis ray.origin.Z ray.direction.Z box.min.Z box.max.Z
+        let (xtmin, xtmax) = checkAxis ray.origin.X ray.direction.X box.min.X box.max.X
+        let (ytmin, ytmax) = checkAxis ray.origin.Y ray.direction.Y box.min.Y box.max.Y
+        let (ztmin, ztmax) = checkAxis ray.origin.Z ray.direction.Z box.min.Z box.max.Z
 
         let tmin = [xtmin; ytmin; ztmin] |> List.max
         let tmax = [xtmax; ytmax; ztmax] |> List.min

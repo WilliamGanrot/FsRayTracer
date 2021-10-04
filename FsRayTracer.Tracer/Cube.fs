@@ -6,34 +6,20 @@ open RayTracer.Helpers
 open RayTracer.Matrix
 open RayTracer.Vector
 open RayTracer.Material
+open RayTracer.BoundingBox
 
 open System
 open RayTracer.Intersection
 
 
 module Cube =
-    let checkAxis origin direction min max=
-        let tMinNumerator = min - origin
-        let tMaxNumerator = max - origin
 
-        let tMin, tMax =
-            match Math.Abs(direction:float) >= epsilon with
-            | true ->
-                let tMin = tMinNumerator / direction
-                let tMax = tMaxNumerator / direction
-                (tMin, tMax)
-            | false ->
-                let tMin = tMinNumerator * infinity
-                let tMax = tMaxNumerator * infinity
-                (tMin, tMax)
-
-        if tMin > tMax then (tMax, tMin) else (tMin, tMax)
 
     let localIntersect object ray =
 
-        let (xtmin, xtmax) = checkAxis ray.origin.X ray.direction.X -1. 1.
-        let (ytmin, ytmax) = checkAxis ray.origin.Y ray.direction.Y -1. 1.
-        let (ztmin, ztmax) = checkAxis ray.origin.Z ray.direction.Z -1. 1.
+        let (xtmin, xtmax) = BoundingBox.checkAxis ray.origin.X ray.direction.X -1. 1.
+        let (ytmin, ytmax) = BoundingBox.checkAxis ray.origin.Y ray.direction.Y -1. 1.
+        let (ztmin, ztmax) = BoundingBox.checkAxis ray.origin.Z ray.direction.Z -1. 1.
 
         let tmin = [xtmin; ytmin; ztmin] |> List.max
         let tmax = [xtmax; ytmax; ztmax] |> List.min

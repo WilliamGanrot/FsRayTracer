@@ -194,11 +194,11 @@ module OBJFile =
                     let groups' = [h] @ acc.groups;
                     let acc' = {acc with groups = groups'}
                     loop t (Some h) acc'
-                | (Traingle(_) | SmoothTraingle(_)), None ->
+                | (Triangle(_) | SmoothTraingle(_)), None ->
                     let defaultGroup' = acc.defaultGroup @ [h]
                     let acc' = {acc with defaultGroup = defaultGroup'; }
                     loop t lastGroup acc'
-                | (Traingle(_) | SmoothTraingle(_)), Some(group) ->
+                | (Triangle(_) | SmoothTraingle(_)), Some(group) ->
                         let group' =
                             let chlidren = Group.getChildren group
                             Group.setChildren ([h] @ chlidren) group

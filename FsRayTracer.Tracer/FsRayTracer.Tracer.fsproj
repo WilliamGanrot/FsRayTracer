@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+
+      
+
+      
 
       
 
@@ -30,18 +34,21 @@
       <Compile Include="Material.fs" />
 
 
-      
-      
+      <Compile Include="BoundingBox.fs" />
+      <Compile Include="Object.fs" />
       <Compile Include="Intersection.fs" />
       <Compile Include="Plane.fs" />
       <Compile Include="Cube.fs" />
       <Compile Include="Cone.fs" />
       <Compile Include="Cylinder.fs" />
       <Compile Include="Sphere.fs" />
-      <Compile Include="BoundingBox.fs" />
-      <Compile Include="Object.fs" />
-      
       <Compile Include="Ray.fs" />
+      <Compile Include="Csg.fs" />
+
+
+
+
+      
       <Compile Include="Triangle.fs" />
       <Compile Include="Group.fs" />
       <Compile Include="OBJFile.fs" />

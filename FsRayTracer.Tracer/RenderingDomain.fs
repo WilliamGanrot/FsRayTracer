@@ -6,7 +6,7 @@ open RayTracer.ObjectDomain
 module RenderingDomain =
 
     type Light = {poistion: Point; intensity: Color}
-    type World = { light: Light; objects: Object list }
+    type World = { lights: Light list; objects: Object list }
 
     //
     type ColorCordinat = {X: int; Y:int; Color:Color;}

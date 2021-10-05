@@ -45,7 +45,7 @@ let ``the default world``  () =
     w.objects |> List.exists (fun x -> x .=. s1) |> Assert.True
     w.objects |> List.exists (fun x -> x .=. s2) |> Assert.True
  
-    w.light = light |> Assert.True
+    (w.lights |> List.head) = light |> Assert.True
 
 [<Fact>]
 let ``intersect a world with a ray``  () =
@@ -80,7 +80,7 @@ let ``shading an intersection from the inside`` () =
 
     let w =
         World.standard
-        |> World.withLight (Light.create (Color.create 1. 1. 1.) (Point.create 0. 0.25 0.))
+        |> World.withLights [(Light.create (Color.create 1. 1. 1.) (Point.create 0. 0.25 0.))]
 
     let r = Ray.create (Point.create 0. 0. 0.) (Vector.create 0. 0. 1.)
     let shape = w.objects.[1]
@@ -130,29 +130,31 @@ let ``the color with an intersection behind the ray`` () =
 let ``there is not shadow when nothing is collinear with point and light`` () =
     let w = World.standard
     let p = Point.create 0. 10. 0.
-
-    World.isShadowed p w |> Assert.False
+    let from = w.lights |> List.head
+    World.isShadowed from.poistion p w |> Assert.False
 
 [<Fact>]
 let ``the shadow when an object is between the point and the light`` () =
     let w = World.standard
     let p = Point.create 10. -10. 10.
 
-    World.isShadowed p w |> Assert.True
+    let from = w.lights |> List.head
+    World.isShadowed from.poistion p w |> Assert.True
 
 [<Fact>]
 let ``there is no shadow when an object is behind the light`` () =
     let w = World.standard
     let p = Point.create -20. 20. -20.
 
-    World.isShadowed p w |> Assert.False
+    let from = w.lights |> List.head
+    World.isShadowed from.poistion p w |> Assert.False
 
 [<Fact>]
 let ``there is no shadow when an object is behind the point`` () =
     let w = World.standard
     let p = Point.create -2. 2. -2.
-
-    World.isShadowed p w |> Assert.False
+    let from = w.lights |> List.head
+    World.isShadowed from.poistion p w |> Assert.False
 
 [<Fact>]
 let ``shadeHit is given an intersection in shadow `` () =
@@ -164,7 +166,7 @@ let ``shadeHit is given an intersection in shadow `` () =
 
     let w =
         World.empty
-        |> World.withLight (Light.create (Color.create 1. 1. 1.) (Point.create 0. 0. -10.))
+        |> World.withLights [(Light.create (Color.create 1. 1. 1.) (Point.create 0. 0. -10.))]
         |> World.addObject s1
         |> World.addObject s2
 
@@ -249,7 +251,7 @@ let ``colorAt with mutually reflective surfaces``() =
 
     let w =
         World.standard
-        |> World.withLight (Light.create (Color.create 1. 1. 1.) (Point.create 0. 0. 0.))
+        |> World.withLights [(Light.create (Color.create 1. 1. 1.) (Point.create 0. 0. 0.))]
         |> World.addObject lower
         |> World.addObject upper
 
@@ -274,7 +276,7 @@ let ``the reflected color at the maximum recursive depth``() =
 
     let w =
         World.standard
-        |> World.withLight (Light.create (Color.create 1. 1. 1.) (Point.create 0. 0. 0.))
+        |> World.withLights [(Light.create (Color.create 1. 1. 1.) (Point.create 0. 0. 0.))]
         |> World.addObject shape
 
     let r = Ray.create (Point.create 0. 0. -3.) (Vector.create 0. ((-Math.Sqrt(2.))/2.) (Math.Sqrt(2.)/2.))

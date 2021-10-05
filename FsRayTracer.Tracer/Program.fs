@@ -96,7 +96,7 @@ let main argv =
 
         Csg.create (Difference, s, c)
         |> Object.transform (Scaling(0.7, 0.7, 0.7))
-        |> Object.transform (Translation(0., 1.5, 1.))
+        //|> Object.transform (Translation(0., 1.5, 1.))
         //|> Object.transform (Rotation(X, Math.PI/4.))
         |> Object.transform (Rotation(Y, Math.PI/6.))
         |> Object.transform (Rotation(X, Math.PI/6.))
@@ -213,7 +213,9 @@ let main argv =
                 |> Material.withSpecular 1.
                 |> Material.withShininess 200.
                 |> Material.withReflectivity 0.7
+                |> Material.withTransparency 0.7
                 |> Material.WithrefractiveIndex 1.5)
+                
             |> largeobject
         Group.create() |> Group.setChildren [plane;sphere]
     let g2 =

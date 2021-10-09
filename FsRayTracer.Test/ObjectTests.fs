@@ -696,24 +696,3 @@ let ``creating a sub-group from a list of children``() =
         match children.[0].shape with
         | Group(c2) ->
             c2.Length = 2 |> Assert.True
-
-[<Fact>]
-let ``Subdividing a primitive does nothing``() =
-    let s = Sphere.create()
-    let s' = Object.divide 1 s
-    match s'.shape with
-    | Sphere -> true |> Assert.True
-    
-[<Fact>]
-let ``Subdividing a group partitions its children``() =
-    let s1 = Sphere.create() |> Object.transform (Translation(-2., -2., 0.))
-    let s2 = Sphere.create() |> Object.transform (Translation(-2., 2., 0.))
-    let s3 = Sphere.create() |> Object.transform (Scaling(4., 4., 4.))
-
-    let g = Group.create() |> Group.setChildren [s1;s2;s3]
-
-    let x = Object.divide 1 g
-
-    match x.shape with
-    | Group(children) ->
-        children.Length = 1 |> Assert.True

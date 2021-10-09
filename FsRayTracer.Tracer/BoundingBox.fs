@@ -91,6 +91,12 @@ module BoundingBox =
             |> addPoint p3
         | Group children ->
 
+            //let mutable box = create None
+            //for child in children do
+            //    let cbox = parentSpaceBoundsOf child
+            //    box <- addBox cbox box
+    
+            //box
             children
             |> List.map (fun c -> parentSpaceBoundsOf c)
             |> List.fold (fun box cbox -> addBox cbox box) (create None)
@@ -171,18 +177,18 @@ module BoundingBox =
     let partitionChildren g =
         match g.shape with
         | Group children ->
-  
-            let left, right = g.shape |> boundsOf |> split
+
+            let left, right = g.bounds |> split
 
             let rec loop children leftlist rightlist restlist =
                 match children with
                 | [] -> {| left = leftlist; right = rightlist; rest = restlist |}
                 | child::t ->
-
-                    if containsBox child.bounds left then
+                    let bounds = child |> parentSpaceBoundsOf
+                    if containsBox bounds left then
                         let leftlist' = [child] @ leftlist
                         loop t leftlist' rightlist restlist
-                    else if containsBox child.bounds right then
+                    else if containsBox bounds right then
                         let rightlist' = [child] @ rightlist
                         loop t leftlist rightlist' restlist
                     else

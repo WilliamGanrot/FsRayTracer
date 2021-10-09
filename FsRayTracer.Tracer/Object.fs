@@ -22,7 +22,8 @@ module Object =
     let transform t (object:Object) : Object =
         let t = Transformation.applyToMatrix t object.transform
         let object' = { object with transform = t; transformInverse = t |> Matrix.inverse }
-        {object' with bounds = BoundingBox.boundsOf object'.shape }
+        {object' with bounds = BoundingBox.parentSpaceBoundsOf object' }
+        
         
     let setMaterial m object =
         {object with material = m}

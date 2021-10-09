@@ -48,11 +48,12 @@ module Group =
         t
 
     let setChildren children parent =
-        { parent with shape = Group(children) }
+        { parent with shape = Group(children); bounds = BoundingBox.boundsOf (Group(children)) }
 
     let addChildren children parent =
         match parent.shape with
-        | Group g -> { parent with shape = Group(children @ g); bounds = BoundingBox.boundsOf (Group(children @ g))  }
+        | Group g ->
+            { parent with shape = Group(children @ g); bounds = BoundingBox.boundsOf (Group(children @ g))}
         | _ -> failwith "expected a group"
             
 

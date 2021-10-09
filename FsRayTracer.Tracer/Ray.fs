@@ -4,12 +4,10 @@ open RayTracer.Point
 
 open RayTracer.Vector
 open System
-open RayTracer.Object
 open RayTracer.Intersection
 open RayTracer.Transformation
 open RayTracer.Matrix
 open RayTracer.Constnats
-open RayTracer.Object
 open RayTracer.Cone
 open RayTracer.Cylinder
 open RayTracer.Cube

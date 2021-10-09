@@ -6,7 +6,6 @@ open RayTracer.RayDomain
 open RayTracer.Vector
 open RayTracer.Material
 open RayTracer.Ray
-open RayTracer.Object
 open RayTracer.Sphere
 open RayTracer.BoundingBox
 
@@ -18,6 +17,8 @@ module Group =
         | Group(l) -> l
         | _ -> failwith "expected object with shape group"
 
+    let isEmpty obj =
+        (getChildren obj).IsEmpty
     let localIntersect object ray =
 
         match (BoundingBox.intersects ray object.bounds) with
@@ -55,5 +56,14 @@ module Group =
         | Group g ->
             { parent with shape = Group(children @ g); bounds = BoundingBox.boundsOf (Group(children @ g))}
         | _ -> failwith "expected a group"
+
+
+
+    let makeSubgroup group children =
+        match group.shape with
+        | Group(_) ->
+            let ns = create() |> setChildren children
+            group |> addChildren [ns]
+        | _ -> failwith ""
             
 

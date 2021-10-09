@@ -15,6 +15,7 @@ open RayTracer.ObjectDomain
 open RayTracer.RenderingDomain
 open RayTracer.RayDomain
 open RayTracer.BoundingBox
+open RayTracer.Group
 
 
 module Object =
@@ -121,3 +122,25 @@ module Object =
 
         normalToWorld object localNormal topparents
 
+    let rec divide threshold object : Object =
+
+        match object.shape with
+        | Group(children) when threshold < children.Length ->
+            let partitions = BoundingBox.partitionChildren object
+
+            let partitionGroups =
+                [partitions.left; partitions.right; partitions.rest]
+                |> List.filter (fun x -> x.Length > 0)
+                |> List.map (fun x -> Group.create() |> Group.setChildren x)
+
+            match partitionGroups with
+            | h::[] ->
+                let children = Group.getChildren h
+                Group.create() |> Group.setChildren children
+            | _ ->
+                partitionGroups
+                |> List.fold(fun accGroup patrition ->
+                    let divided = divide threshold patrition
+                    Group.addChildren [divided] accGroup ) (Group.create())
+
+        | _ -> object

@@ -18,6 +18,7 @@ open RayTracer.BoundingBox
 open RayTracer.Group
 
 
+
 module Object =
 
     let transform t (object:Object) : Object =
@@ -72,14 +73,34 @@ module Object =
                 let factor = Math.Pow(reflectDotEye, material.shininess)
                 ambient + diffuse + (light.intensity |> Color.mulitplyByScalar (material.specular * factor))
 
+    let parent o (tree: Object list) =
+
+        let rec loopNode (node: Object) =
+            match node.shape with
+            | _ when node.id = o.id -> Some node
+            | Group(children) when children.Length <> 0 -> loopChildren children
+            | Csg(_,l,r) -> loopChildren [l;r]
+            | _ -> None
+
+        and loopChildren (tree: Object list) =
+            match tree with
+            | h::t ->
+                match loopNode h with
+                | Some v -> Some h
+                | None -> loopChildren t 
+
+            | _ -> None
+
+        loopChildren tree
+
     let gettrail (key:int) (tree:Object list) =
         let mutable mlist = []
 
         let rec loopNode (node: Object) =
             match node.shape with
-            | _ when node.id = key ->
-                Some node
+            | _ when node.id = key -> Some node
             | Group(children) when children.Length <> 0 -> loopChildren children
+            | Csg(_,left,right) -> loopChildren [left;right]
             | _ -> None
             
     
@@ -96,6 +117,13 @@ module Object =
 
         loopChildren tree |> ignore
         mlist
+
+    let rec childIsIn child parent =
+        match parent.shape with
+        | Group(children) -> children |> List.exists(fun c -> childIsIn child c)
+        | Csg(_,left,right) -> childIsIn child left || childIsIn child right
+        | _ -> parent.id = child.id
+
 
     let worldToObject (object:Object) point topparents =
 

@@ -22,7 +22,7 @@ module World =
     let maxDepth = 4
 
     let empty =
-        { light = Point.create -10. 10. -10. |> Light.create (Color.create 1. 1. 1.);
+        { lights = [Light.create (Color.create 1. 1. 1.) (Point.create -10. 10. -10.)];
           objects = [] }
           
     let standard =
@@ -44,7 +44,7 @@ module World =
             Sphere.create()
             |> Object.transform (Scaling(0.5, 0.5, 0.5))
 
-        { light = light;
+        { lights = [light];
           objects = [s1;s2] }
 
     let intersect (w:World) r = 
@@ -53,13 +53,13 @@ module World =
         |> List.fold List.append []
         |> List.sortBy (fun x -> x.t)
 
-    let isShadowed p w =
-        let v = w.light.poistion - p
+    let isShadowed fromPoint toPoint w =
+        let v = fromPoint - toPoint
         let distance = Vector.magnitude v
         let direction = Vector.normalize v
 
         let optionHit =
-            Ray.create p direction
+            Ray.create toPoint direction
             |> intersect w
             |> Intersection.hit
 
@@ -68,19 +68,32 @@ module World =
         |_ -> false
 
     let rec shadeHit (w:World) (remaining:int) (c:Computation) =
-        let shadowed = isShadowed c.overPoint w
 
-        let surface = Object.lighting c.object.material w.light c.overPoint c.eyev c.normalv shadowed c.object
-        let reflected = reflectedColor c remaining w
-        let refracted = refractedColor c remaining w
+        let rec loopLights lights colorList =
+            match lights with
+            | [] ->
+                let head = colorList |> List.head
+                let tail = colorList |> List.tail
+                tail |> List.fold (fun c c2 -> c + c2) head
+            | light::xs ->
+                let shadowed = isShadowed light.poistion c.overPoint w
 
-        let m = c.object.material
-        match m.reflectivity > 0. && m.transparency > 0. with
-        | true ->
-            let reflactance = Computation.shlick c
-            surface + (Color.mulitplyByScalar reflactance reflected) + Color.mulitplyByScalar (1. - reflactance) refracted 
-        | false ->
-            surface + reflected + refracted
+                let surface = Object.lighting c.object.material light c.overPoint c.eyev c.normalv shadowed c.object
+                let reflected = reflectedColor c remaining w
+                let refracted = refractedColor c remaining w
+
+                let m = c.object.material
+                match m.reflectivity > 0. && m.transparency > 0. with
+                | true ->
+                    let reflactance = Computation.shlick c
+                    let color = surface + (Color.mulitplyByScalar reflactance reflected) + Color.mulitplyByScalar (1. - reflactance) refracted
+                    loopLights xs (colorList @ [color])
+                | false ->
+                    let color = surface + reflected + refracted
+                    loopLights xs (colorList @ [color])
+
+        loopLights w.lights []
+
 
     and colorAt world remaining ray =
         ray
@@ -138,6 +151,6 @@ module World =
     let setObjects objects (world:World) =
         { world with objects = objects }
 
-    let withLight l world =
-        { world with light = l }
+    let withLights l world =
+        { world with lights = l }
 

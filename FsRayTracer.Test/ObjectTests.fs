@@ -21,6 +21,7 @@ open RayTracer.Triangle
 open RayTracer.World
 open RayTracer.BoundingBox
 open RayTracer.Computation
+open RayTracer.Csg
 
 
 
@@ -459,7 +460,7 @@ let ``constructing a traingle`` () =
     let t = Triangle.create(p1,p2,p3)
 
     match t.shape with
-    | Traingle(p1', p2', p3', e1, e2, n) ->
+    | Triangle(p1', p2', p3', e1, e2, n) ->
         
         Point.equal p1' p1 |> Assert.True
         Point.equal p2' p2 |> Assert.True
@@ -483,7 +484,7 @@ let ``finding the normal on a triangle`` () =
     let n3 = t.localNormalAt t.shape (Point.create 0.5 0.25 0.) None
 
     match t.shape with
-    | Traingle(_,_,_,_,_,n) ->
+    | Triangle(_,_,_,_,_,n) ->
         n .= n1 |> Assert.True
         n .= n2 |> Assert.True
         n .= n3 |> Assert.True
@@ -670,6 +671,121 @@ let ``preparing the normal on a ooth triangle``() =
 
     (Vector.create -0.5547 0.83205 0.) .= comps.normalv |> Assert.True
 
+[<Fact>]
+let ``csg is created with an operation and two shapes``() =
+    let o1 = Sphere.create()
+    let o2 = Cube.create()
+
+    let c = Csg.create (Union, o1, o2)
+    match c.shape with
+    | Csg(operation,left,right) ->
+        left .=. o1 |> Assert.True
+        right .=. o2 |> Assert.True
+        operation = Union |> Assert.True
+
+        let p1 = [c] |> Object.parent o1
+        match p1 with
+        | Some p ->
+            p .=. c |> Assert.True
+        | None -> failwith ""
+        
+
+        let p2 = [c] |> Object.parent o2
+        match p2 with
+        | Some p ->
+            p .=. c |> Assert.True
+        | None -> failwith ""
+        
+    | _ -> failwith ""
+
+[<Theory>]
+[<InlineData("u", true,true, true,false)>]
+[<InlineData("u", true, true, false, true)>]
+[<InlineData("u", true,false,true,false)>]
+[<InlineData("u", true,false,false,true)>]
+[<InlineData("u",false, true,true,false )>]
+[<InlineData("u", false,true,false,false)>]
+[<InlineData("u", false,false,true,true)>]
+[<InlineData("u", false,false,false,true)>]
+
+[<InlineData("i", true,true,true,true)>]
+[<InlineData("i", true, true, false, false)>]
+[<InlineData("i",true,false,true,true)>]
+[<InlineData("i",true,false,false,false)>]
+[<InlineData("i",false,true,true,true)>]
+[<InlineData("i",false,true,false,true)>]
+[<InlineData("i",false,false,true,false)>]
+[<InlineData("i",false,false,false,false)>]
+
+[<InlineData("d", true, true, true, false)>]
+[<InlineData("d",true,true, false, true)>]
+[<InlineData("d",true,false,true,false)>]
+[<InlineData("d",true,false,false,true)>]
+[<InlineData("d",false, true,true,true)>]
+[<InlineData("d",false,true,false,true)>]
+[<InlineData("d",false,false,true,false)>]
+[<InlineData("d",false,false,false,false)>]
+let ``evaluating athe rule for acsg operation``(op, lhit, inl, inr, result) =
+    let op' =
+        match op with
+        | "u" -> Union
+        | "i" -> Intersect
+        | "d" -> Difference
+
+    let result' = Csg.intersectionAllowed op' lhit inl inr
+    result = result' |> Assert.True
+    
+[<Theory>]
+[<InlineData("u", 0, 3)>]
+[<InlineData("i", 1, 2)>]
+[<InlineData("d", 0, 1)>]
+let ``filtering a list on intersections``(op, x0, x1) =
+
+    let op' =
+        match op with
+        | "u" -> Union
+        | "i" -> Intersect
+        | "d" -> Difference
+
+    let o1 = Sphere.create()
+    let o2 = Cube.create()
+
+    let c = Csg.create (op', o1, o2)
+
+    let xs = Intersection.tuplesToIntersections[(1.,o1); (2.,o2); (3.,o1); (4.,o2)]
+    let result = Csg.filterIntersections xs c.shape
+
+    2 = result.Length |> Assert.True
+    result.[0].object .=. xs.[x0].object |> Assert.True
+    result.[0].t = xs.[x0].t |> Assert.True
+
+    result.[1].object .=. xs.[x1].object |> Assert.True
+    result.[1].t = xs.[x1].t |> Assert.True
+
+[<Fact>]
+let ``a ray misses a csg object``() =
+    let o1 = Sphere.create()
+    let o2 = Sphere.create()
+    let c = Csg.create (Union, o1, o2)
+
+    let r = Ray.create (Point.create 0. 2. -5.) (Vector.create 0. 0. 1.)
+    let xs = c.localIntersect c r
+    xs.Length = 0 |> Assert.True
+
+[<Fact>]
+let ``a ray hits a csg object``() =
+    let o1 = Sphere.create()
+    let o2 = Sphere.create() |> Object.transform (Translation(0., 0., 0.5))
+    let c = Csg.create (Union, o1, o2)
+
+    let r = Ray.create (Point.create 0. 0. -5.) (Vector.create 0. 0. 1.)
+    let xs = c.localIntersect c r
+
+    xs.Length = 2 |> Assert.True
+    xs.[0].t = 4. |> Assert.True
+    xs.[0].object .=. o1 |> Assert.True
+    xs.[1].t = 6.5 |> Assert.True
+    xs.[1].object .=. o2 |> Assert.True
 [<Fact>]
 let ``partitioning a groups children``() =
     let s1 = Sphere.create() |> Object.transform (Translation(-2., 0., 0.))

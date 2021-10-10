@@ -11,7 +11,6 @@ open System
 open RayTracer.Constnats
 
 module BoundingBox =
-
     let checkAxis origin direction min max=
         let tMinNumerator = min - origin
         let tMaxNumerator = max - origin
@@ -28,7 +27,6 @@ module BoundingBox =
                 (tMin, tMax)
 
         if tMin > tMax then (tMax, tMin) else (tMin, tMax)
-
     let create (t: Option<(Point*Point)>) : BoundingBox =
         match t with
         | Some (min,max) -> {min = min; max = max;}
@@ -79,7 +77,7 @@ module BoundingBox =
             let min' = Point.create -limit min -limit
             let max' = Point.create limit max limit
             create (Some(min', max'))
-        | Traingle(p1,p2,p3,e1,e2,n) ->
+        | Triangle(p1,p2,p3,e1,e2,n) ->
             create None
             |> addPoint p1
             |> addPoint p2
@@ -90,17 +88,17 @@ module BoundingBox =
             |> addPoint p2
             |> addPoint p3
         | Group children ->
-
-            //let mutable box = create None
-            //for child in children do
-            //    let cbox = parentSpaceBoundsOf child
-            //    box <- addBox cbox box
-    
-            //box
             children
             |> List.map (fun c -> parentSpaceBoundsOf c)
             |> List.fold (fun box cbox -> addBox cbox box) (create None)
+        | Csg(_,left,right) ->
 
+            let left' = parentSpaceBoundsOf left
+            let right' = parentSpaceBoundsOf right
+
+            create None
+            |> addBox left'
+            |> addBox right'
 
 
 

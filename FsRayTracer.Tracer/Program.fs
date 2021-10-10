@@ -19,9 +19,13 @@ open RayTracer.Plane
 open RayTracer.ObjectDomain
 open RayTracer.Cylinder
 open RayTracer.Sphere
-open System.IO
+open RayTracer.Csg
+open RayTracer.Cube
 open RayTracer.OBJFile
 open System
+open RayTracer.Color
+open RayTracer.Color
+open System.IO
 
 
 [<EntryPoint>]
@@ -79,8 +83,8 @@ let main argv =
         World.empty
         |> World.addObject g
         |> World.addObject (Plane.create())
-        |> World.withLight (
-            Light.create (Color.create 1. 1. 1.) (Point.create -10. 10. -10.))
+        |> World.withLights (
+            [Light.create (Color.create 1. 1. 1.) (Point.create -10. 10. -10.)])
 
     let stopWatch = System.Diagnostics.Stopwatch.StartNew()
     let ppm =

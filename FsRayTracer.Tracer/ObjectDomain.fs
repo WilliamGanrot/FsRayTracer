@@ -94,6 +94,10 @@ module ObjectDomain =
             FloatHelper.equal m.refractiveIndex m2.refractiveIndex &&
             m.pattern = m2.pattern
 
+    type CsgOperation =
+        | Union
+        | Intersect
+        | Difference
 
     [<CustomEquality; CustomComparison>]
     type Shape =
@@ -103,8 +107,9 @@ module ObjectDomain =
         | Cylinder of minimum: float * maximum: float * closed: bool
         | Cone of minimum: float * maximum: float * closed: bool
         | Group of Object list
-        | Traingle of p1: Point * p2: Point * p3: Point * e1: Vector * e2: Vector * normal: Vector
+        | Triangle of p1: Point * p2: Point * p3: Point * e1: Vector * e2: Vector * normal: Vector
         | SmoothTraingle of p1: Point * p2: Point * p3: Point * e1: Vector * e2: Vector * n: Vector * n2: Vector * n3: Vector
+        | Csg of operation: CsgOperation * left: Object * right: Object
         
         override x.Equals(y) =
             (match y with :? Shape -> true | _ -> false)

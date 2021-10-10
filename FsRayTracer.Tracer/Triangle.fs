@@ -14,7 +14,7 @@ module Triangle =
     let localIntersect (object:Object) (ray:Ray) = 
 
         match object.shape with
-        | Traingle(p1,_,_,e1,e2,n) ->
+        | Triangle(p1,_,_,e1,e2,n) ->
 
             let dirrCrossE2 = Vector.cross ray.direction e2
             let det = Vector.dot e1 dirrCrossE2
@@ -63,7 +63,7 @@ module Triangle =
 
     let localNormalAt shape point (i: Intersection Option) =
         match shape, i with
-        | Traingle(_,_,_,_,_,n),_ -> n
+        | Triangle(_,_,_,_,_,n),_ -> n
         | SmoothTraingle(_,_,_,_,_,n1,n2,n3), Some i ->
             match i.uv with
             | Some(u,v) -> n2 * u + n3 * v + n1 * (1. - u - v)
@@ -81,11 +81,11 @@ module Triangle =
         { transform = Matrix.identityMatrix 4;
           transformInverse= Matrix.identityMatrix 4 |> Matrix.inverse;
           material = Material.standard;
-          shape = Traingle(p1, p2, p3, e1, e2, n);
+          shape = Triangle(p1, p2, p3, e1, e2, n);
           id = r.Next();
           localIntersect = localIntersect;
           localNormalAt = localNormalAt;
-          bounds = BoundingBox.boundsOf (Traingle(p1, p2, p3, e1, e2, n))}
+          bounds = BoundingBox.boundsOf (Triangle(p1, p2, p3, e1, e2, n))}
 
     let createSmooth((p1:Point), (p2:Point), (p3:Point), n1, n2, n3) =
 

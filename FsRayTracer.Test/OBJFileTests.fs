@@ -45,14 +45,14 @@ let ``parsing triangle face`` () =
     let t2 = parser.defaultGroup.[1]
 
     match t1.shape with
-    | Traingle(p1,p2,p3,_,_,_) ->
+    | Triangle(p1,p2,p3,_,_,_) ->
         Point.equal p1 parser.vertices.[0] |> Assert.True
         Point.equal p2 parser.vertices.[1] |> Assert.True
         Point.equal p3 parser.vertices.[2] |> Assert.True
     | _ -> failwith "wrong shape"
 
     match t2.shape with
-    | Traingle(p1,p2,p3,_,_,_) ->
+    | Triangle(p1,p2,p3,_,_,_) ->
         Point.equal p1 parser.vertices.[0] |> Assert.True
         Point.equal p2 parser.vertices.[2] |> Assert.True
         Point.equal p3 parser.vertices.[3] |> Assert.True
@@ -75,21 +75,21 @@ let ``triangulating polygons`` () =
     let t3 = parser.defaultGroup.[2]
 
     match t1.shape with
-    | Traingle(p1,p2,p3,_,_,_) ->
+    | Triangle(p1,p2,p3,_,_,_) ->
         Point.equal p1 parser.vertices.[1-1] |> Assert.True
         Point.equal p2 parser.vertices.[2-1] |> Assert.True
         Point.equal p3 parser.vertices.[3-1] |> Assert.True
     | _ -> failwith "wrong shape"
 
     match t2.shape with
-    | Traingle(p1,p2,p3,_,_,_) ->
+    | Triangle(p1,p2,p3,_,_,_) ->
         Point.equal p1 parser.vertices.[1-1] |> Assert.True
         Point.equal p2 parser.vertices.[3-1] |> Assert.True
         Point.equal p3 parser.vertices.[4-1] |> Assert.True
     | _ -> failwith "wrong shape"
 
     match t3.shape with
-    | Traingle(p1,p2,p3,_,_,_) ->
+    | Triangle(p1,p2,p3,_,_,_) ->
         Point.equal p1 parser.vertices.[1-1] |> Assert.True
         Point.equal p2 parser.vertices.[4-1] |> Assert.True
         Point.equal p3 parser.vertices.[5-1] |> Assert.True
@@ -116,14 +116,14 @@ let ``triangles in groups`` () =
     let t2 = g2 |> Group.getChildren |> List.head
 
     match t1.shape with
-    | Traingle(p1,p2,p3,_,_,_) ->
+    | Triangle(p1,p2,p3,_,_,_) ->
         Point.equal p1 parser.vertices.[1-1] |> Assert.True
         Point.equal p2 parser.vertices.[2-1] |> Assert.True
         Point.equal p3 parser.vertices.[3-1] |> Assert.True
     | _ -> true |> Assert.False
 
     match t2.shape with
-    | Traingle(p1,p2,p3,_,_,_) ->
+    | Triangle(p1,p2,p3,_,_,_) ->
         Point.equal p1 parser.vertices.[1-1] |> Assert.True
         Point.equal p2 parser.vertices.[3-1] |> Assert.True
         Point.equal p3 parser.vertices.[4-1] |> Assert.True

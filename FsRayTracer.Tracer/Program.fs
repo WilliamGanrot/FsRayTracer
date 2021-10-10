@@ -71,30 +71,46 @@ let main argv =
         Group.setChildren sides hex
 
     let parser =
-            let f =
-                File.ReadAllLines "../../../../OBJModels/dragon.obj"
-                |> Array.map(fun x -> x.TrimEnd())
-            OBJFile.parseFile f
+        File.ReadAllLines "../../../../OBJModels/dragon.obj"
+        |> Array.map(fun x -> x.TrimEnd())
+        |> OBJFile.parseFile
 
     let g =
-        Group.create() |> Group.setChildren parser.defaultGroup |> Object.divide 50
+        let children =
+            parser.defaultGroup
+            |> List.map (fun o -> o |> Object.setMaterial(Material.standard |> Material.withColor (Color.create 0. 0.4 0.)))
+
+        Group.create()
+        |> Group.setChildren children
+        |> Object.divide 50
+
+
+    let p =
+        Plane.create()
+        |> Object.setMaterial (
+            Material.standard
+            |> Material.withPattern (
+                Pattern.checkers (Color.white) (Color.black)
+                |> Pattern.transform (Rotation(Y, 45.)))
+            |> Material.withReflectivity 1.
+            |> Material.withReflectivity 0.5)
 
     let world =
         World.empty
         |> World.addObject g
-        |> World.addObject (Plane.create())
+        |> World.addObject p
         |> World.withLights (
             [Light.create (Color.create 1. 1. 1.) (Point.create -10. 10. -10.)])
 
     let stopWatch = System.Diagnostics.Stopwatch.StartNew()
     let ppm =
 
-        Camera.create 50 25 (Math.PI/3.)
-        |> Camera.withTransfom (Transformation.viewTransform (Point.create 0. 3.5 -8.) (Point.create 0. 1. 0.) (Vector.create 0. 1. 0.))
+        Camera.create 1200 678 (Math.PI/3.)
+        |> Camera.withTransfom (Transformation.viewTransform (Point.create 0. 7. -10.) (Point.create 0. 1.7 0.) (Vector.create 0. 1.7 0.))
         |> Camera.render world
         |> Canvas.toPPM
     stopWatch.Stop()
 
     System.IO.File.WriteAllText ("image.pgm", ppm)
 
-    0    
+    0   

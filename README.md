@@ -2,7 +2,7 @@
 This project is an F# implementation of a raytracer based on the book "The Ray Tracer Challenge: A Test-Driven Guide to Your First 3D Renderer" by James Buck
 
 ## Rendered Cover Image
-![Image](Images/cover_2_lights.png?raw=true "Title")
+![Image](Images/cover_2_lights_2.png?raw=true "Title")
 
 ## Chapter 16 - Constructive Solid Geometry (CSG)
 ![Image](Images/csg.png?raw=true "Title")
